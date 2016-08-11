@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -19,6 +18,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
+import com.itheima.mobilesafe.utils.Encryption;
 
 public class HomeActivity extends Activity implements View.OnClickListener {
 
@@ -143,7 +143,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
                 if (password.equals(confirmingPassword)) {
                     SharedPreferences.Editor editor = sp.edit();
-                    editor.putString("password", password);
+                    editor.putString("password", Encryption.doMd5(password));
                     editor.commit();
                     alertDialog.dismiss();
                 } else {
@@ -158,15 +158,15 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             case R.id.bt_type_ok:
                 String input = et_type_pwd.getText().toString().trim();
                 String savedPassword = sp.getString("password", "");
-                if(TextUtils.isEmpty(input)){
+                if (TextUtils.isEmpty(input)) {
                     Toast.makeText(this, "密码不得为空", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                if(input.equals(savedPassword)){
+                if (Encryption.doMd5(input).equals(savedPassword)) {
                     alertDialog.dismiss();
 
-                }else{
+                } else {
                     Toast.makeText(this, "密码错误", Toast.LENGTH_LONG).show();
                     return;
                 }
