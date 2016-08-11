@@ -2,32 +2,34 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textView1"
         android:layout_width="fill_parent"
         android:layout_height="55dip"
-        android:background="#8866ff00"
+        android:background="#cf0027b4"
         android:gravity="center"
         android:text="功能列表"
-        android:textColor="#000000"
+        android:textColor="#ffffff"
         android:textSize="22sp" />
 
     <com.itheima.mobilesafe.ui.FocusedTextView
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:textSize="18sp"
-        android:text="最新的手机卫士，快来下载啊，下载送好吃的，最新的手机卫士，快来下载啊，下载送好吃的"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="最新的手机卫士，快来下载啊，下载送好吃的，最新的手机卫士，快来下载啊，下载送好吃的"
+        android:textSize="18sp" />
 
     <GridView
         android:id="@+id/list_home"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginTop="15dip"
+        android:gravity="center"
         android:numColumns="3"
+        android:stretchMode="columnWidth"
         android:verticalSpacing="10dip" />
 
 </LinearLayout>
