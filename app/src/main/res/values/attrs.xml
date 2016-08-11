@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Refer to android-sdk-macosx/platforms/android-23/data/res/values/attrs.xml-->
+    <declare-styleable name="TextView">
+        <attr name="title_" format="string" />
+        <attr name="desc_on" format="string" />
+        <attr name="desc_off" format="string" />
+    </declare-styleable>
+</resources>
