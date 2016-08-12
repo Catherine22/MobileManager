@@ -60,32 +60,51 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Fragment fragment = null;
-                String tag = null;
                 switch (position) {
                     case 0://进入手机防盗
                         showAntiTheftDialog();
                         break;
                     case 8://进入设置中心
-//                        Intent intent = new Intent(HomeActivity.this, SettingActivity.class);
-//                        startActivity(intent);
-                        tv_title.setText("设置中心");
-                        fragment = new SettingsFragment();
-                        tag = "SETTINGS";
+                        callFragment(Constants.SETTINGS_FRAG);
                         break;
 
                     default:
                         break;
                 }
 
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.add(R.id.fl_container, fragment, tag);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
             }
         });
     }
 
+    /**
+     * 跳页至某Fragment
+     * @param ID
+     */
+    private void callFragment(int ID) {
+        Fragment fragment = null;
+        String tag = null;
+        switch (ID) {
+            case Constants.SETTINGS_FRAG:
+                tv_title.setText("设置中心");
+                fragment = new SettingsFragment();
+                tag = "SETTINGS";
+                break;
+            case Constants.ANTI_THEFT_FRAG:
+                tv_title.setText("手机防盗");
+                fragment = new AntiTheftFragment();
+                tag = "ANTI_THEFT";
+                break;
+        }
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.fl_container, fragment, tag);
+        transaction.addToBackStack(null);
+        transaction.commitAllowingStateLoss();
+    }
+
+    /**
+     * 检查密码设置
+     */
     private void showAntiTheftDialog() {
         if (isSetupPwd())
             showPwdDialog();
@@ -93,6 +112,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             showSetupPwdDialog();
     }
 
+    //Dialog components
     private EditText et_setup_pwd, et_confirm_pwd, et_type_pwd;
     private Button bt_ok, bt_cancel;
     private Dialog alertDialog;
@@ -135,7 +155,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     }
 
     /**
-     * 判断是否输入过密码
+     * 判断是否设置过密码
      *
      * @return
      */
@@ -181,7 +201,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
                 if (Encryption.doMd5(input).equals(savedPassword)) {
                     alertDialog.dismiss();
-
+                    callFragment(Constants.ANTI_THEFT_FRAG);
                 } else {
                     Toast.makeText(this, "密码错误", Toast.LENGTH_LONG).show();
                     return;
