@@ -17,12 +17,13 @@
     <FrameLayout
         android:id="@+id/fl_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
 
         <com.itheima.mobilesafe.ui.FocusedTextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
             android:ellipsize="marquee"
             android:singleLine="true"
             android:text="最新的手机卫士，快来下载啊，下载送好吃的，最新的手机卫士，快来下载啊，下载送好吃的"
@@ -30,9 +31,9 @@
 
         <GridView
             android:id="@+id/list_home"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="15dip"
+            android:layout_marginTop="45dip"
             android:gravity="center"
             android:numColumns="3"
             android:stretchMode="columnWidth"

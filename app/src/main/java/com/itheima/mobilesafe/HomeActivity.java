@@ -7,8 +7,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -22,12 +24,13 @@ import android.widget.Toast;
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
 import com.itheima.mobilesafe.utils.Encryption;
 
+import java.util.Stack;
+
 public class HomeActivity extends FragmentActivity implements View.OnClickListener {
 
     private SharedPreferences sp;
-    private GridView list_home;
     private TextView tv_title;
-    private MyGridViewAdapter adapter;
+    private Stack<String> titles = new Stack<>();
     private static String[] names = {
             "手机防盗", "通讯卫士", "软件管理",
             "进程管理", "流量统计", "手机杀毒",
@@ -51,9 +54,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void initComponent() {
-        list_home = (GridView) findViewById(R.id.list_home);
+        GridView list_home = (GridView) findViewById(R.id.list_home);
         tv_title = (TextView) findViewById(R.id.tv_title);
-        adapter = new MyGridViewAdapter(this, names, ids);
+        tv_title.setText("功能列表");
+        titles.push("功能列表");
+        MyGridViewAdapter adapter = new MyGridViewAdapter(this, names, ids);
         list_home.setAdapter(adapter);
         list_home.setOnItemClickListener(new OnItemClickListener() {
 
@@ -78,23 +83,28 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
     /**
      * 跳页至某Fragment
-     * @param ID
+     *
+     * @param ID Tag of the Fragment
      */
     private void callFragment(int ID) {
         Fragment fragment = null;
         String tag = null;
+        String title = "";
         switch (ID) {
             case Constants.SETTINGS_FRAG:
-                tv_title.setText("设置中心");
+                title = "设置中心";
                 fragment = new SettingsFragment();
                 tag = "SETTINGS";
                 break;
             case Constants.ANTI_THEFT_FRAG:
-                tv_title.setText("手机防盗");
+                title = "手机防盗";
                 fragment = new AntiTheftFragment();
                 tag = "ANTI_THEFT";
                 break;
         }
+
+        titles.push(title);
+        tv_title.setText(title);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.fl_container, fragment, tag);
@@ -157,11 +167,23 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     /**
      * 判断是否设置过密码
      *
-     * @return
+     * @return Is password empty or not
      */
     private boolean isSetupPwd() {
         String pwd = sp.getString("password", null);
         return !TextUtils.isEmpty(pwd);
+    }
+
+    @Override
+    public void onBackPressed() {
+        final FragmentManager fm = getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStack();
+            titles.pop();
+            tv_title.setText(titles.peek());
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -180,7 +202,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 if (password.equals(confirmingPassword)) {
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString("password", Encryption.doMd5(password));
-                    editor.commit();
+                    editor.apply();
                     alertDialog.dismiss();
                 } else {
                     Toast.makeText(this, "密码不一致", Toast.LENGTH_LONG).show();
