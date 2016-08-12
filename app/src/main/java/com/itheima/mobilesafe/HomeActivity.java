@@ -1,12 +1,13 @@
 package com.itheima.mobilesafe;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -15,15 +16,17 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
 import com.itheima.mobilesafe.utils.Encryption;
 
-public class HomeActivity extends Activity implements View.OnClickListener {
+public class HomeActivity extends FragmentActivity implements View.OnClickListener {
 
     private SharedPreferences sp;
     private GridView list_home;
+    private TextView tv_title;
     private MyGridViewAdapter adapter;
     private static String[] names = {
             "手机防盗", "通讯卫士", "软件管理",
@@ -44,7 +47,12 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         sp = getSharedPreferences("config", MODE_PRIVATE);
+        initComponent();
+    }
+
+    private void initComponent() {
         list_home = (GridView) findViewById(R.id.list_home);
+        tv_title = (TextView) findViewById(R.id.tv_title);
         adapter = new MyGridViewAdapter(this, names, ids);
         list_home.setAdapter(adapter);
         list_home.setOnItemClickListener(new OnItemClickListener() {
@@ -52,20 +60,28 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
+                Fragment fragment = null;
+                String tag = null;
                 switch (position) {
                     case 0://进入手机防盗
                         showAntiTheftDialog();
                         break;
                     case 8://进入设置中心
-                        Intent intent = new Intent(HomeActivity.this, SettingActivity.class);
-                        startActivity(intent);
-
+//                        Intent intent = new Intent(HomeActivity.this, SettingActivity.class);
+//                        startActivity(intent);
+                        tv_title.setText("设置中心");
+                        fragment = new SettingsFragment();
+                        tag = "SETTINGS";
                         break;
 
                     default:
                         break;
                 }
 
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.add(R.id.fl_container, fragment, tag);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
             }
         });
     }
