@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -22,14 +21,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
+import com.itheima.mobilesafe.fragments.AntiTheftFragment;
+import com.itheima.mobilesafe.fragments.SettingsFragment;
+import com.itheima.mobilesafe.fragments.Setup1Fragment;
 import com.itheima.mobilesafe.utils.Encryption;
 
 import java.util.Stack;
 
-public class HomeActivity extends FragmentActivity implements View.OnClickListener {
-
+public class HomeActivity extends FragmentActivity implements View.OnClickListener, MainInterface {
+    private final static String TAG = "HomeActivity";
     private SharedPreferences sp;
     private TextView tv_title;
+    private boolean isClearAll;
+    private FragmentManager fm = getSupportFragmentManager();
     private Stack<String> titles = new Stack<>();
     private static String[] names = {
             "手机防盗", "通讯卫士", "软件管理",
@@ -51,6 +55,56 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         setContentView(R.layout.activity_home);
         sp = getSharedPreferences("config", MODE_PRIVATE);
         initComponent();
+    }
+
+    /**
+     * 跳页至某Fragment
+     *
+     * @param ID Tag of the Fragment
+     */
+    @Override
+    public void callFragment(int ID) {
+        Fragment fragment = null;
+        String tag = null;
+        String title = "";
+        isClearAll = false;
+        switch (ID) {
+            case Constants.SETTINGS_FRAG:
+                title = "设置中心";
+                fragment = new SettingsFragment();
+                tag = "SETTINGS";
+                break;
+            case Constants.ANTI_THEFT_FRAG:
+                title = "手机防盗";
+                fragment = new AntiTheftFragment();
+                tag = "ANTI_THEFT";
+                break;
+            case Constants.SETUP1_FRAG:
+                isClearAll = true;
+                title = "欢迎使用手机防盗";
+                fragment = new Setup1Fragment();
+                tag = "SETUP1";
+                break;
+        }
+
+        titles.push(title);
+        tv_title.setText(title);
+
+        FragmentTransaction transaction = fm.beginTransaction();
+        transaction.add(R.id.fl_container, fragment, tag);
+        transaction.addToBackStack(title);
+        transaction.commitAllowingStateLoss();
+    }
+
+    /**
+     * Pop the fragment from stack
+     */
+    private void clearAllFragments() {
+        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
+            fm.popBackStack();
+            titles.pop();
+        }
+        titles.push("功能列表");
     }
 
     private void initComponent() {
@@ -79,37 +133,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
             }
         });
-    }
-
-    /**
-     * 跳页至某Fragment
-     *
-     * @param ID Tag of the Fragment
-     */
-    private void callFragment(int ID) {
-        Fragment fragment = null;
-        String tag = null;
-        String title = "";
-        switch (ID) {
-            case Constants.SETTINGS_FRAG:
-                title = "设置中心";
-                fragment = new SettingsFragment();
-                tag = "SETTINGS";
-                break;
-            case Constants.ANTI_THEFT_FRAG:
-                title = "手机防盗";
-                fragment = new AntiTheftFragment();
-                tag = "ANTI_THEFT";
-                break;
-        }
-
-        titles.push(title);
-        tv_title.setText(title);
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.fl_container, fragment, tag);
-        transaction.addToBackStack(null);
-        transaction.commitAllowingStateLoss();
     }
 
     /**
@@ -176,13 +199,17 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void onBackPressed() {
-        final FragmentManager fm = getSupportFragmentManager();
-        if (fm.getBackStackEntryCount() > 0) {
-            fm.popBackStack();
-            titles.pop();
+        if (isClearAll) {
+            clearAllFragments();
             tv_title.setText(titles.peek());
         } else {
-            super.onBackPressed();
+            if (fm.getBackStackEntryCount() > 0) {
+                fm.popBackStack();
+                titles.pop();
+                tv_title.setText(titles.peek());
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 

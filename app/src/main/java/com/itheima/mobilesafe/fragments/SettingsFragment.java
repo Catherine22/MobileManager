@@ -1,4 +1,4 @@
-package com.itheima.mobilesafe;
+package com.itheima.mobilesafe.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.SettingItemView;
 
 /**
