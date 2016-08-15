@@ -13,7 +13,6 @@ import android.widget.Button;
 import com.itheima.mobilesafe.Constants;
 import com.itheima.mobilesafe.MainInterface;
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.ui.SettingItemView;
 
 /**
  * Created by Catherine on 2016/8/12.
