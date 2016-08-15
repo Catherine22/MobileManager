@@ -42,7 +42,7 @@ public class Setup1Fragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.d(TAG,"onResume");
+        Log.d(TAG, "onResume");
         super.onResume();
     }
 

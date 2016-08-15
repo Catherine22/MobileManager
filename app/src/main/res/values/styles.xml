@@ -36,6 +36,26 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="text_item_left_style" parent="AppBaseTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_alignParentLeft">true</item>
+    </style>
+
+    <style name="text_item_right_style" parent="AppBaseTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_alignParentRight">true</item>
+    </style>
+
     <style name="button_back_style" parent="AppBaseTheme">
         <item name="android:layout_width">80dp</item>
         <item name="android:layout_height">wrap_content</item>

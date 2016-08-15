@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -35,7 +36,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private final static String TAG = "HomeActivity";
     private SharedPreferences sp;
     private TextView tv_title;
-    private int backStackFlag;
     private FragmentManager fm = getSupportFragmentManager();
     private Stack<String> titles = new Stack<>();
     private static String[] names = {
@@ -117,9 +117,12 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
      * Clear all fragments in stack
      */
     @Override
-    public void clearFragments() {
-        //因为BackStackEntryCount不会立刻增加
-        backStackFlag = fm.getBackStackEntryCount();
+    public void clearAllFragments() {
+        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
+            fm.popBackStack();
+            titles.pop();
+        }
+        titles.push("功能列表");
     }
 
     /**
@@ -128,16 +131,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     @Override
     public void backToPreviousPage() {
         onBackPressed();
-    }
-    /**
-     * Pop the fragment from stack
-     */
-    private void backToRootPage() {
-        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
-            fm.popBackStack();
-            titles.pop();
-        }
-        titles.push("功能列表");
     }
 
     private void initComponent() {
@@ -232,19 +225,14 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void onBackPressed() {
-        if (backStackFlag > 0) {
-            backToRootPage();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStack();
+            titles.pop();
             tv_title.setText(titles.peek());
-            backStackFlag = 0;
-        } else {
-            if (fm.getBackStackEntryCount() > 0) {
-                fm.popBackStack();
-                titles.pop();
-                tv_title.setText(titles.peek());
-            } else {
-                super.onBackPressed();
-            }
-        }
+        } else
+            super.onBackPressed();
+
+
     }
 
     @Override

@@ -33,6 +33,8 @@ public class Setup4Fragment extends Fragment {
         bt_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mainInterface.clearAllFragments();
+                mainInterface.callFragment(Constants.ANTI_THEFT_FRAG);
             }
         });
         bt_back = (Button) view.findViewById(R.id.bt_back);
