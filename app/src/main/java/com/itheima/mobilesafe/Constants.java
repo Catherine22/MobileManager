@@ -9,4 +9,5 @@ public class Constants {
     public final static int ANTI_THEFT_FRAG = 0;
     public final static int SETTINGS_FRAG = 8;
     public final static int SETUP1_FRAG = 9;
+    public final static int SETUP2_FRAG = 10;
 }

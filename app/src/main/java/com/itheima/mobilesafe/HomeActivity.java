@@ -24,6 +24,7 @@ import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
 import com.itheima.mobilesafe.fragments.SettingsFragment;
 import com.itheima.mobilesafe.fragments.Setup1Fragment;
+import com.itheima.mobilesafe.fragments.Setup2Fragment;
 import com.itheima.mobilesafe.utils.Encryption;
 
 import java.util.Stack;
@@ -32,7 +33,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private final static String TAG = "HomeActivity";
     private SharedPreferences sp;
     private TextView tv_title;
-    private boolean isClearAll;
+    private int backStackFlag;
     private FragmentManager fm = getSupportFragmentManager();
     private Stack<String> titles = new Stack<>();
     private static String[] names = {
@@ -67,7 +68,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         Fragment fragment = null;
         String tag = null;
         String title = "";
-        isClearAll = false;
         switch (ID) {
             case Constants.SETTINGS_FRAG:
                 title = "设置中心";
@@ -80,10 +80,14 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 tag = "ANTI_THEFT";
                 break;
             case Constants.SETUP1_FRAG:
-                isClearAll = true;
                 title = "欢迎使用手机防盗";
                 fragment = new Setup1Fragment();
                 tag = "SETUP1";
+                break;
+            case Constants.SETUP2_FRAG:
+                title = "手机卡绑定";
+                fragment = new Setup2Fragment();
+                tag = "SETUP2";
                 break;
         }
 
@@ -96,10 +100,27 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         transaction.commitAllowingStateLoss();
     }
 
+
+    /**
+     * Clear all fragments in stack
+     */
+    @Override
+    public void clearFragments() {
+        //因为BackStackEntryCount不会立刻增加
+        backStackFlag = fm.getBackStackEntryCount();
+    }
+
+    /**
+     * Simulate BackKey event
+     */
+    @Override
+    public void backToPreviousPage() {
+        onBackPressed();
+    }
     /**
      * Pop the fragment from stack
      */
-    private void clearAllFragments() {
+    private void backToRootPage() {
         for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
             fm.popBackStack();
             titles.pop();
@@ -199,9 +220,10 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void onBackPressed() {
-        if (isClearAll) {
-            clearAllFragments();
+        if (backStackFlag > 0) {
+            backToRootPage();
             tv_title.setText(titles.peek());
+            backStackFlag = 0;
         } else {
             if (fm.getBackStackEntryCount() > 0) {
                 fm.popBackStack();
@@ -217,7 +239,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_setup_ok:
-
                 String password = et_setup_pwd.getText().toString().trim();
                 String confirmingPassword = et_confirm_pwd.getText().toString().trim();
 
@@ -239,7 +260,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             case R.id.bt_setup_cancel:
                 alertDialog.dismiss();
                 break;
-
             case R.id.bt_type_ok:
                 String input = et_type_pwd.getText().toString().trim();
                 String savedPassword = sp.getString("password", "");
@@ -250,14 +270,16 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
                 if (Encryption.doMd5(input).equals(savedPassword)) {
                     alertDialog.dismiss();
-                    callFragment(Constants.ANTI_THEFT_FRAG);
+                    sp = getSharedPreferences("config", MODE_PRIVATE);
+                    if (!sp.getBoolean("configed", false))
+                        callFragment(Constants.SETUP1_FRAG);
+                    else
+                        callFragment(Constants.ANTI_THEFT_FRAG);
                 } else {
                     Toast.makeText(this, "密码错误", Toast.LENGTH_LONG).show();
                     return;
                 }
-
                 break;
-
             case R.id.bt_type_cancel:
                 alertDialog.dismiss();
                 break;

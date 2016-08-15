@@ -7,4 +7,8 @@ package com.itheima.mobilesafe;
  */
 public interface MainInterface {
     void callFragment(int ID);
+
+    void clearFragments();
+
+    void backToPreviousPage();
 }

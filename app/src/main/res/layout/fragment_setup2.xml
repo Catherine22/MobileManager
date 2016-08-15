@@ -54,12 +54,12 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@android:drawable/presence_online" />
+                    android:src="@android:drawable/presence_invisible" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@android:drawable/presence_invisible" />
+                    android:src="@android:drawable/presence_online" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -82,4 +82,13 @@
         android:layout_margin="10dp"
         android:background="@drawable/button"
         android:text="NEXT" />
+
+    <Button
+        android:id="@+id/bt_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|left"
+        android:layout_margin="10dp"
+        android:background="@drawable/button"
+        android:text="BACK" />
 </FrameLayout>
