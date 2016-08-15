@@ -25,6 +25,8 @@ import com.itheima.mobilesafe.fragments.AntiTheftFragment;
 import com.itheima.mobilesafe.fragments.SettingsFragment;
 import com.itheima.mobilesafe.fragments.Setup1Fragment;
 import com.itheima.mobilesafe.fragments.Setup2Fragment;
+import com.itheima.mobilesafe.fragments.Setup3Fragment;
+import com.itheima.mobilesafe.fragments.Setup4Fragment;
 import com.itheima.mobilesafe.utils.Encryption;
 
 import java.util.Stack;
@@ -88,6 +90,16 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 title = "手机卡绑定";
                 fragment = new Setup2Fragment();
                 tag = "SETUP2";
+                break;
+            case Constants.SETUP3_FRAG:
+                title = "设置安全号码";
+                fragment = new Setup3Fragment();
+                tag = "SETUP3";
+                break;
+            case Constants.SETUP4_FRAG:
+                title = "恭喜您设置完成";
+                fragment = new Setup4Fragment();
+                tag = "SETUP4";
                 break;
         }
 

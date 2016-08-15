@@ -11,6 +11,7 @@ import android.widget.Button;
 import com.itheima.mobilesafe.Constants;
 import com.itheima.mobilesafe.MainInterface;
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.ui.SettingItemView;
 
 /**
  * Created by Catherine on 2016/8/12.
@@ -22,6 +23,7 @@ public class Setup2Fragment extends Fragment {
     private static final String TAG = "Setup2Fragment";
     private MainInterface mainInterface;
     private Button bt_next, bt_back;
+    private SettingItemView siv_sim;
 
     @Nullable
     @Override
@@ -32,7 +34,7 @@ public class Setup2Fragment extends Fragment {
         bt_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.callFragment(Constants.SETUP2_FRAG);
+                mainInterface.callFragment(Constants.SETUP3_FRAG);
             }
         });
         bt_back = (Button) view.findViewById(R.id.bt_back);
@@ -40,6 +42,20 @@ public class Setup2Fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mainInterface.backToPreviousPage();
+            }
+        });
+        siv_sim = (SettingItemView) view.findViewById(R.id.siv_sim);
+        siv_sim.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //判断是否有选中
+                //已经打开SIM卡绑定
+                if(siv_sim.isChecked()){
+                    siv_sim.setChecked(false);
+                }else{
+                    //没有打开SIM卡绑定
+                    siv_sim.setChecked(true);
+                }
             }
         });
         return view;

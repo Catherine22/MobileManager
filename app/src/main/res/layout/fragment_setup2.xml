@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:itheima="http://schemas.android.com/apk/com.itheima.mobilesafe"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundPrimary"
@@ -12,27 +13,20 @@
 
         <TextView
             style="@style/text_content_style"
-            android:text="您的手机防盗卫士:" />
+            android:text="通过绑定SIM卡:" />
 
         <TextView
             style="@style/text_content_style"
-            android:drawableLeft="@android:drawable/btn_star_big_on"
-            android:text="sim卡更变报警" />
+            android:gravity="center_vertical|left"
+            android:text="下次重启手机如果发现SIM卡变化\n就会发送报警短信" />
 
-        <TextView
-            style="@style/text_content_style"
-            android:drawableLeft="@android:drawable/btn_star_big_on"
-            android:text="GPS追踪" />
-
-        <TextView
-            style="@style/text_content_style"
-            android:drawableLeft="@android:drawable/btn_star_big_on"
-            android:text="远程数据销毁" />
-
-        <TextView
-            style="@style/text_content_style"
-            android:drawableLeft="@android:drawable/btn_star_big_on"
-            android:text="远程锁屏" />
+        <com.itheima.mobilesafe.ui.SettingItemView
+            android:id="@+id/siv_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            itheima:desc_off="SIM卡没有绑定"
+            itheima:desc_on="SIM卡已绑定"
+            itheima:title_="点击绑定SIM卡"></com.itheima.mobilesafe.ui.SettingItemView>
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -42,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/setup1" />
+                android:src="@drawable/bind" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -76,19 +70,11 @@
 
     <Button
         android:id="@+id/bt_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|right"
-        android:layout_margin="10dp"
-        android:background="@drawable/button"
+        style="@style/button_next_style"
         android:text="NEXT" />
 
     <Button
         android:id="@+id/bt_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|left"
-        android:layout_margin="10dp"
-        android:background="@drawable/button"
+        style="@style/button_back_style"
         android:text="BACK" />
 </FrameLayout>

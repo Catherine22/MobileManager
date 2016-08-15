@@ -10,4 +10,7 @@ public class Constants {
     public final static int SETTINGS_FRAG = 8;
     public final static int SETUP1_FRAG = 9;
     public final static int SETUP2_FRAG = 10;
+    public final static int SETUP3_FRAG = 11;
+    public final static int SETUP4_FRAG = 12;
+
 }

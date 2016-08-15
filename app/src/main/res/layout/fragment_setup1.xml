@@ -17,7 +17,7 @@
         <TextView
             style="@style/text_content_style"
             android:drawableLeft="@android:drawable/btn_star_big_on"
-            android:text="sim卡更变报警" />
+            android:text="SIM卡更变报警" />
 
         <TextView
             style="@style/text_content_style"
@@ -76,10 +76,6 @@
 
     <Button
         android:id="@+id/bt_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|right"
-        android:layout_margin="10dp"
-        android:background="@drawable/button"
+        style="@style/button_next_style"
         android:text="NEXT" />
 </FrameLayout>

@@ -27,7 +27,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.itheima.mobilesafe.HomeActivity" />
+        <activity
+            android:name="com.itheima.mobilesafe.HomeActivity"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>
