@@ -36,7 +36,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:gravity="center"
-            android:background="@drawable/button"
+            android:background="@drawable/button_selector"
             android:text="选择联络人" />
 
         <FrameLayout

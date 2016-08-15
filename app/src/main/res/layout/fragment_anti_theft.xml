@@ -49,14 +49,18 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/button">
+        android:layout_height="50dp">
 
         <TextView
             android:id="@+id/tv_setup"
-            style="@style/text_item_left_style"
-            android:layout_centerVertical="true"
-            android:text="重新进入设置导向" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/gradient_box_selector"
+            android:paddingLeft="10dp"
+            android:gravity="center_vertical"
+            android:text="重新进入设置导向"
+            android:textSize="20sp" />
     </RelativeLayout>
 
 

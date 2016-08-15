@@ -1,5 +1,7 @@
 package com.itheima.mobilesafe.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,6 +25,7 @@ public class Setup4Fragment extends Fragment {
     private static final String TAG = "Setup4Fragment";
     private MainInterface mainInterface;
     private Button bt_next, bt_back;
+    private SharedPreferences sp;
 
     @Nullable
     @Override
@@ -33,6 +36,11 @@ public class Setup4Fragment extends Fragment {
         bt_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putBoolean("configed", true);
+                editor.commit();
+
                 mainInterface.clearAllFragments();
                 mainInterface.callFragment(Constants.ANTI_THEFT_FRAG);
             }
