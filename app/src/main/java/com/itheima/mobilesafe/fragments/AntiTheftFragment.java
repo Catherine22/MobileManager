@@ -32,7 +32,7 @@ public class AntiTheftFragment extends Fragment {
         tv_setup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.callFragment(Constants.SETUP1_FRAG);
+                mainInterface.callFragment(Constants.SETUP_FRAG);
 
             }
         });

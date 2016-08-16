@@ -70,6 +70,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         Fragment fragment = null;
         String tag = null;
         String title = "";
+        tv_title.setVisibility(View.VISIBLE);
         switch (ID) {
             case Constants.SETTINGS_FRAG:
                 title = "设置中心";
@@ -102,9 +103,10 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 tag = "SETUP4";
                 break;
             case Constants.SETUP_FRAG:
-                title = "TEST";
+                title = "设置";
                 fragment = new SetupFragment();
                 tag = "SETUP";
+                tv_title.setVisibility(View.GONE);
                 break;
         }
 
@@ -277,7 +279,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     alertDialog.dismiss();
                     sp = getSharedPreferences("config", MODE_PRIVATE);
                     if (!sp.getBoolean("configed", false))
-                        callFragment(Constants.SETUP_FRAG);//callFragment(Constants.SETUP1_FRAG);
+                        callFragment(Constants.SETUP_FRAG);
                     else
                         callFragment(Constants.ANTI_THEFT_FRAG);
                 } else {

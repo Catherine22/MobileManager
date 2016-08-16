@@ -37,10 +37,20 @@ public abstract class BasePageTransformer implements ViewPager.PageTransformer {
 
     public static BasePageTransformer getPageTransformer(TransitionEffect effect) {
         switch (effect) {
-            case Default:
+            case DEFAULT:
                 return new DefaultPageTransformer();
-            case Alpha:
+            case ALPHA:
                 return new AlphaPageTransformer();
+            case FADE:
+                return new FadePageTransformer();
+            case STACK:
+                return new StackPageTransformer();
+            case ZOOM:
+                return new ZoomPageTransformer();
+            case ZOOMSTACK:
+                return new ZoomStackPageTransformer();
+            case ZOOMFADE:
+                return new ZoomFadePageTransformer();
             default:
                 return new DefaultPageTransformer();
         }

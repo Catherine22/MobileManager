@@ -6,6 +6,11 @@ package com.itheima.mobilesafe.ui.my_viewpager;
  * catherine919@soft-world.com.tw
  */
 public enum TransitionEffect {
-    Default,
-    Alpha
+    DEFAULT,
+    ALPHA,
+    STACK,
+    FADE,
+    ZOOM,
+    ZOOMSTACK,
+    ZOOMFADE
 }
