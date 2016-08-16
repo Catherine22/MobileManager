@@ -27,6 +27,7 @@ import com.itheima.mobilesafe.fragments.Setup1Fragment;
 import com.itheima.mobilesafe.fragments.Setup2Fragment;
 import com.itheima.mobilesafe.fragments.Setup3Fragment;
 import com.itheima.mobilesafe.fragments.Setup4Fragment;
+import com.itheima.mobilesafe.fragments.SetupFragment;
 import com.itheima.mobilesafe.utils.Encryption;
 
 import java.util.Stack;
@@ -99,6 +100,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 title = "恭喜您设置完成";
                 fragment = new Setup4Fragment();
                 tag = "SETUP4";
+                break;
+            case Constants.SETUP_FRAG:
+                title = "TEST";
+                fragment = new SetupFragment();
+                tag = "SETUP";
                 break;
         }
 
@@ -271,7 +277,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     alertDialog.dismiss();
                     sp = getSharedPreferences("config", MODE_PRIVATE);
                     if (!sp.getBoolean("configed", false))
-                        callFragment(Constants.SETUP1_FRAG);
+                        callFragment(Constants.SETUP_FRAG);//callFragment(Constants.SETUP1_FRAG);
                     else
                         callFragment(Constants.ANTI_THEFT_FRAG);
                 } else {
