@@ -6,9 +6,21 @@
     android:background="@color/backgroundPrimary"
     android:clickable="true">
 
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="fill_parent"
+        android:layout_height="55dip"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:text="手机卡绑定"
+        android:textColor="#ffffff"
+        android:textSize="22sp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="55dp"
         android:orientation="vertical">
 
         <TextView
@@ -38,33 +50,6 @@
                 android:layout_gravity="center"
                 android:src="@drawable/bind" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="10dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@android:drawable/presence_invisible" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@android:drawable/presence_online" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@android:drawable/presence_invisible" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@android:drawable/presence_invisible" />
-            </LinearLayout>
         </FrameLayout>
     </LinearLayout>
 

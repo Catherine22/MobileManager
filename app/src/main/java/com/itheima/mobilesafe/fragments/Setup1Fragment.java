@@ -34,7 +34,7 @@ public class Setup1Fragment extends Fragment {
         bt_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.callFragment(Constants.SETUP2_FRAG);
+//                mainInterface.callFragment(Constants.SETUP2_FRAG);
             }
         });
         return view;

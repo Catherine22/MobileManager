@@ -48,7 +48,7 @@ public class Setup4Fragment extends Fragment {
         bt_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.backToPreviousPage();
+//                mainInterface.backToPreviousPage();
             }
         });
         return view;

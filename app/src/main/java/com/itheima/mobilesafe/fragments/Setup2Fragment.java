@@ -34,14 +34,14 @@ public class Setup2Fragment extends Fragment {
         bt_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.callFragment(Constants.SETUP3_FRAG);
+//                mainInterface.callFragment(Constants.SETUP3_FRAG);
             }
         });
         bt_back = (Button) view.findViewById(R.id.bt_back);
         bt_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.backToPreviousPage();
+//                mainInterface.backToPreviousPage();
             }
         });
         siv_sim = (SettingItemView) view.findViewById(R.id.siv_sim);

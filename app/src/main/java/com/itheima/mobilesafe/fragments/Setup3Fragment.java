@@ -35,7 +35,7 @@ public class Setup3Fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 hideKeyboard();
-                mainInterface.callFragment(Constants.SETUP4_FRAG);
+//                mainInterface.callFragment(Constants.SETUP4_FRAG);
             }
         });
         bt_back = (Button) view.findViewById(R.id.bt_back);
@@ -43,7 +43,7 @@ public class Setup3Fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 hideKeyboard();
-                mainInterface.backToPreviousPage();
+//                mainInterface.backToPreviousPage();
             }
         });
         return view;
