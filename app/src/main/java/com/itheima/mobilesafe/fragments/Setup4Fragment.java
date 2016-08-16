@@ -23,7 +23,7 @@ public class Setup4Fragment extends Fragment {
 
     private static final String TAG = "Setup4Fragment";
     private MainInterface mainInterface;
-    private Button bt_next, bt_back;
+    private Button bt_next;
     private SharedPreferences sp;
 
     @Nullable
@@ -42,13 +42,6 @@ public class Setup4Fragment extends Fragment {
 
                 mainInterface.clearAllFragments();
                 mainInterface.callFragment(Constants.ANTI_THEFT_FRAG);
-            }
-        });
-        bt_back = (Button) view.findViewById(R.id.bt_back);
-        bt_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                mainInterface.backToPreviousPage();
             }
         });
         return view;

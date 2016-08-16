@@ -24,22 +24,20 @@ import com.itheima.mobilesafe.ui.my_viewpager.CustomBanner;
 public class SetupFragment extends Fragment {
 
     private static final String TAG = "SetupFragment";
-    private MainInterface mainInterface;
     private CustomBanner cb_container;
-    private String[] titles = new String[]{"欢迎使用手机防盗", "手机卡绑定", "设置安全号码", "恭喜您设置完成"};
+    private final int PAGE_COUNT = 4;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setup, container, false);
-        mainInterface = (MainInterface) getActivity();
         cb_container = (CustomBanner) view.findViewById(R.id.cb_container);
-        cb_container.setView(4,TransitionEffect.FADE);
+        cb_container.setView(PAGE_COUNT, TransitionEffect.FADE);
         cb_container.setAdapter(new FragmentStatePagerAdapter(getFragmentManager()) {
 
                                     @Override
                                     public int getCount() {
-                                        return titles.length;
+                                        return PAGE_COUNT;
                                     }
 
                                     @Override

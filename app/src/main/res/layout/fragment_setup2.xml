@@ -52,14 +52,4 @@
 
         </FrameLayout>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/bt_next"
-        style="@style/button_next_style"
-        android:text="NEXT" />
-
-    <Button
-        android:id="@+id/bt_back"
-        style="@style/button_back_style"
-        android:text="BACK" />
 </FrameLayout>

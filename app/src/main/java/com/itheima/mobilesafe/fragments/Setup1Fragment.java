@@ -23,20 +23,12 @@ public class Setup1Fragment extends Fragment {
 
     private static final String TAG = "Setup1Fragment";
     private MainInterface mainInterface;
-    private Button bt_next;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setup1, container, false);
         mainInterface = (MainInterface) getActivity();
-        bt_next = (Button) view.findViewById(R.id.bt_next);
-        bt_next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                mainInterface.callFragment(Constants.SETUP2_FRAG);
-            }
-        });
         return view;
     }
 

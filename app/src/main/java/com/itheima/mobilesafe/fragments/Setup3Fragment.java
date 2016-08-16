@@ -23,29 +23,12 @@ public class Setup3Fragment extends Fragment {
 
     private static final String TAG = "Setup3Fragment";
     private MainInterface mainInterface;
-    private Button bt_next, bt_back;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setup3, container, false);
         mainInterface = (MainInterface) getActivity();
-        bt_next = (Button) view.findViewById(R.id.bt_next);
-        bt_next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideKeyboard();
-//                mainInterface.callFragment(Constants.SETUP4_FRAG);
-            }
-        });
-        bt_back = (Button) view.findViewById(R.id.bt_back);
-        bt_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideKeyboard();
-//                mainInterface.backToPreviousPage();
-            }
-        });
         return view;
     }
 
