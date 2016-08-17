@@ -4,17 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.itheima.mobilesafe.MainInterface;
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.ui.my_viewpager.BasePageTransformer;
-import com.itheima.mobilesafe.ui.my_viewpager.TransitionEffect;
 import com.itheima.mobilesafe.ui.my_viewpager.CustomBanner;
+import com.itheima.mobilesafe.ui.my_viewpager.TransitionEffect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,9 +68,6 @@ public class SetupFragment extends Fragment {
                                 }
 
         );
-
-        cb_container = (CustomBanner) view.findViewById(R.id.cb_container);
-        cb_container.setView(PAGE_COUNT, TransitionEffect.DEFAULT, TransitionEffect.FADE);
         cb_container.setBackgroundAdapter(new FragmentStatePagerAdapter(getFragmentManager()) {
             @Override
             public int getCount() {

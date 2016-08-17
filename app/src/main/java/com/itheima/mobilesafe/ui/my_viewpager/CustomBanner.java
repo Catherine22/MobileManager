@@ -6,9 +6,9 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -74,7 +74,7 @@ public class CustomBanner extends RelativeLayout {
     }
 
     /**
-     * Set PagerAdapter on ViewPager
+     * Set PagerAdapter on Background ViewPager
      *
      * @param adapter
      */
@@ -88,6 +88,7 @@ public class CustomBanner extends RelativeLayout {
      *
      * @param itemCount
      * @param effect
+     * @param backgroundEffect
      */
     public void setView(int itemCount, TransitionEffect effect, TransitionEffect backgroundEffect) {
         if (vp_container != null) {
@@ -112,6 +113,7 @@ public class CustomBanner extends RelativeLayout {
                 }
             });
         }
+
         if (vp_background != null) {
             vp_background.setPageTransformer(true, BasePageTransformer.getPageTransformer(backgroundEffect));
             vp_background.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

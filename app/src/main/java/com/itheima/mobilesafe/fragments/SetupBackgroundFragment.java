@@ -1,18 +1,13 @@
 package com.itheima.mobilesafe.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.ui.my_viewpager.CustomBanner;
-import com.itheima.mobilesafe.ui.my_viewpager.TransitionEffect;
 
 /**
  * Created by Catherine on 2016/8/17.
