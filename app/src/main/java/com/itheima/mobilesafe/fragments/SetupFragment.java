@@ -16,6 +16,9 @@ import com.itheima.mobilesafe.ui.my_viewpager.BasePageTransformer;
 import com.itheima.mobilesafe.ui.my_viewpager.TransitionEffect;
 import com.itheima.mobilesafe.ui.my_viewpager.CustomBanner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Catherine on 2016/8/12.
  * Soft-World Inc.
@@ -26,13 +29,24 @@ public class SetupFragment extends Fragment {
     private static final String TAG = "SetupFragment";
     private CustomBanner cb_container;
     private final int PAGE_COUNT = 4;
+    private List<Fragment> fragments;
+
+    private List<Fragment> getFragments() {
+        List<Fragment> fragments = new ArrayList<>();
+        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.uoko_guide_background_1));
+        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.uoko_guide_background_2));
+        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.uoko_guide_background_3));
+        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.uoko_guide_background_1));
+        return fragments;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setup, container, false);
+        fragments = getFragments();
         cb_container = (CustomBanner) view.findViewById(R.id.cb_container);
-        cb_container.setView(PAGE_COUNT, TransitionEffect.FADE);
+        cb_container.setView(PAGE_COUNT, TransitionEffect.DEFAULT, TransitionEffect.FADE);
         cb_container.setAdapter(new FragmentStatePagerAdapter(getFragmentManager()) {
 
                                     @Override
@@ -58,6 +72,21 @@ public class SetupFragment extends Fragment {
                                 }
 
         );
+
+        cb_container = (CustomBanner) view.findViewById(R.id.cb_container);
+        cb_container.setView(PAGE_COUNT, TransitionEffect.DEFAULT, TransitionEffect.FADE);
+        cb_container.setBackgroundAdapter(new FragmentStatePagerAdapter(getFragmentManager()) {
+            @Override
+            public int getCount() {
+                return PAGE_COUNT;
+            }
+
+            @Override
+            public Fragment getItem(int position) {
+                return fragments.get(position);
+            }
+        });
+
         return view;
     }
 }

@@ -25,11 +25,12 @@ import java.util.List;
  */
 public class CustomBanner extends RelativeLayout {
     private final static String TAG = "CustomBanner";
-    private ViewPager vp_container;
+    private ViewPager vp_container, vp_background;
     private Context ctx;
     private LinearLayout ll_dots;
     private List<ImageView> dots = new ArrayList<>();
     private boolean showDots;
+    private boolean showBackground;
     private int dotsSrcOn;
     private int dotsSrcOff;
 
@@ -41,18 +42,25 @@ public class CustomBanner extends RelativeLayout {
         initView();
     }
 
+
     /**
      * 初始化布局文件
      */
     private void initView() {
         View.inflate(ctx, R.layout.banner, this);
         vp_container = (ViewPager) this.findViewById(R.id.vp_container);
+        vp_background = (ViewPager) this.findViewById(R.id.vp_background);
         ll_dots = (LinearLayout) this.findViewById(R.id.ll_dots);
 
         if (showDots)
             ll_dots.setVisibility(VISIBLE);
         else
             ll_dots.setVisibility(GONE);
+
+        if (showBackground)
+            vp_background.setVisibility(VISIBLE);
+        else
+            vp_background.setVisibility(GONE);
     }
 
     /**
@@ -65,7 +73,23 @@ public class CustomBanner extends RelativeLayout {
             vp_container.setAdapter(adapter);
     }
 
-    public void setView(int itemCount, TransitionEffect effect) {
+    /**
+     * Set PagerAdapter on ViewPager
+     *
+     * @param adapter
+     */
+    public void setBackgroundAdapter(PagerAdapter adapter) {
+        if (vp_background != null)
+            vp_background.setAdapter(adapter);
+    }
+
+    /**
+     * Set items and effect
+     *
+     * @param itemCount
+     * @param effect
+     */
+    public void setView(int itemCount, TransitionEffect effect, TransitionEffect backgroundEffect) {
         if (vp_container != null) {
             vp_container.setPageTransformer(true, BasePageTransformer.getPageTransformer(effect));
             vp_container.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -88,6 +112,29 @@ public class CustomBanner extends RelativeLayout {
                 }
             });
         }
+        if (vp_background != null) {
+            vp_background.setPageTransformer(true, BasePageTransformer.getPageTransformer(backgroundEffect));
+            vp_background.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    Log.d(TAG, "vp_background onPageSelected" + position);
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
+
+        }
+        setDotsView(itemCount);
+    }
+
+    private void setDotsView(int itemCount) {
         for (int i = 0; i < itemCount; i++) {
             ImageView dot = new ImageView(ctx);
             if (i == 0)
@@ -104,6 +151,7 @@ public class CustomBanner extends RelativeLayout {
     }
 
     private void initAttr(AttributeSet attrs) {
+        showBackground = attrs.getAttributeBooleanValue("http://schemas.android.com/apk/com.itheima.mobilesafe", "show_background", false);
         showDots = attrs.getAttributeBooleanValue("http://schemas.android.com/apk/com.itheima.mobilesafe", "show_dots", false);
         dotsSrcOn = attrs.getAttributeIntValue("http://schemas.android.com/apk/com.itheima.mobilesafe", "dots_src_on", android.R.drawable.presence_online);
         dotsSrcOff = attrs.getAttributeIntValue("http://schemas.android.com/apk/com.itheima.mobilesafe", "dots_src_off", android.R.drawable.presence_invisible);
