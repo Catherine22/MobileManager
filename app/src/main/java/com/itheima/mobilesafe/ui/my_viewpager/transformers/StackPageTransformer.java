@@ -1,4 +1,4 @@
-package com.itheima.mobilesafe.ui.my_viewpager;
+package com.itheima.mobilesafe.ui.my_viewpager.transformers;
 
 import android.view.View;
 
@@ -9,7 +9,7 @@ import com.itheima.mobilesafe.ui.view_helper.ViewHelper;
  * 创建时间:15/6/19 上午8:41
  * 描述:
  */
-public class FadePageTransformer extends BasePageTransformer {
+public class StackPageTransformer extends BasePageTransformer {
 
     @Override
     public void handleInvisiblePage(View view, float position) {
@@ -17,14 +17,11 @@ public class FadePageTransformer extends BasePageTransformer {
 
     @Override
     public void handleLeftPage(View view, float position) {
-        ViewHelper.setTranslationX(view, -view.getWidth() * position);
-        ViewHelper.setAlpha(view, 1 + position);
     }
 
     @Override
     public void handleRightPage(View view, float position) {
         ViewHelper.setTranslationX(view, -view.getWidth() * position);
-        ViewHelper.setAlpha(view, 1 - position);
     }
 
 }

@@ -1,12 +1,12 @@
 package com.itheima.mobilesafe.ui.my_viewpager;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.Settings;
+import com.itheima.mobilesafe.ui.my_viewpager.transformers.BasePageTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,15 +98,17 @@ public class CustomBanner extends RelativeLayout {
             vp_container.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    Log.d(TAG, position + " " + positionOffset + " " + positionOffsetPixels);
+//                    vp_background.scrollTo((position * Settings.DISPLAY_WIDTH_PX) + positionOffsetPixels, 0);
                 }
 
                 @Override
                 public void onPageSelected(int position) {
-                    Log.d(TAG, "onPageSelected" + position);
                     for (ImageView dot : dots) {
                         dot.setImageResource(dotsSrcOff);
                     }
                     dots.get(position).setImageResource(dotsSrcOn);
+//                    vp_background.setCurrentItem(position);
                 }
 
                 @Override
@@ -112,26 +116,11 @@ public class CustomBanner extends RelativeLayout {
 
                 }
             });
+
         }
 
         if (vp_background != null) {
             vp_background.setPageTransformer(true, BasePageTransformer.getPageTransformer(backgroundEffect));
-            vp_background.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    Log.d(TAG, "vp_background onPageSelected" + position);
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-
-                }
-            });
-
         }
         setDotsView(itemCount);
     }
