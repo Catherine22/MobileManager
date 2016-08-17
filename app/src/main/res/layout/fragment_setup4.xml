@@ -28,14 +28,14 @@
             android:text="你没有开启防盗保护" />
 
         <!--<FrameLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent">-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
 
-            <!--<ImageView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_gravity="center"-->
-                <!--android:src="@drawable/phone" />-->
+        <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:src="@drawable/phone" />-->
 
         <!--</FrameLayout>-->
     </LinearLayout>
@@ -43,5 +43,5 @@
     <Button
         android:id="@+id/bt_next"
         style="@style/button_next_style"
-        android:text="DONE" />
+        android:text="Done" />
 </FrameLayout>

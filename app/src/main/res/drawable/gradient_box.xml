@@ -12,7 +12,7 @@
     android:startColor="#ff0000" />
     -->
     <!--固定的颜色-->
-    <solid android:color="#ffffff" />
+    <solid android:color="#fdf2f2" />
 
     <!--边框大小-->
     <stroke

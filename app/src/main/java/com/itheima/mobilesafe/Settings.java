@@ -8,4 +8,5 @@ package com.itheima.mobilesafe;
 public class Settings {
     public static int DISPLAY_WIDTH_PX;
     public static int DISPLAY_HEIGHT_PX;
+    public static String simSerialNumber;
 }
