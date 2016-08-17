@@ -1,4 +1,4 @@
-package com.itheima.mobilesafe.ui.my_viewpager;
+package com.itheima.mobilesafe.ui.my_viewpager.transformers;
 
 import android.view.View;
 

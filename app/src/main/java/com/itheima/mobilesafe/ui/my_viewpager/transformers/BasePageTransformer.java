@@ -1,7 +1,9 @@
-package com.itheima.mobilesafe.ui.my_viewpager;
+package com.itheima.mobilesafe.ui.my_viewpager.transformers;
 
 import android.support.v4.view.ViewPager;
 import android.view.View;
+
+import com.itheima.mobilesafe.ui.my_viewpager.TransitionEffect;
 
 /**
  * Created by Catherine on 2016/8/16.

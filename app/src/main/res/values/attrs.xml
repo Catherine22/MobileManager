@@ -8,6 +8,7 @@
     </declare-styleable>
 
     <declare-styleable name="Banner">
+        <attr name="show_background" format="boolean" />
         <attr name="show_dots" format="boolean" />
         <attr name="dots_src_on" format="integer" />
         <attr name="dots_src_off" format="integer" />

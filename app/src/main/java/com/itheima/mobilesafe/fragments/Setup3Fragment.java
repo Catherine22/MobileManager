@@ -8,9 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 
-import com.itheima.mobilesafe.Constants;
 import com.itheima.mobilesafe.MainInterface;
 import com.itheima.mobilesafe.R;
 

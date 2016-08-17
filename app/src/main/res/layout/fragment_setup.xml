@@ -16,6 +16,7 @@
             android:id="@+id/cb_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            itheima:show_background="true"
             itheima:show_dots="true"></com.itheima.mobilesafe.ui.my_viewpager.CustomBanner>
 
     </FrameLayout>

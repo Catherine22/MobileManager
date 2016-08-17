@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundPrimary"
+    android:background="@android:color/transparent"
     android:clickable="true">
 
 
@@ -27,21 +27,21 @@
             style="@style/text_content_style"
             android:text="你没有开启防盗保护" />
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <!--<FrameLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/phone" />
+            <!--<ImageView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:src="@drawable/phone" />-->
 
-        </FrameLayout>
+        <!--</FrameLayout>-->
     </LinearLayout>
 
     <Button
         android:id="@+id/bt_next"
         style="@style/button_next_style"
-        android:text="Done" />
+        android:text="DONE" />
 </FrameLayout>

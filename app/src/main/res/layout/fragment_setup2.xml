@@ -3,7 +3,7 @@
     xmlns:itheima="http://schemas.android.com/apk/com.itheima.mobilesafe"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundPrimary"
+    android:background="@android:color/transparent"
     android:clickable="true">
 
 
@@ -40,16 +40,16 @@
             itheima:desc_on="SIM卡已绑定"
             itheima:title_="点击绑定SIM卡"></com.itheima.mobilesafe.ui.SettingItemView>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <!--<FrameLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/bind" />
+            <!--<ImageView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:src="@drawable/bind" />-->
 
-        </FrameLayout>
+        <!--</FrameLayout>-->
     </LinearLayout>
 </FrameLayout>

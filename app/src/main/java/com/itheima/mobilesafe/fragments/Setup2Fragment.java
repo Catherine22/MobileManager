@@ -6,9 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
-import com.itheima.mobilesafe.Constants;
 import com.itheima.mobilesafe.MainInterface;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.SettingItemView;

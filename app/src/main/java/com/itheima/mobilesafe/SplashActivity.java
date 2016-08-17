@@ -89,7 +89,7 @@ public class SplashActivity extends Activity {
 
         @Override
         public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
+
             super.handleMessage(msg);
             switch (msg.what) {
                 case SHOW_UPDATE_DIALOG:// 显示升级的对话框
@@ -170,15 +170,15 @@ public class SplashActivity extends Activity {
                     }
 
                 } catch (MalformedURLException e) {
-                    // TODO Auto-generated catch block
+
                     mes.what = URL_ERROR;
                     e.printStackTrace();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
+
                     mes.what = NETWORK_ERROR;
                     e.printStackTrace();
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
+
                     e.printStackTrace();
                     mes.what = JSON_ERROR;
                 } finally {
@@ -191,7 +191,7 @@ public class SplashActivity extends Activity {
                         try {
                             Thread.sleep(2000 - dTime);
                         } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
+
                             e.printStackTrace();
                         }
                     }
@@ -218,7 +218,7 @@ public class SplashActivity extends Activity {
 
             @Override
             public void onCancel(DialogInterface dialog) {
-                // TODO Auto-generated method stub
+
                 //进入主页面
                 enterHome();
                 dialog.dismiss();
@@ -250,7 +250,7 @@ public class SplashActivity extends Activity {
 
                                 @Override
                                 public void onLoading(long count, long current) {
-                                    // TODO Auto-generated method stub
+
                                     super.onLoading(count, current);
                                     tv_update_info.setVisibility(View.VISIBLE);
                                     //当前下载百分比
@@ -260,7 +260,7 @@ public class SplashActivity extends Activity {
 
                                 @Override
                                 public void onSuccess(File t) {
-                                    // TODO Auto-generated method stub
+
                                     super.onSuccess(t);
                                     installAPK(t);
                                 }
@@ -293,7 +293,7 @@ public class SplashActivity extends Activity {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // TODO Auto-generated method stub
+
                 dialog.dismiss();
                 enterHome();// 进入主页面
             }
@@ -324,7 +324,7 @@ public class SplashActivity extends Activity {
             PackageInfo info = pm.getPackageInfo(getPackageName(), 0);
             return info.versionName;
         } catch (NameNotFoundException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
             return "";
         }

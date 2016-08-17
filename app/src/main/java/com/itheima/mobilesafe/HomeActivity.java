@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -49,7 +50,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             R.drawable.safe, R.drawable.callmsgsafe, R.drawable.app,
             R.drawable.taskmanager, R.drawable.netmanager, R.drawable.trojan,
             R.drawable.sysoptimize, R.drawable.atools, R.drawable.settings
-
     };
 
     @Override
@@ -58,6 +58,15 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         setContentView(R.layout.activity_home);
         sp = getSharedPreferences("config", MODE_PRIVATE);
         initComponent();
+        initSettings();
+    }
+
+    private void initSettings() {
+        //取得设备信息
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        Settings.DISPLAY_WIDTH_PX = metrics.widthPixels;
+        Settings.DISPLAY_HEIGHT_PX = metrics.heightPixels;
     }
 
     /**

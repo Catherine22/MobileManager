@@ -4,7 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.view.ViewPager
+    <com.itheima.mobilesafe.ui.my_viewpager.MyViewPager
+        android:id="@+id/vp_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.itheima.mobilesafe.ui.my_viewpager.MyViewPager
         android:id="@+id/vp_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
