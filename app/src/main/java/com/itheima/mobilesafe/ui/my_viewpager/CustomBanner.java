@@ -1,12 +1,12 @@
 package com.itheima.mobilesafe.ui.my_viewpager;
 
 import android.content.Context;
-import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.Settings;
 import com.itheima.mobilesafe.ui.my_viewpager.transformers.BasePageTransformer;
 
 import java.util.ArrayList;
@@ -35,6 +34,9 @@ public class CustomBanner extends RelativeLayout {
     private boolean showBackground;
     private int dotsSrcOn;
     private int dotsSrcOff;
+    private boolean enableSwiping = true;
+    private int enableSwipingPage = -1;
+    private int currentPosition;
 
 
     public CustomBanner(Context context, AttributeSet attrs) {
@@ -51,6 +53,7 @@ public class CustomBanner extends RelativeLayout {
     private void initView() {
         View.inflate(ctx, R.layout.banner, this);
         vp_container = (MyViewPager) this.findViewById(R.id.vp_container);
+        vp_container.setPagingEnabled(enableSwiping);
         vp_background = (MyViewPager) this.findViewById(R.id.vp_background);
         ll_dots = (LinearLayout) this.findViewById(R.id.ll_dots);
 
@@ -86,6 +89,21 @@ public class CustomBanner extends RelativeLayout {
     }
 
     /**
+     * To enable / disable the swiping on container view
+     *
+     * @param b
+     */
+    public void setPagingEnabled(int page, boolean b) {
+        enableSwipingPage = page;
+        enableSwiping = b;
+
+        if (currentPosition == enableSwipingPage)
+            vp_container.setPagingEnabled(enableSwiping);
+        else
+            vp_container.setPagingEnabled(true);
+    }
+
+    /**
      * Set items and effect
      *
      * @param itemCount
@@ -100,10 +118,12 @@ public class CustomBanner extends RelativeLayout {
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                     Log.d(TAG, position + " " + positionOffset + " " + positionOffsetPixels);
 //                    vp_background.scrollTo((position * Settings.DISPLAY_WIDTH_PX) + positionOffsetPixels, 0);
+
                 }
 
                 @Override
                 public void onPageSelected(int position) {
+                    currentPosition = position;
                     for (ImageView dot : dots) {
                         dot.setImageResource(dotsSrcOff);
                     }
@@ -113,10 +133,8 @@ public class CustomBanner extends RelativeLayout {
 
                 @Override
                 public void onPageScrollStateChanged(int state) {
-
                 }
             });
-
         }
 
         if (vp_background != null) {

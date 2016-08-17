@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,10 @@ import com.itheima.mobilesafe.ui.my_viewpager.TransitionEffect;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import tw.com.softworld.messagescenter.Client;
+import tw.com.softworld.messagescenter.CustomReceiver;
+import tw.com.softworld.messagescenter.Result;
 
 /**
  * Created by Catherine on 2016/8/12.
@@ -26,6 +31,7 @@ public class SetupFragment extends Fragment {
     private CustomBanner cb_container;
     private final int PAGE_COUNT = 4;
     private List<Fragment> fragments;
+    private Client client;
 
     private List<Fragment> getFragments() {
         List<Fragment> fragments = new ArrayList<>();
@@ -41,6 +47,15 @@ public class SetupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setup, container, false);
         fragments = getFragments();
+        CustomReceiver cr = new CustomReceiver() {
+            @Override
+            public void onBroadcastReceive(Result result) {
+                Log.d(TAG,"You got "+result.isBoolean());
+                cb_container.setPagingEnabled(1,result.isBoolean());
+            }
+        };
+        client = new Client(getActivity(), cr);
+        client.gotMessages("DISABLE_SWIPING");
         cb_container = (CustomBanner) view.findViewById(R.id.cb_container);
         cb_container.setView(PAGE_COUNT, TransitionEffect.DEFAULT, TransitionEffect.FADE);
         cb_container.setAdapter(new FragmentStatePagerAdapter(getFragmentManager()) {
@@ -81,5 +96,11 @@ public class SetupFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        client.release();
+        super.onDestroy();
     }
 }

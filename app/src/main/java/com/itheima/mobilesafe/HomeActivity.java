@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -75,8 +74,8 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
         //取得sim卡信息
         TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        Settings.simSerialNumber = tm.getSimSerialNumber();
-//        Settings.simSerialNumber = "65123576";
+//        Settings.simSerialNumber = tm.getSimSerialNumber();
+        Settings.simSerialNumber = "65123576";
     }
 
     /**
