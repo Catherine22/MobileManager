@@ -29,10 +29,10 @@ public class SetupFragment extends Fragment {
 
     private List<Fragment> getFragments() {
         List<Fragment> fragments = new ArrayList<>();
-        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.uoko_guide_background_1));
-        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.uoko_guide_background_2));
-        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.uoko_guide_background_3));
-        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.uoko_guide_background_1));
+        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.setup1));
+        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.bind));
+        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.phone));
+        fragments.add(SetupBackgroundFragment.newInstance(R.drawable.phone));
         return fragments;
     }
 

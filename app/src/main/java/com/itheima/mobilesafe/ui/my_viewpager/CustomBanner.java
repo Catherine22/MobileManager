@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class CustomBanner extends RelativeLayout {
     private final static String TAG = "CustomBanner";
-    private ViewPager vp_container, vp_background;
+    private MyViewPager vp_container, vp_background;
     private Context ctx;
     private LinearLayout ll_dots;
     private List<ImageView> dots = new ArrayList<>();
@@ -50,8 +50,8 @@ public class CustomBanner extends RelativeLayout {
      */
     private void initView() {
         View.inflate(ctx, R.layout.banner, this);
-        vp_container = (ViewPager) this.findViewById(R.id.vp_container);
-        vp_background = (ViewPager) this.findViewById(R.id.vp_background);
+        vp_container = (MyViewPager) this.findViewById(R.id.vp_container);
+        vp_background = (MyViewPager) this.findViewById(R.id.vp_background);
         ll_dots = (LinearLayout) this.findViewById(R.id.ll_dots);
 
         if (showDots)
@@ -108,7 +108,7 @@ public class CustomBanner extends RelativeLayout {
                         dot.setImageResource(dotsSrcOff);
                     }
                     dots.get(position).setImageResource(dotsSrcOn);
-//                    vp_background.setCurrentItem(position);
+                    vp_background.setCurrentItem(position, true);
                 }
 
                 @Override
