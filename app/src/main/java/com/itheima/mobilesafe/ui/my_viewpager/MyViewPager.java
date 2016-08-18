@@ -16,19 +16,19 @@ public class MyViewPager extends ViewPager {
     private static final String TAG = "MyViewPager";
 
     /**
-     * 预设,可翻页
+     * Default, enable paging
      */
     public static final int NONE = -1;
     /**
-     * 设置让ViewPager完全不能翻页
+     * Disable swiping forward and back
      */
     public static final int ALL = 0;
     /**
-     * 设置让ViewPager不能翻到下一页
+     * Disable swiping forward
      */
     public static final int FORWARD = 1;
     /**
-     * 设置让ViewPager不能翻到上一页
+     * Disable swiping back
      */
     public static final int BACK = 2;
 
@@ -77,10 +77,10 @@ public class MyViewPager extends ViewPager {
     }
 
     /**
-     * 设置让ViewPager不能翻页
+     * Disable paging swiping
      *
-     * @param enabled 能不能翻页
-     * @param type    翻页类型
+     * @param enabled paging swiping
+     * @param type    swiping direction
      */
     public void setPagingEnabled(boolean enabled, int type) {
         this.type = type;

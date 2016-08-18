@@ -1,11 +1,11 @@
 package com.itheima.mobilesafe.ui.my_viewpager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,7 +17,11 @@ import com.itheima.mobilesafe.ui.my_viewpager.transformers.BasePageTransformer;
 import com.itheima.mobilesafe.utils.CLog;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  * Created by Catherine on 2016/8/16.
@@ -37,18 +41,20 @@ public class CustomBanner extends RelativeLayout {
     private boolean enableSwiping = true;
     private int enableSwipingPage = -1;
     private int currentPosition;
+    private Set<Integer> disablePages;//记录要被禁用的页数
 
 
     public CustomBanner(Context context, AttributeSet attrs) {
         super(context, attrs);
         ctx = context;
+        disablePages = new HashSet<>();
         initAttr(attrs);
         initView();
     }
 
 
     /**
-     * 初始化布局文件
+     * Initialize components
      */
     private void initView() {
         View.inflate(ctx, R.layout.banner, this);
@@ -91,16 +97,22 @@ public class CustomBanner extends RelativeLayout {
     /**
      * To enable / disable the swiping on container view
      *
+     * @param page
      * @param b
      */
     public void setPagingEnabled(int page, boolean b) {
         enableSwipingPage = page;
         enableSwiping = b;
-
-        if (currentPosition == enableSwipingPage)
-            vp_container.setPagingEnabled(enableSwiping, MyViewPager.ALL);
-        else
-            vp_container.setPagingEnabled(true, MyViewPager.ALL);
+        if (!b) {
+            disablePages.add(page);
+            disable();
+        } else {
+            if (disablePages.contains(page))
+                disablePages.remove(page);
+            else {
+                disable();
+            }
+        }
     }
 
     /**
@@ -116,7 +128,7 @@ public class CustomBanner extends RelativeLayout {
             vp_container.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                    CLog.d(TAG, position + " " + positionOffset + " " + positionOffsetPixels);
+//                    CLog.d(TAG, position + " " + positionOffset + " " + positionOffsetPixels);
 //                    vp_background.scrollTo((position * Settings.DISPLAY_WIDTH_PX) + positionOffsetPixels, 0);
 
                 }
@@ -129,10 +141,16 @@ public class CustomBanner extends RelativeLayout {
                     }
                     dots.get(position).setImageResource(dotsSrcOn);
                     vp_background.setCurrentItem(position, true);
+
+                    if (!enableSwiping && disablePages.contains(enableSwipingPage)) {
+                        disable();
+                    }
+
                 }
 
                 @Override
                 public void onPageScrollStateChanged(int state) {
+                    CLog.d(TAG, "state" + state);
                 }
             });
         }
@@ -141,6 +159,15 @@ public class CustomBanner extends RelativeLayout {
             vp_background.setPageTransformer(true, BasePageTransformer.getPageTransformer(backgroundEffect));
         }
         setDotsView(itemCount);
+    }
+
+
+    private void disable() {
+        if (currentPosition == enableSwipingPage) {
+            vp_container.setPagingEnabled(enableSwiping, MyViewPager.ALL);
+            disablePages.remove(enableSwipingPage);
+        } else
+            vp_container.setPagingEnabled(true, MyViewPager.ALL);
     }
 
     private void setDotsView(int itemCount) {

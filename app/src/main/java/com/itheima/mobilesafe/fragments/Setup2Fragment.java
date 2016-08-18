@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import android.view.ViewGroup;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.Settings;
 import com.itheima.mobilesafe.ui.SettingItemView;
-import com.itheima.mobilesafe.utils.CLog;
 
 import tw.com.softworld.messagescenter.AsyncResponse;
 import tw.com.softworld.messagescenter.Server;
@@ -31,6 +29,7 @@ public class Setup2Fragment extends Fragment {
     private SharedPreferences sp;
     private Server sv;
     private SharedPreferences.Editor editor;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,14 +54,6 @@ public class Setup2Fragment extends Fragment {
                 }
             }
         });
-        if (TextUtils.isEmpty(sp.getString("simSerialNumber", null))) {
-            siv_sim.setChecked(false);
-            sv.pushBoolean("DISABLE_SWIPING", false);
-        }
-        else {
-            siv_sim.setChecked(true);
-            sv.pushBoolean("DISABLE_SWIPING", true);
-        }
         return view;
     }
 
@@ -76,5 +67,17 @@ public class Setup2Fragment extends Fragment {
         };
 
         sv = new Server(getActivity(), ar);
+    }
+
+    @Override
+    public void onResume() {
+        if (TextUtils.isEmpty(sp.getString("simSerialNumber", null))) {
+            siv_sim.setChecked(false);
+            sv.pushBoolean("DISABLE_SWIPING", false);
+        } else {
+            siv_sim.setChecked(true);
+            sv.pushBoolean("DISABLE_SWIPING", true);
+        }
+        super.onResume();
     }
 }

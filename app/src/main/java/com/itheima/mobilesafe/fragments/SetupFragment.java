@@ -50,8 +50,8 @@ public class SetupFragment extends Fragment {
         CustomReceiver cr = new CustomReceiver() {
             @Override
             public void onBroadcastReceive(Result result) {
-                CLog.d(TAG,"You got "+result.isBoolean());
-                cb_container.setPagingEnabled(1,result.isBoolean());
+                CLog.d(TAG, "You got " + result.isBoolean());
+                cb_container.setPagingEnabled(1, result.isBoolean());
             }
         };
         client = new Client(getActivity(), cr);
