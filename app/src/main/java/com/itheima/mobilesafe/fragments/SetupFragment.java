@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,7 @@ import android.view.ViewGroup;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.my_viewpager.CustomBanner;
 import com.itheima.mobilesafe.ui.my_viewpager.TransitionEffect;
+import com.itheima.mobilesafe.utils.CLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ public class SetupFragment extends Fragment {
         CustomReceiver cr = new CustomReceiver() {
             @Override
             public void onBroadcastReceive(Result result) {
-                Log.d(TAG,"You got "+result.isBoolean());
+                CLog.d(TAG,"You got "+result.isBoolean());
                 cb_container.setPagingEnabled(1,result.isBoolean());
             }
         };

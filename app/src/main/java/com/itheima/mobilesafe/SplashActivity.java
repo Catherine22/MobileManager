@@ -16,12 +16,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.StreamTools;
 
 import net.tsz.afinal.FinalHttp;
@@ -93,7 +93,7 @@ public class SplashActivity extends Activity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case SHOW_UPDATE_DIALOG:// 显示升级的对话框
-                    Log.i(TAG, "显示升级的对话框");
+                    CLog.i(TAG, "显示升级的对话框");
                     showUpdateDialog();
                     break;
                 case ENTER_HOME:// 进入主页面
@@ -148,7 +148,7 @@ public class SplashActivity extends Activity {
                         InputStream is = conn.getInputStream();
                         // 把流转成String
                         String result = StreamTools.readFromStream(is);
-                        Log.i(TAG, "联网成功了" + result);
+                        CLog.i(TAG, "联网成功了" + result);
                         // json解析
                         JSONObject obj = new JSONObject(result);
                         // 得到服务器的版本信息

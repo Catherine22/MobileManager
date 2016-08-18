@@ -27,6 +27,16 @@ android {
         }
     }
     productFlavors {
+        MobileManager {
+            applicationId "com.itheima.mobilesafe"
+            versionName "0.1"
+            versionCode 1
+        }
+        MobileManagerTest {
+            applicationId "com.itheima.mobilesafe.test"
+            versionName "0.1"
+            versionCode 1
+        }
     }
 }
 

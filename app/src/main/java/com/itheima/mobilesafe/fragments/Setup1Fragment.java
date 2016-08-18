@@ -4,13 +4,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.itheima.mobilesafe.MainInterface;
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.utils.CLog;
 
 /**
  * Created by Catherine on 2016/8/12.
@@ -32,61 +32,61 @@ public class Setup1Fragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume");
+        CLog.d(TAG, "onResume");
         super.onResume();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
+        CLog.d(TAG, "onCreate");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop");
+        CLog.d(TAG, "onStop");
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart");
+        CLog.d(TAG, "onStart");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
+        CLog.d(TAG, "onPause");
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState");
+        CLog.d(TAG, "onSaveInstanceState");
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "onViewCreated");
+        CLog.d(TAG, "onViewCreated");
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        Log.d(TAG, "onViewStateRestored");
+        CLog.d(TAG, "onViewStateRestored");
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d(TAG, "onDetach");
+        CLog.d(TAG, "onDetach");
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d(TAG, "onAttach");
+        CLog.d(TAG, "onAttach");
     }
 }
