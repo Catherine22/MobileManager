@@ -15,32 +15,11 @@ import com.itheima.mobilesafe.utils.CLog;
 public class MyViewPager extends ViewPager {
     private static final String TAG = "MyViewPager";
 
-    /**
-     * Default, enable paging
-     */
-    public static final int NONE = -1;
-    /**
-     * Disable swiping forward and back
-     */
-    public static final int ALL = 0;
-    /**
-     * Disable swiping forward
-     */
-    public static final int FORWARD = 1;
-    /**
-     * Disable swiping back
-     */
-    public static final int BACK = 2;
-
-
     private boolean enabled;
-    private int type;
-    private float x1, x2, dx;
 
     public MyViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.enabled = true;
-        this.type = NONE;
     }
 
     @Override
@@ -48,22 +27,6 @@ public class MyViewPager extends ViewPager {
         if (this.enabled) {
             return super.onTouchEvent(event);
         }
-
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                x1 = event.getX();
-                CLog.d(TAG, "ACTION_DOWN" + x1);
-                break;
-            case MotionEvent.ACTION_UP:
-                x2 = event.getX();
-                CLog.d(TAG, "ACTION_UP" + x2);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                dx = event.getX();
-                CLog.d(TAG, "ACTION_MOVE" + dx);
-                break;
-        }
-
         return false;
     }
 
@@ -72,18 +35,17 @@ public class MyViewPager extends ViewPager {
         if (this.enabled) {
             return super.onInterceptTouchEvent(event);
         }
-
         return false;
+
     }
 
     /**
      * Disable paging swiping
      *
      * @param enabled paging swiping
-     * @param type    swiping direction
      */
-    public void setPagingEnabled(boolean enabled, int type) {
-        this.type = type;
+    public void setPagingEnabled(boolean enabled) {
         this.enabled = enabled;
+
     }
 }

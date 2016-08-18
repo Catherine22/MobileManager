@@ -59,7 +59,7 @@ public class CustomBanner extends RelativeLayout {
     private void initView() {
         View.inflate(ctx, R.layout.banner, this);
         vp_container = (MyViewPager) this.findViewById(R.id.vp_container);
-        vp_container.setPagingEnabled(enableSwiping, MyViewPager.ALL);
+        vp_container.setPagingEnabled(enableSwiping);
         vp_background = (MyViewPager) this.findViewById(R.id.vp_background);
         ll_dots = (LinearLayout) this.findViewById(R.id.ll_dots);
 
@@ -150,7 +150,6 @@ public class CustomBanner extends RelativeLayout {
 
                 @Override
                 public void onPageScrollStateChanged(int state) {
-                    CLog.d(TAG, "state" + state);
                 }
             });
         }
@@ -164,10 +163,10 @@ public class CustomBanner extends RelativeLayout {
 
     private void disable() {
         if (currentPosition == enableSwipingPage) {
-            vp_container.setPagingEnabled(enableSwiping, MyViewPager.ALL);
+            vp_container.setPagingEnabled(enableSwiping);
             disablePages.remove(enableSwipingPage);
         } else
-            vp_container.setPagingEnabled(true, MyViewPager.ALL);
+            vp_container.setPagingEnabled(true);
     }
 
     private void setDotsView(int itemCount) {

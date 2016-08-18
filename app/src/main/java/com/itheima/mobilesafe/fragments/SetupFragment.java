@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.adapter.MyFragmentStatePagerAdapter;
 import com.itheima.mobilesafe.ui.my_viewpager.CustomBanner;
 import com.itheima.mobilesafe.ui.my_viewpager.TransitionEffect;
 import com.itheima.mobilesafe.utils.CLog;
@@ -29,9 +30,10 @@ public class SetupFragment extends Fragment {
 
     private static final String TAG = "SetupFragment";
     private CustomBanner cb_container;
-    private final int PAGE_COUNT = 4;
+    private int PAGE_COUNT = 4;
     private List<Fragment> fragments;
     private Client client;
+    private MyFragmentStatePagerAdapter adapter;
 
     private List<Fragment> getFragments() {
         List<Fragment> fragments = new ArrayList<>();
@@ -51,38 +53,22 @@ public class SetupFragment extends Fragment {
             @Override
             public void onBroadcastReceive(Result result) {
                 CLog.d(TAG, "You got " + result.isBoolean());
-                cb_container.setPagingEnabled(1, result.isBoolean());
+                if (result.isBoolean())
+                    adapter.setCount(4);
+                else
+                    adapter.setCount(2);
+//
+//                cb_container.setPagingEnabled(1, result.isBoolean());
             }
         };
         client = new Client(getActivity(), cr);
         client.gotMessages("DISABLE_SWIPING");
+
+        adapter = new MyFragmentStatePagerAdapter(getFragmentManager());
+
         cb_container = (CustomBanner) view.findViewById(R.id.cb_container);
         cb_container.setView(PAGE_COUNT, TransitionEffect.DEFAULT, TransitionEffect.FADE);
-        cb_container.setAdapter(new FragmentStatePagerAdapter(getFragmentManager()) {
-
-                                    @Override
-                                    public int getCount() {
-                                        return PAGE_COUNT;
-                                    }
-
-                                    @Override
-                                    public Fragment getItem(int position) {
-                                        switch (position) {
-                                            case 0:
-                                                return new Setup1Fragment();
-                                            case 1:
-                                                return new Setup2Fragment();
-                                            case 2:
-                                                return new Setup3Fragment();
-                                            case 3:
-                                                return new Setup4Fragment();
-                                            default:
-                                                return new Setup1Fragment();
-                                        }
-                                    }
-                                }
-
-        );
+        cb_container.setAdapter(adapter);
         cb_container.setBackgroundAdapter(new FragmentStatePagerAdapter(getFragmentManager()) {
             @Override
             public int getCount() {
