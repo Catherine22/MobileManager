@@ -1,7 +1,6 @@
 package com.itheima.mobilesafe.ui.my_viewpager;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -14,13 +13,10 @@ import android.widget.RelativeLayout;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.my_viewpager.transformers.BasePageTransformer;
-import com.itheima.mobilesafe.utils.CLog;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -38,16 +34,10 @@ public class CustomBanner extends RelativeLayout {
     private boolean showBackground;
     private int dotsSrcOn;
     private int dotsSrcOff;
-    private boolean enableSwiping = true;
-    private int enableSwipingPage = -1;
-    private int currentPosition;
-    private Set<Integer> disablePages;//记录要被禁用的页数
-
 
     public CustomBanner(Context context, AttributeSet attrs) {
         super(context, attrs);
         ctx = context;
-        disablePages = new HashSet<>();
         initAttr(attrs);
         initView();
     }
@@ -59,7 +49,6 @@ public class CustomBanner extends RelativeLayout {
     private void initView() {
         View.inflate(ctx, R.layout.banner, this);
         vp_container = (MyViewPager) this.findViewById(R.id.vp_container);
-        vp_container.setPagingEnabled(enableSwiping);
         vp_background = (MyViewPager) this.findViewById(R.id.vp_background);
         ll_dots = (LinearLayout) this.findViewById(R.id.ll_dots);
 
@@ -95,27 +84,6 @@ public class CustomBanner extends RelativeLayout {
     }
 
     /**
-     * To enable / disable the swiping on container view
-     *
-     * @param page
-     * @param b
-     */
-    public void setPagingEnabled(int page, boolean b) {
-        enableSwipingPage = page;
-        enableSwiping = b;
-        if (!b) {
-            disablePages.add(page);
-            disable();
-        } else {
-            if (disablePages.contains(page))
-                disablePages.remove(page);
-            else {
-                disable();
-            }
-        }
-    }
-
-    /**
      * Set items and effect
      *
      * @param itemCount
@@ -135,17 +103,11 @@ public class CustomBanner extends RelativeLayout {
 
                 @Override
                 public void onPageSelected(int position) {
-                    currentPosition = position;
                     for (ImageView dot : dots) {
                         dot.setImageResource(dotsSrcOff);
                     }
                     dots.get(position).setImageResource(dotsSrcOn);
                     vp_background.setCurrentItem(position, true);
-
-                    if (!enableSwiping && disablePages.contains(enableSwipingPage)) {
-                        disable();
-                    }
-
                 }
 
                 @Override
@@ -158,15 +120,6 @@ public class CustomBanner extends RelativeLayout {
             vp_background.setPageTransformer(true, BasePageTransformer.getPageTransformer(backgroundEffect));
         }
         setDotsView(itemCount);
-    }
-
-
-    private void disable() {
-        if (currentPosition == enableSwipingPage) {
-            vp_container.setPagingEnabled(enableSwiping);
-            disablePages.remove(enableSwipingPage);
-        } else
-            vp_container.setPagingEnabled(true);
     }
 
     private void setDotsView(int itemCount) {

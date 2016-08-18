@@ -30,6 +30,11 @@ public class Setup2Fragment extends Fragment {
     private Server sv;
     private SharedPreferences.Editor editor;
 
+    public static final Setup2Fragment newInstance() {
+        Setup2Fragment f = new Setup2Fragment();
+        return f;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

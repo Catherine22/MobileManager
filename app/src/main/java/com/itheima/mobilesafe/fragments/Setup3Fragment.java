@@ -22,6 +22,10 @@ public class Setup3Fragment extends Fragment {
     private static final String TAG = "Setup3Fragment";
     private MainInterface mainInterface;
 
+    public static final Setup3Fragment newInstance() {
+        Setup3Fragment f = new Setup3Fragment();
+        return f;
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

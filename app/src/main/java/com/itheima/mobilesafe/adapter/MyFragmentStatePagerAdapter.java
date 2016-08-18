@@ -4,11 +4,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.itheima.mobilesafe.fragments.Setup1Fragment;
-import com.itheima.mobilesafe.fragments.Setup2Fragment;
-import com.itheima.mobilesafe.fragments.Setup3Fragment;
-import com.itheima.mobilesafe.fragments.Setup4Fragment;
 import com.itheima.mobilesafe.utils.CLog;
+
+import java.util.List;
 
 /**
  * Created by Catherine on 2016/8/18.
@@ -16,27 +14,19 @@ import com.itheima.mobilesafe.utils.CLog;
  * catherine919@soft-world.com.tw
  */
 public class MyFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
-    int count = 4;
+    int count;
+    private List<Fragment> fragments;
 
-    public MyFragmentStatePagerAdapter(FragmentManager fm) {
+    public MyFragmentStatePagerAdapter(FragmentManager fm, List<Fragment> fragments) {
         super(fm);
+        this.fragments = fragments;
+        count = fragments.size();
     }
 
     @Override
     public Fragment getItem(int position) {
-        CLog.d("MyFragmentStatePagerAdapter", "getItem");
-        switch (position) {
-            case 0:
-                return new Setup1Fragment();
-            case 1:
-                return new Setup2Fragment();
-            case 2:
-                return new Setup3Fragment();
-            case 3:
-                return new Setup4Fragment();
-            default:
-                return new Setup1Fragment();
-        }
+        CLog.d("MyFragmentStatePagerAdapter", "getItem"+position);
+        return fragments.get(position);
     }
 
     @Override

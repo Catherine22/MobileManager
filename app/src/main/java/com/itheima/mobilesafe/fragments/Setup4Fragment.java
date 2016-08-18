@@ -26,6 +26,11 @@ public class Setup4Fragment extends Fragment {
     private Button bt_next;
     private SharedPreferences sp;
 
+    public static final Setup4Fragment newInstance() {
+        Setup4Fragment f = new Setup4Fragment();
+        return f;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.itheima.mobilesafe.MainInterface;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.utils.CLog;
 
@@ -20,13 +19,16 @@ import com.itheima.mobilesafe.utils.CLog;
 public class Setup1Fragment extends Fragment {
 
     private static final String TAG = "Setup1Fragment";
-    private MainInterface mainInterface;
+
+    public static final Setup1Fragment newInstance() {
+        Setup1Fragment f = new Setup1Fragment();
+        return f;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setup1, container, false);
-        mainInterface = (MainInterface) getActivity();
         return view;
     }
 
