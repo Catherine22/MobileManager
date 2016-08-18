@@ -15,9 +15,7 @@ import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.my_viewpager.transformers.BasePageTransformer;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Catherine on 2016/8/16.

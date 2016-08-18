@@ -14,28 +14,33 @@ import java.util.List;
  * catherine919@soft-world.com.tw
  */
 public class MyFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
-    int count;
     private List<Fragment> fragments;
+    private int counts;
 
     public MyFragmentStatePagerAdapter(FragmentManager fm, List<Fragment> fragments) {
         super(fm);
         this.fragments = fragments;
-        count = fragments.size();
+        counts = fragments.size();
     }
 
     @Override
     public Fragment getItem(int position) {
-        CLog.d("MyFragmentStatePagerAdapter", "getItem"+position);
+        CLog.d("MyFragmentStatePagerAdapter", "getItem" + position);
         return fragments.get(position);
     }
 
     @Override
     public int getCount() {
-        return count;
+        return counts;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setCounts(int counts){
+        this.counts = counts;
+        notifyDataSetChanged();
+    }
+
+    public void setFragments(List<Fragment> fragments) {
+        this.fragments = fragments;
         notifyDataSetChanged();
     }
 }

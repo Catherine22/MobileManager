@@ -61,29 +61,31 @@ public class SetupFragment extends Fragment {
 
         forwardAdapter = new MyFragmentStatePagerAdapter(getFragmentManager(), fFragments);
         backAdapter = new MyFragmentStatePagerAdapter(getFragmentManager(), bFragments);
-
         cb_container = (CustomBanner) view.findViewById(R.id.cb_container);
         cb_container.setView(PAGE_COUNT, TransitionEffect.DEFAULT, TransitionEffect.FADE);
         cb_container.setAdapter(forwardAdapter);
         cb_container.setBackgroundAdapter(backAdapter);
 
+        registerReceiver();
+        return view;
+    }
+
+    private void registerReceiver() {
         CustomReceiver cr = new CustomReceiver() {
             @Override
             public void onBroadcastReceive(Result result) {
                 CLog.d(TAG, "You got " + result.isBoolean());
                 if (result.isBoolean()) {
-                    forwardAdapter.setCount(4);
-                    backAdapter.setCount(4);
+                    forwardAdapter.setCounts(4);
+                    backAdapter.setCounts(4);
                 } else {
-                    forwardAdapter.setCount(2);
-                    backAdapter.setCount(2);
+                    forwardAdapter.setCounts(2);
+                    backAdapter.setCounts(2);
                 }
             }
         };
         client = new Client(getActivity(), cr);
         client.gotMessages("DISABLE_SWIPING");
-
-        return view;
     }
 
     @Override
