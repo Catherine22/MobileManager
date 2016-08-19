@@ -28,9 +28,6 @@ import tw.com.softworld.messagescenter.Result;
 public class SetupFragment extends Fragment {
 
     private static final String TAG = "SetupFragment";
-    private CustomBanner cb_container;
-    private int PAGE_COUNT = 4;
-    private List<Fragment> bFragments, fFragments;
     private Client client;
     private MyFragmentStatePagerAdapter forwardAdapter, backAdapter;
 
@@ -56,13 +53,13 @@ public class SetupFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setup, container, false);
-        bFragments = getBFragments();
-        fFragments = getFFragments();
+        List<Fragment> bFragments = getBFragments();
+        List<Fragment> fFragments = getFFragments();
 
         forwardAdapter = new MyFragmentStatePagerAdapter(getFragmentManager(), fFragments);
         backAdapter = new MyFragmentStatePagerAdapter(getFragmentManager(), bFragments);
-        cb_container = (CustomBanner) view.findViewById(R.id.cb_container);
-        cb_container.setView(PAGE_COUNT, TransitionEffect.DEFAULT, TransitionEffect.FADE);
+        CustomBanner cb_container = (CustomBanner) view.findViewById(R.id.cb_container);
+        cb_container.setView(4, TransitionEffect.DEFAULT, TransitionEffect.FADE);
         cb_container.setAdapter(forwardAdapter);
         cb_container.setBackgroundAdapter(backAdapter);
 

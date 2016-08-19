@@ -19,16 +19,15 @@ import com.itheima.mobilesafe.R;
  */
 public class AntiTheftFragment extends Fragment {
 
-    private static final String TAG = "AntiTheftFragment";
+//    private static final String TAG = "AntiTheftFragment";
     private MainInterface mainInterface;
-    private TextView tv_setup;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_anti_theft, container, false);
         mainInterface = (MainInterface) getActivity();
-        tv_setup = (TextView) view.findViewById(R.id.tv_setup);
+        TextView tv_setup = (TextView) view.findViewById(R.id.tv_setup);
         tv_setup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

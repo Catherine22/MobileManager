@@ -35,12 +35,10 @@ public class Setup3Fragment extends Fragment {
     private MainInterface mainInterface;
     private Server sv;
     private EditText et_phone_number;
-    private Button bt_choose_contacts;
     private Client client;
 
-    public static final Setup3Fragment newInstance() {
-        Setup3Fragment f = new Setup3Fragment();
-        return f;
+    public static  Setup3Fragment newInstance() {
+        return new Setup3Fragment();
     }
 
     @Nullable
@@ -70,9 +68,10 @@ public class Setup3Fragment extends Fragment {
                     sv.pushInt("DISABLE_SWIPING", 3);
                 else
                     sv.pushInt("DISABLE_SWIPING", -1);
+                Settings.safePhone = et_phone_number.getText().toString();
             }
         });
-        bt_choose_contacts = (Button) view.findViewById(R.id.bt_choose_contacts);
+        Button bt_choose_contacts = (Button) view.findViewById(R.id.bt_choose_contacts);
         bt_choose_contacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,5 +117,11 @@ public class Setup3Fragment extends Fragment {
         if (!TextUtils.isEmpty(Settings.safePhone))
             et_phone_number.setText(Settings.safePhone);
         super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        client.release();
+        super.onDestroy();
     }
 }

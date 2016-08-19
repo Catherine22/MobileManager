@@ -20,16 +20,14 @@ public class Setup1Fragment extends Fragment {
 
     private static final String TAG = "Setup1Fragment";
 
-    public static final Setup1Fragment newInstance() {
-        Setup1Fragment f = new Setup1Fragment();
-        return f;
+    public static  Setup1Fragment newInstance() {
+        return new Setup1Fragment();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_setup1, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_setup1, container, false);
     }
 
     @Override

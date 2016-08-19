@@ -55,7 +55,7 @@ public class SettingsFragment extends Fragment {
                     siv_update.setChecked(true);
                     editor.putBoolean("update", true);
                 }
-                editor.commit();
+                editor.apply();
             }
         });
         return view;

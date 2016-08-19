@@ -15,11 +15,11 @@ import com.itheima.mobilesafe.R;
  * catherine919@soft-world.com.tw
  */
 public class SetupBackgroundFragment extends Fragment {
-    private final static String TAG = "SetupBackgroundFragment";
+//    private final static String TAG = "SetupBackgroundFragment";
     public static final String IMAGE = "IMAGE";
     private int resImageId = 0;
 
-    public static final SetupBackgroundFragment newInstance(int resImageId) {
+    public static SetupBackgroundFragment newInstance(int resImageId) {
         SetupBackgroundFragment f = new SetupBackgroundFragment();
         Bundle bdl = new Bundle(1);
         bdl.putInt(IMAGE, resImageId);

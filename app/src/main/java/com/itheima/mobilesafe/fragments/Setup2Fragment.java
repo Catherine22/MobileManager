@@ -31,9 +31,8 @@ public class Setup2Fragment extends Fragment {
     private Server sv;
     private SharedPreferences.Editor editor;
 
-    public static final Setup2Fragment newInstance() {
-        Setup2Fragment f = new Setup2Fragment();
-        return f;
+    public static Setup2Fragment newInstance() {
+        return new Setup2Fragment();
     }
 
     @Nullable
@@ -50,13 +49,15 @@ public class Setup2Fragment extends Fragment {
                 if (siv_sim.isChecked()) {
                     siv_sim.setChecked(false);
                     sv.pushInt("DISABLE_SWIPING", 2);
-                    editor.putString("simSerialNumber", null);
-                    editor.commit();
+                    editor = sp.edit();
+                    editor.putString("sim_serial", null);
+                    editor.apply();
                 } else {
                     siv_sim.setChecked(true);
                     sv.pushInt("DISABLE_SWIPING", -1);
-                    editor.putString("simSerialNumber", Settings.simSerialNumber);
-                    editor.commit();
+                    editor = sp.edit();
+                    editor.putString("sim_serial", Settings.simSerialNumber);
+                    editor.apply();
                 }
             }
         });
@@ -65,7 +66,6 @@ public class Setup2Fragment extends Fragment {
 
     private void initData() {
         sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
-        editor = sp.edit();
         AsyncResponse ar = new AsyncResponse() {
             @Override
             public void onFailure(int errorCode) {
@@ -78,7 +78,7 @@ public class Setup2Fragment extends Fragment {
 
     @Override
     public void onResume() {
-        if (TextUtils.isEmpty(sp.getString("simSerialNumber", null))) {
+        if (TextUtils.isEmpty(sp.getString("sim_serial", null))) {
             siv_sim.setChecked(false);
             sv.pushInt("DISABLE_SWIPING", 2);
         } else {

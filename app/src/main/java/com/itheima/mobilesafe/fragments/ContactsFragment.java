@@ -35,7 +35,6 @@ import tw.com.softworld.messagescenter.Server;
  * catherine919@soft-world.com.tw
  */
 public class ContactsFragment extends Fragment {
-    private ListView lv_contacts;
     private List<Contact> contacts;
     private MainInterface mainInterface;
     private final static String TAG = "ContactsFragment";
@@ -47,7 +46,7 @@ public class ContactsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
         initData();
 
-        lv_contacts = (ListView) view.findViewById(R.id.lv_contacts);
+        ListView lv_contacts = (ListView) view.findViewById(R.id.lv_contacts);
         lv_contacts.setAdapter(new ContactsListAdapter(getActivity(), contacts));
         lv_contacts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -86,7 +85,6 @@ public class ContactsFragment extends Fragment {
     }
 
     private Dialog alertDialog;
-    private ListView lv_phones;
 
     private void showPhoneDialog(String[] phones) {
         final String[] myPhones = phones;
@@ -97,7 +95,7 @@ public class ContactsFragment extends Fragment {
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         alertDialog.show();
 
-        lv_phones = (ListView) alertDialog.findViewById(R.id.lv_phones);
+        ListView lv_phones = (ListView) alertDialog.findViewById(R.id.lv_phones);
         lv_phones.setAdapter(new ArrayAdapter<>(
                 getActivity(), R.layout.list_item_phone,
                 R.id.tv_name, myPhones));
@@ -164,48 +162,52 @@ public class ContactsFragment extends Fragment {
         Uri database = Uri.parse("content://com.android.contacts/data");
         Cursor cursor = getContext().getContentResolver().query(rawbase, null,
                 null, null, null);
-        while (cursor.moveToNext()) {
-            Contact item = new Contact();
-            item.id = cursor.getString(cursor.getColumnIndex("_id"));
-//            CLog.d(TAG, "id=" + item.id);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                Contact item = new Contact();
+                item.id = cursor.getString(cursor.getColumnIndex("_id"));
+                //            CLog.d(TAG, "id=" + item.id);
 
-            Cursor dataCursor = getContext().getContentResolver().query(
-                    database, null, "raw_contact_id=?", new String[]{item.id},
-                    null);
-            while (dataCursor.moveToNext()) {
-                String mimetype = dataCursor.getString(dataCursor
-                        .getColumnIndex("mimetype"));
-//                CLog.d(TAG, "mimetype=" + mimetype);
+                Cursor dataCursor = getContext().getContentResolver().query(
+                        database, null, "raw_contact_id=?", new String[]{item.id},
+                        null);
+                if (dataCursor != null) {
+                    while (dataCursor.moveToNext()) {
+                        String mimetype = dataCursor.getString(dataCursor
+                                .getColumnIndex("mimetype"));
+                        //                CLog.d(TAG, "mimetype=" + mimetype);
 
-                if ("vnd.android.cursor.item/name".equals(mimetype)) {
-                    item.name = dataCursor.getString(dataCursor
-                            .getColumnIndex("data1"));
-//                    CLog.d(TAG, "名字=" + item.name);
-                } else if ("vnd.android.cursor.item/phone_v2".equals(mimetype)) {
-                    item.phone.add(dataCursor.getString(dataCursor
-                            .getColumnIndex("data1")));
-//                    CLog.d(TAG, "电话号码=" + item.phone);
-                } else if ("vnd.android.cursor.item/email_v2".equals(mimetype)) {
-                    item.email = dataCursor.getString(dataCursor
-                            .getColumnIndex("data1"));
-//                    CLog.d(TAG, "邮箱=" + item.email);
-                } else if ("vnd.android.cursor.item/organization"
-                        .equals(mimetype)) {
-                    item.company = dataCursor.getString(dataCursor
-                            .getColumnIndex("data1"));
-//                    CLog.d(TAG, "公司=" + item.company);
-                } else if ("vnd.android.cursor.item/postal-address_v2"
-                        .equals(mimetype)) {
-                    item.address = dataCursor.getString(dataCursor
-                            .getColumnIndex("data1"));
-//                    CLog.d(TAG, "地址=" + item.address);
+                        if ("vnd.android.cursor.item/name".equals(mimetype)) {
+                            item.name = dataCursor.getString(dataCursor
+                                    .getColumnIndex("data1"));
+                            //                    CLog.d(TAG, "名字=" + item.name);
+                        } else if ("vnd.android.cursor.item/phone_v2".equals(mimetype)) {
+                            item.phone.add(dataCursor.getString(dataCursor
+                                    .getColumnIndex("data1")));
+                            //                    CLog.d(TAG, "电话号码=" + item.phone);
+                        } else if ("vnd.android.cursor.item/email_v2".equals(mimetype)) {
+                            item.email = dataCursor.getString(dataCursor
+                                    .getColumnIndex("data1"));
+                            //                    CLog.d(TAG, "邮箱=" + item.email);
+                        } else if ("vnd.android.cursor.item/organization"
+                                .equals(mimetype)) {
+                            item.company = dataCursor.getString(dataCursor
+                                    .getColumnIndex("data1"));
+                            //                    CLog.d(TAG, "公司=" + item.company);
+                        } else if ("vnd.android.cursor.item/postal-address_v2"
+                                .equals(mimetype)) {
+                            item.address = dataCursor.getString(dataCursor
+                                    .getColumnIndex("data1"));
+                            //                    CLog.d(TAG, "地址=" + item.address);
+                        }
+                    }
+                    dataCursor.close();
                 }
+                if (item.phone.size() != 0)
+                    myContacts.add(item);
             }
-            dataCursor.close();
-            if (item.phone.size() != 0)
-                myContacts.add(item);
+            cursor.close();
         }
-        cursor.close();
         return myContacts;
     }
 

@@ -45,21 +45,19 @@ public class SplashActivity extends Activity {
     protected static final int URL_ERROR = 2;
     protected static final int NETWORK_ERROR = 3;
     protected static final int JSON_ERROR = 4;
-    private TextView tv_splash_version;
     private String description;
     private TextView tv_update_info;
     /**
      * 新版本的下载地址
      */
     private String apkurl;
-    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        sp = getSharedPreferences("config", MODE_PRIVATE);
-        tv_splash_version = (TextView) findViewById(R.id.tv_splash_version);
+        SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
+        TextView tv_splash_version = (TextView) findViewById(R.id.tv_splash_version);
         tv_splash_version.setText("版本号" + getVersionName());
         tv_update_info = (TextView) findViewById(R.id.tv_update_info);
         boolean update = sp.getBoolean("update", false);
@@ -200,8 +198,6 @@ public class SplashActivity extends Activity {
                 }
 
             }
-
-            ;
         }.start();
 
     }
@@ -284,7 +280,6 @@ public class SplashActivity extends Activity {
                 } else {
                     Toast.makeText(getApplicationContext(), "没有sdcard，请安装上在试",
                             Toast.LENGTH_SHORT).show();
-                    return;
                 }
 
             }
