@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
+import com.itheima.mobilesafe.fragments.ContactsFragment;
 import com.itheima.mobilesafe.fragments.SettingsFragment;
 import com.itheima.mobilesafe.fragments.Setup1Fragment;
 import com.itheima.mobilesafe.fragments.Setup2Fragment;
@@ -88,7 +89,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         Fragment fragment = null;
         String tag = null;
         String title = "";
-        tv_title.setVisibility(View.VISIBLE);
         switch (ID) {
             case Constants.SETTINGS_FRAG:
                 title = "设置中心";
@@ -124,7 +124,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 title = "设置";
                 fragment = new SetupFragment();
                 tag = "SETUP";
-                tv_title.setVisibility(View.GONE);
+                break;
+            case Constants.CONSTANTS:
+                title = "选择联络人";
+                fragment = new ContactsFragment();
+                tag = "CONSTANTS";
                 break;
         }
 
@@ -135,6 +139,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         transaction.add(R.id.fl_container, fragment, tag);
         transaction.addToBackStack(title);
         transaction.commitAllowingStateLoss();
+
+        if (ID == Constants.SETUP_FRAG)
+            tv_title.setVisibility(View.GONE);
+        else
+            tv_title.setVisibility(View.VISIBLE);
     }
 
 
@@ -254,10 +263,13 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             fm.popBackStack();
             titles.pop();
             tv_title.setText(titles.peek());
+
+            if (tv_title.getText().toString().equals("设置"))
+                tv_title.setVisibility(View.GONE);
+            else
+                tv_title.setVisibility(View.VISIBLE);
         } else
             super.onBackPressed();
-
-
     }
 
     @Override

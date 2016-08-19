@@ -1,16 +1,28 @@
 package com.itheima.mobilesafe.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 
+import com.itheima.mobilesafe.Constants;
 import com.itheima.mobilesafe.MainInterface;
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.Settings;
+import com.itheima.mobilesafe.utils.CLog;
+
+import tw.com.softworld.messagescenter.AsyncResponse;
+import tw.com.softworld.messagescenter.Client;
+import tw.com.softworld.messagescenter.CustomReceiver;
+import tw.com.softworld.messagescenter.Result;
+import tw.com.softworld.messagescenter.Server;
 
 /**
  * Created by Catherine on 2016/8/12.
@@ -21,25 +33,90 @@ public class Setup3Fragment extends Fragment {
 
     private static final String TAG = "Setup3Fragment";
     private MainInterface mainInterface;
+    private Server sv;
+    private EditText et_phone_number;
+    private Button bt_choose_contacts;
+    private Client client;
 
     public static final Setup3Fragment newInstance() {
         Setup3Fragment f = new Setup3Fragment();
         return f;
     }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setup3, container, false);
-        mainInterface = (MainInterface) getActivity();
+
+        initData();
+
+        et_phone_number = (EditText) view.findViewById(R.id.et_phone_number);
+        if (!TextUtils.isEmpty(Settings.safePhone))
+            et_phone_number.setText(Settings.safePhone);
+        et_phone_number.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (TextUtils.isEmpty(et_phone_number.getText()))
+                    sv.pushInt("DISABLE_SWIPING", 3);
+                else
+                    sv.pushInt("DISABLE_SWIPING", -1);
+            }
+        });
+        bt_choose_contacts = (Button) view.findViewById(R.id.bt_choose_contacts);
+        bt_choose_contacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainInterface.callFragment(Constants.CONSTANTS);
+            }
+        });
         return view;
     }
 
-    private void hideKeyboard() {
-        // Check if no view has focus:
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
+    private void initData() {
+        mainInterface = (MainInterface) getActivity();
+        AsyncResponse ar = new AsyncResponse() {
+            @Override
+            public void onFailure(int errorCode) {
+                CLog.e(TAG, "onFailure" + errorCode);
+            }
+        };
+        sv = new Server(getActivity(), ar);
+
+
+        CustomReceiver cr = new CustomReceiver() {
+            @Override
+            public void onBroadcastReceive(Result result) {
+                CLog.d(TAG, "You got " + result.getString());
+                et_phone_number.setText(Settings.safePhone);
+                if (TextUtils.isEmpty(et_phone_number.getText()))
+                    sv.pushInt("DISABLE_SWIPING", 3);
+                else
+                    sv.pushInt("DISABLE_SWIPING", -1);
+            }
+        };
+        client = new Client(getActivity(), cr);
+        client.gotMessages("SAFE_PHONE");
+    }
+
+    @Override
+    public void onResume() {
+        if (TextUtils.isEmpty(et_phone_number.getText()))
+            sv.pushInt("DISABLE_SWIPING", 3);
+        else
+            sv.pushInt("DISABLE_SWIPING", -1);
+
+        if (!TextUtils.isEmpty(Settings.safePhone))
+            et_phone_number.setText(Settings.safePhone);
+        super.onResume();
     }
 }

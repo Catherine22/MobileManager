@@ -74,13 +74,13 @@ public class SetupFragment extends Fragment {
         CustomReceiver cr = new CustomReceiver() {
             @Override
             public void onBroadcastReceive(Result result) {
-                CLog.d(TAG, "You got " + result.isBoolean());
-                if (result.isBoolean()) {
+                CLog.d(TAG, "You got " + result.getInt());
+                if (result.getInt() == -1) {
                     forwardAdapter.setCounts(4);
                     backAdapter.setCounts(4);
                 } else {
-                    forwardAdapter.setCounts(2);
-                    backAdapter.setCounts(2);
+                    forwardAdapter.setCounts(result.getInt());
+                    backAdapter.setCounts(result.getInt());
                 }
             }
         };

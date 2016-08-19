@@ -14,6 +14,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!--使用WakeLock使Android应用程序保持后台唤醒-->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!--获取联系人-->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 
 
     <application

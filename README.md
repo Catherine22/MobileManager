@@ -33,6 +33,28 @@
 MD5加密
   - [Encryption]
 
+多渠道打包与自动隐藏debug log
+  - [build.gradle]之productFlavors{...}
+  - [MyApplication]
+  - [CLog]
+
+开机后自动启动、检查SIM卡       
+  - 在[AndroidManifest]添加权限与注册receiver
+```JAVA
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+<!--使用WakeLock使Android应用程序保持后台唤醒-->
+<uses-permission android:name="android.permission.WAKE_LOCK" />
+
+<application
+    <receiver android:name=".utils.BootCompletedReceiver">
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+        </intent-filter>
+    </receiver>
+</application>
+```
+  - [BootCompletedReceiver]
+
 
   
 
@@ -44,3 +66,8 @@ MD5加密
    [attrs]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/values/attrs.xml>
    [HomeActivity]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/HomeActivity.java>
    [Encryption]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/Encryption.java>
+   [build.gradle]: <https://github.com/Catherine22/MobileManager/blob/master/app/build.gradle>
+   [AndroidManifest]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/AndroidManifest.xml>
+   [MyApplication]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/MyApplication.java>
+   [CLog]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/CLog.java>
+   [BootCompletedReceiver]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/BootCompletedReceiver.java>

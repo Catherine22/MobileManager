@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.Settings;
 import com.itheima.mobilesafe.ui.SettingItemView;
+import com.itheima.mobilesafe.utils.CLog;
 
 import tw.com.softworld.messagescenter.AsyncResponse;
 import tw.com.softworld.messagescenter.Server;
@@ -48,12 +49,12 @@ public class Setup2Fragment extends Fragment {
                 //判断是否有选中
                 if (siv_sim.isChecked()) {
                     siv_sim.setChecked(false);
-                    sv.pushBoolean("DISABLE_SWIPING", false);
+                    sv.pushInt("DISABLE_SWIPING", 2);
                     editor.putString("simSerialNumber", null);
                     editor.commit();
                 } else {
                     siv_sim.setChecked(true);
-                    sv.pushBoolean("DISABLE_SWIPING", true);
+                    sv.pushInt("DISABLE_SWIPING", -1);
                     editor.putString("simSerialNumber", Settings.simSerialNumber);
                     editor.commit();
                 }
@@ -68,6 +69,7 @@ public class Setup2Fragment extends Fragment {
         AsyncResponse ar = new AsyncResponse() {
             @Override
             public void onFailure(int errorCode) {
+                CLog.e(TAG, "onFailure" + errorCode);
             }
         };
 
@@ -78,10 +80,10 @@ public class Setup2Fragment extends Fragment {
     public void onResume() {
         if (TextUtils.isEmpty(sp.getString("simSerialNumber", null))) {
             siv_sim.setChecked(false);
-            sv.pushBoolean("DISABLE_SWIPING", false);
+            sv.pushInt("DISABLE_SWIPING", 2);
         } else {
             siv_sim.setChecked(true);
-            sv.pushBoolean("DISABLE_SWIPING", true);
+            sv.pushInt("DISABLE_SWIPING", -1);
         }
         super.onResume();
     }
