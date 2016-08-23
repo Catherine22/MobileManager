@@ -4,9 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
+
+import com.itheima.mobilesafe.R;
 
 /**
  * Created by Catherine on 2016/8/19.
@@ -62,19 +65,30 @@ public class SMSReceiver extends BroadcastReceiver {
 
             CLog.d(TAG, address + "\n" + content);
             if (address.equals(safePhone)) {
-                if (content.indexOf("#*location*#") != -1) {
+                if (content.contains("#*location*#")) {
                     CLog.d(TAG, "#*location*#");
                     //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
                     abortBroadcast();
                 }
-                if (content.indexOf("#*alarm*#") != -1) {
+                if (content.contains("#*alarm*#")) {
                     CLog.d(TAG, "#*alarm*#");
+                    //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
+                    abortBroadcast();
+
+                    MediaPlayer mp = MediaPlayer.create(context, R.raw.ylzs);
+                    mp.setLooping(true);
+                    mp.setVolume(1.0f, 1.0f);
+                    mp.start();
                 }
-                if (content.indexOf("#*wipedata*#") != -1) {
+                if (content.contains("#*wipedata*#")) {
                     CLog.d(TAG, "#*wipedata*#");
+                    //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
+                    abortBroadcast();
                 }
-                if (content.indexOf("#*lockscreen*#") != -1) {
+                if (content.contains("#*lockscreen*#")) {
                     CLog.d(TAG, "#*lockscreen*#");
+                    //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
+                    abortBroadcast();
                 }
             }
 
