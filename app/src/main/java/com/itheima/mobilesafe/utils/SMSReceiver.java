@@ -3,6 +3,7 @@ package com.itheima.mobilesafe.utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
@@ -37,7 +38,8 @@ public class SMSReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         CLog.d(TAG, "SMS received!");
-
+        SharedPreferences sp = context.getSharedPreferences("config", Context.MODE_PRIVATE);
+        String safePhone = sp.getString("safe_phone", "");
 /*
         //测试ANR，阻塞主线程
         try {
@@ -59,15 +61,22 @@ public class SMSReceiver extends BroadcastReceiver {
 
 
             CLog.d(TAG, address + "\n" + content);
-
-            if ("#*location*#".equals(content)) {
-                CLog.d(TAG, "#*location*#");
-                //截获短信
-                abortBroadcast();
+            if (address.equals(safePhone)) {
+                if (content.indexOf("#*location*#") != -1) {
+                    CLog.d(TAG, "#*location*#");
+                    //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
+                    abortBroadcast();
+                }
+                if (content.indexOf("#*alarm*#") != -1) {
+                    CLog.d(TAG, "#*alarm*#");
+                }
+                if (content.indexOf("#*wipedata*#") != -1) {
+                    CLog.d(TAG, "#*wipedata*#");
+                }
+                if (content.indexOf("#*lockscreen*#") != -1) {
+                    CLog.d(TAG, "#*lockscreen*#");
+                }
             }
-
-            //根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
-//            abortBroadcast();
 
             //回传讯息
 //            SmsManager manager = SmsManager.getDefault();

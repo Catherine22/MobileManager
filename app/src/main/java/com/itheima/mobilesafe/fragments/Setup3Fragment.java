@@ -37,7 +37,7 @@ public class Setup3Fragment extends Fragment {
     private EditText et_phone_number;
     private Client client;
 
-    public static  Setup3Fragment newInstance() {
+    public static Setup3Fragment newInstance() {
         return new Setup3Fragment();
     }
 

@@ -3,6 +3,7 @@ package com.itheima.mobilesafe;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
@@ -16,6 +17,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.telephony.TelephonyManager;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
@@ -60,6 +63,8 @@ public class SplashActivity extends Activity {
         TextView tv_splash_version = (TextView) findViewById(R.id.tv_splash_version);
         tv_splash_version.setText("版本号" + getVersionName());
         tv_update_info = (TextView) findViewById(R.id.tv_update_info);
+
+        initSettings();
         boolean update = sp.getBoolean("update", false);
         if (update) {
             // 检查升级
@@ -323,7 +328,26 @@ public class SplashActivity extends Activity {
             e.printStackTrace();
             return "";
         }
+    }
 
+    /**
+     * 取得设备信息
+     */
+    private void initSettings() {
+        //取得屏幕信息
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        Settings.DISPLAY_WIDTH_PX = metrics.widthPixels;
+        Settings.DISPLAY_HEIGHT_PX = metrics.heightPixels;
+
+        //取得sim卡信息
+        TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+//        Settings.simSerialNumber = tm.getSimSerialNumber();
+        Settings.simSerialNumber = "65123576";
+
+        //取得安全碼信息
+        SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
+        Settings.safePhone = sp.getString("safe_phone","");
     }
 
 }

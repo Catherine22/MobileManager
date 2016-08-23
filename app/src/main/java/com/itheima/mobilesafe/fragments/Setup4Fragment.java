@@ -15,6 +15,7 @@ import com.itheima.mobilesafe.Constants;
 import com.itheima.mobilesafe.MainInterface;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.Settings;
+import com.itheima.mobilesafe.utils.CLog;
 
 /**
  * Created by Catherine on 2016/8/12.
@@ -37,10 +38,6 @@ public class Setup4Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setup4, container, false);
         mainInterface = (MainInterface) getActivity();
-        SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
-        editor = sp.edit();
-        editor.putString("safe_phone", Settings.safePhone);
-        editor.apply();
 
         cb = (CheckBox) view.findViewById(R.id.cb);
         cb.setOnClickListener(new View.OnClickListener() {
@@ -56,6 +53,11 @@ public class Setup4Fragment extends Fragment {
         bt_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+                editor = sp.edit();
+                editor.putString("safe_phone", Settings.safePhone);
+                editor.apply();
+
                 editor.putBoolean("configed", true);
                 editor.apply();
 

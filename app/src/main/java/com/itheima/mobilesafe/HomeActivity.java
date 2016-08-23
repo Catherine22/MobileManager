@@ -31,6 +31,7 @@ import com.itheima.mobilesafe.fragments.Setup2Fragment;
 import com.itheima.mobilesafe.fragments.Setup3Fragment;
 import com.itheima.mobilesafe.fragments.Setup4Fragment;
 import com.itheima.mobilesafe.fragments.SetupFragment;
+import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Encryption;
 
 import java.util.Stack;
