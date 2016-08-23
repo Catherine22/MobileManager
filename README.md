@@ -55,6 +55,10 @@ MD5加密
 ```
   - [BootCompletedReceiver]
 
+获取经纬度，中国境内已修正火星坐标偏移
+  - [GPSService]（只有在[BootCompletedReceiver]中收到来自安全码的SMS信息才会触发）
+  - [火星坐标偏移算法]
+
 
   
 
@@ -71,3 +75,5 @@ MD5加密
    [MyApplication]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/MyApplication.java>
    [CLog]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/CLog.java>
    [BootCompletedReceiver]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/BootCompletedReceiver.java>
+   [GPSService]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/GPSService.java>
+   [火星坐标偏移算法]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/services/gcj02>
