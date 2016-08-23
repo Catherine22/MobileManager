@@ -5,11 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
-import android.widget.Toast;
+import android.text.TextUtils;
 
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.services.GPSService;
+
+import tw.com.softworld.messagescenter.Client;
+import tw.com.softworld.messagescenter.CustomReceiver;
+import tw.com.softworld.messagescenter.Result;
 
 /**
  * Created by Catherine on 2016/8/19.
@@ -20,6 +26,8 @@ public class SMSReceiver extends BroadcastReceiver {
     public static final String TAG = "SmsReceiver";
     public static String address;
     public static String content;
+    private String safePhone;
+    private SmsManager manager;
 
     /**
      * ANR异常：
@@ -42,7 +50,7 @@ public class SMSReceiver extends BroadcastReceiver {
 
         CLog.d(TAG, "SMS received!");
         SharedPreferences sp = context.getSharedPreferences("config", Context.MODE_PRIVATE);
-        String safePhone = sp.getString("safe_phone", "");
+        safePhone = sp.getString("safe_phone", "");
 /*
         //测试ANR，阻塞主线程
         try {
@@ -55,6 +63,7 @@ public class SMSReceiver extends BroadcastReceiver {
         Object[] pdus = (Object[]) intent.getExtras().get("pdus");
         for (Object pdu : pdus) {
             SmsMessage message = SmsMessage.createFromPdu((byte[]) pdu);
+            manager = SmsManager.getDefault();
 
             //获取短信的正文内容
             content = message.getMessageBody();
@@ -69,6 +78,29 @@ public class SMSReceiver extends BroadcastReceiver {
                     CLog.d(TAG, "#*location*#");
                     //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
                     abortBroadcast();
+
+                    //启动服务
+                    Intent i = new Intent(context, GPSService.class);
+                    context.startService(i);
+                    CustomReceiver cr = new CustomReceiver() {
+                        @Override
+                        public void onBroadcastReceive(Result result) {
+                            Bundle b = result.getBundle();
+                            String longitude = b.getString("longitude");
+                            String latitude = b.getString("latitude");
+                            String accutacy = b.getString("accutacy");
+
+                            CLog.d(TAG, "Longitude:" + longitude + "\nLatitude:" + latitude + "\nAccutacy:" + accutacy);
+
+                            if (TextUtils.isEmpty(longitude))
+                                manager.sendTextMessage(safePhone, null, "Getting location...", null, null);
+                            else
+                                manager.sendTextMessage(safePhone, null, "Longitude:" + longitude + "\nLatitude:" + latitude + "\nAccutacy:" + accutacy, null, null);
+                        }
+                    };
+                    Client client = new Client(context, cr);
+                    client.gotMessages("LOCATION_INFO");
+
                 }
                 if (content.contains("#*alarm*#")) {
                     CLog.d(TAG, "#*alarm*#");
@@ -98,4 +130,6 @@ public class SMSReceiver extends BroadcastReceiver {
 
         }
     }
+
+
 }

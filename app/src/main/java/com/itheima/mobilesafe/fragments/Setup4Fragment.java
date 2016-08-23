@@ -15,7 +15,6 @@ import com.itheima.mobilesafe.Constants;
 import com.itheima.mobilesafe.MainInterface;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.Settings;
-import com.itheima.mobilesafe.utils.CLog;
 
 /**
  * Created by Catherine on 2016/8/12.
@@ -56,8 +55,6 @@ public class Setup4Fragment extends Fragment {
                 SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
                 editor = sp.edit();
                 editor.putString("safe_phone", Settings.safePhone);
-                editor.apply();
-
                 editor.putBoolean("configed", true);
                 editor.apply();
 

@@ -1,17 +1,18 @@
 package com.itheima.mobilesafe;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -42,14 +43,15 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private TextView tv_title;
     private FragmentManager fm = getSupportFragmentManager();
     private Stack<String> titles = new Stack<>();
-    private static String[] names = {
+    private final int ACCESS_PERMISSION = 1001;
+    private final static String[] names = {
             "手机防盗", "通讯卫士", "软件管理",
             "进程管理", "流量统计", "手机杀毒",
             "缓存清理", "高级工具", "设置中心"
 
     };
 
-    private static int[] ids = {
+    private final static int[] ids = {
             R.drawable.safe, R.drawable.callmsgsafe, R.drawable.app,
             R.drawable.taskmanager, R.drawable.netmanager, R.drawable.trojan,
             R.drawable.sysoptimize, R.drawable.atools, R.drawable.settings
@@ -61,23 +63,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         setContentView(R.layout.activity_home);
         sp = getSharedPreferences("config", MODE_PRIVATE);
         initComponent();
-        initSettings();
-    }
-
-    /**
-     * 取得设备信息
-     */
-    private void initSettings() {
-        //取得屏幕信息
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        Settings.DISPLAY_WIDTH_PX = metrics.widthPixels;
-        Settings.DISPLAY_HEIGHT_PX = metrics.heightPixels;
-
-        //取得sim卡信息
-        TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-//        Settings.simSerialNumber = tm.getSimSerialNumber();
-        Settings.simSerialNumber = "65123576";
     }
 
     /**
@@ -169,6 +154,14 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void initComponent() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    ACCESS_PERMISSION);
+            return;
+        } else {
+            getLocationInfo();
+        }
+
         GridView list_home = (GridView) findViewById(R.id.list_home);
         tv_title = (TextView) findViewById(R.id.tv_title);
         tv_title.setText("功能列表");
@@ -194,6 +187,34 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
             }
         });
+    }
+
+
+    /**
+     * 取得位置信息
+     */
+    private void getLocationInfo() {
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        doNext(requestCode, grantResults);
+    }
+
+    private void doNext(int requestCode, int[] grantResults) {
+        if (requestCode == ACCESS_PERMISSION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission Granted
+                CLog.d(TAG, "Permission Granted");
+                getLocationInfo();
+            } else {
+                // Permission Denied
+                CLog.d(TAG, "Permission Denied");
+                finish();
+            }
+        }
     }
 
     /**
@@ -258,6 +279,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         return !TextUtils.isEmpty(pwd);
     }
 
+    /**
+     * 点击back键
+     */
     @Override
     public void onBackPressed() {
         if (fm.getBackStackEntryCount() > 0) {

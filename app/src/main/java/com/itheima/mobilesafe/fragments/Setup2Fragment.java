@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ public class Setup2Fragment extends Fragment {
     private SharedPreferences sp;
     private Server sv;
     private SharedPreferences.Editor editor;
+    private String simSerialNumber;
 
     public static Setup2Fragment newInstance() {
         return new Setup2Fragment();
@@ -72,8 +74,11 @@ public class Setup2Fragment extends Fragment {
                 CLog.e(TAG, "onFailure" + errorCode);
             }
         };
-
         sv = new Server(getActivity(), ar);
+        //取得sim卡信息
+        TelephonyManager tm = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+//        Settings.simSerialNumber = tm.getSimSerialNumber();
+        simSerialNumber = "65123576";
     }
 
     @Override
