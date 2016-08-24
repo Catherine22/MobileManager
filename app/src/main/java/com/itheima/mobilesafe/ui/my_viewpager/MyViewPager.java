@@ -24,7 +24,6 @@ public class MyViewPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        CLog.d(TAG,"TouchEvent");
         if (this.enabled) {
             return super.onTouchEvent(event);
         }

@@ -33,7 +33,6 @@ import com.itheima.mobilesafe.fragments.Setup3Fragment;
 import com.itheima.mobilesafe.fragments.Setup4Fragment;
 import com.itheima.mobilesafe.fragments.SetupFragment;
 import com.itheima.mobilesafe.interfaces.MainInterface;
-import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Encryption;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
@@ -185,27 +184,28 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
             }
         });
-        getPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+        getPermissions(new String[]{Manifest.permission.INTERNET, Manifest.permission.READ_PHONE_STATE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new MyPermissionsResultListener() {
+            @Override
+            public void onGranted() {
+            }
+
+            @Override
+            public void onDenied() {
+                Toast.makeText(HomeActivity.this, "权限不足", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
     }
 
     /**
      * 要求用户打开权限,仅限android 6.0 以上
      *
-     * @param permissions e.g. 手机权限
-     * @param listener 此变量implements事件的接口,负责传递信息
+     * @param permissions 手机权限 e.g. Manifest.permission.ACCESS_FINE_LOCATION
+     * @param listener    此变量implements事件的接口,负责传递信息
      */
     @Override
     public void getPermissions(String[] permissions, MyPermissionsResultListener listener) {
         this.listener = listener;
-        getPermissions(permissions);
-    }
-
-    /**
-     * 要求用户打开权限,仅限android 6.0 以上
-     *
-     * @param permissions e.g. Manifest.permission.ACCESS_FINE_LOCATION
-     */
-    private void getPermissions(String[] permissions) {
         List<String> deniedPermissionsList = new LinkedList<>();
         for (String p : permissions) {
             if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED)
@@ -219,12 +219,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
         } else {
             // All of the permissions granted
+            listener.onGranted();
         }
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-//                    ACCESS_PERMISSION);
         return;
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -233,16 +232,16 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void doNext(int requestCode, int[] grantResults) {
+        int count = 0;
         if (requestCode == ACCESS_PERMISSION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission Granted
-                listener.onGranted();
-                CLog.d(TAG, "Permission Granted");
-            } else {
-                // Permission Denied
-                listener.onDenied();
-                CLog.d(TAG, "Permission Denied");
+            for (int i = 0; i < grantResults.length; i++) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                    count++;
             }
+            if (count == grantResults.length)//全部同意
+                listener.onGranted();// Permission Granted
+            else
+                listener.onDenied();// Permission Denied
         }
     }
 

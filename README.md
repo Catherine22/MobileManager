@@ -59,8 +59,92 @@ MD5加密
   - [GPSService]（只有在[SMSReceiver]中收到来自安全码的SMS信息才会触发）
   - [火星坐标偏移算法]
 
+Android6.0或以上权限设置
+  - 需要在用到权限的地方，自定义是否检查权限
+  - 参考[Android 6.0 运行时权限处理]，改成以注册listener的方式支援批次处理，在Activity接收用户事件，需要权限的fragment或activity则注册listener监听结果，主要代码如下：
 
-  
+[HomeActivity]
+```JAVA
+private MyPermissionsResultListener listener;
+/**
+ * 要求用户打开权限,仅限android 6.0 以上
+ *
+ * @param permissions 手机权限 e.g. Manifest.permission.ACCESS_FINE_LOCATION
+ * @param listener    此变量implements事件的接口,负责传递信息
+ */
+@Override
+public void getPermissions(String[] permissions, MyPermissionsResultListener listener) {
+    this.listener = listener;
+    List<String> deniedPermissionsList = new LinkedList<>();
+    for (String p : permissions) {
+        if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED)
+            deniedPermissionsList.add(p);
+    }
+    if (deniedPermissionsList.size() != 0) {
+        String[] deniedPermissions = new String[deniedPermissionsList.size()];
+        for (int i = 0; i < deniedPermissionsList.size(); i++) {
+            deniedPermissions[i] = deniedPermissionsList.get(i);
+        }
+        ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+    } else {
+        // All of the permissions granted
+        listener.onGranted();
+    }
+    return;
+}
+
+@Override
+public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    doNext(requestCode, grantResults);
+}
+
+private void doNext(int requestCode, int[] grantResults) {
+    int count = 0;
+    if (requestCode == ACCESS_PERMISSION) {
+        for (int i = 0; i < grantResults.length; i++) {
+            if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                count++;
+        }
+        if (count == grantResults.length)//全部同意
+            listener.onGranted();// Permission Granted
+        else
+            listener.onDenied();// Permission Denied
+    }
+}
+```
+[Setup2Fragment]
+```JAVA
+private MainInterface mainInterface;
+
+@Nullable
+@Override
+public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+...
+    mainInterface = (MainInterface) getActivity();
+}
+
+private void doSomethingWithPermissions(){
+    mainInterface.getPermissions(new String[]{
+                Manifest.permission.WAKE_LOCK,
+                Manifest.permission.RECEIVE_BOOT_COMPLETED,
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.WRITE_CONTACTS,
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.RECEIVE_SMS},
+        new MyPermissionsResultListener() {
+            @Override
+            public void onGranted() {
+            //You've got all permissions you need
+            }
+            @Override
+            public void onDenied() {
+                //Do something to handle this situaction
+            }
+        }
+    );
+}
+```
 
 
 
@@ -72,9 +156,11 @@ MD5加密
    [Encryption]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/Encryption.java>
    [build.gradle]: <https://github.com/Catherine22/MobileManager/blob/master/app/build.gradle>
    [AndroidManifest]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/AndroidManifest.xml>
-   [MyApplication]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/MyApplication.java>
+   [MyApplication]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/MyApplication.java>
    [CLog]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/CLog.java>
    [BootCompletedReceiver]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/BootCompletedReceiver.java>
    [SMSReceiver]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/SMSReceiver.java>
    [GPSService]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/GPSService.java>
    [火星坐标偏移算法]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/services/gcj02>
+   [Android 6.0 运行时权限处理]: <https://www.aswifter.com/2015/11/04/android-6-permission/>
+   [Setup2Fragment]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/Setup2Fragment.java/>

@@ -1,5 +1,6 @@
 package com.itheima.mobilesafe.fragments;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.interfaces.MainInterface;
+import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.utils.CLog;
@@ -29,10 +32,9 @@ public class Setup2Fragment extends Fragment {
     private static final String TAG = "Setup2Fragment";
     private SettingItemView siv_sim;
     private SharedPreferences sp;
+    private MainInterface mainInterface;
     private Server sv;
     private SharedPreferences.Editor editor;
-    private String simSerialNumber;
-
     public static Setup2Fragment newInstance() {
         return new Setup2Fragment();
     }
@@ -55,11 +57,30 @@ public class Setup2Fragment extends Fragment {
                     editor.putString("sim_serial", null);
                     editor.apply();
                 } else {
-                    siv_sim.setChecked(true);
-                    sv.pushInt("DISABLE_SWIPING", -1);
-                    editor = sp.edit();
-                    editor.putString("sim_serial", Settings.simSerialNumber);
-                    editor.apply();
+                    mainInterface.getPermissions(new String[]{
+                                    Manifest.permission.WAKE_LOCK,
+                                    Manifest.permission.RECEIVE_BOOT_COMPLETED,
+                                    Manifest.permission.READ_CONTACTS,
+                                    Manifest.permission.WRITE_CONTACTS,
+                                    Manifest.permission.SEND_SMS,
+                                    Manifest.permission.RECEIVE_SMS},
+                            new MyPermissionsResultListener() {
+                                @Override
+                                public void onGranted() {
+                                    CLog.d(TAG,"onGranted");
+                                    siv_sim.setChecked(true);
+                                    sv.pushInt("DISABLE_SWIPING", -1);
+                                    editor = sp.edit();
+                                    editor.putString("sim_serial", Settings.simSerialNumber);
+                                    editor.apply();
+                                }
+                                @Override
+                                public void onDenied() {
+                                    CLog.d(TAG,"onDenied");
+                                    mainInterface.backToPreviousPage();
+                                }
+                            }
+                    );
                 }
             }
         });
@@ -67,6 +88,7 @@ public class Setup2Fragment extends Fragment {
     }
 
     private void initData() {
+        mainInterface = (MainInterface) getActivity();
         sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
         AsyncResponse ar = new AsyncResponse() {
             @Override
@@ -78,7 +100,7 @@ public class Setup2Fragment extends Fragment {
         //取得sim卡信息
         TelephonyManager tm = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
 //        Settings.simSerialNumber = tm.getSimSerialNumber();
-        simSerialNumber = "65123576";
+        Settings.simSerialNumber = "65123576";
     }
 
     @Override
