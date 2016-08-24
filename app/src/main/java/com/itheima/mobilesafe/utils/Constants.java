@@ -1,4 +1,4 @@
-package com.itheima.mobilesafe;
+package com.itheima.mobilesafe.utils;
 
 /**
  * Created by Catherine on 2016/8/12.

@@ -11,10 +11,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 
-import com.itheima.mobilesafe.Constants;
-import com.itheima.mobilesafe.MainInterface;
+import com.itheima.mobilesafe.utils.Constants;
+import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.Settings;
+import com.itheima.mobilesafe.utils.Settings;
 
 /**
  * Created by Catherine on 2016/8/12.

@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.Settings;
+import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.utils.CLog;
 

@@ -16,9 +16,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.itheima.mobilesafe.MainInterface;
+import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.Settings;
+import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.adapter.ContactsListAdapter;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.objects.Contact;

@@ -2,9 +2,6 @@ package com.itheima.mobilesafe.utils;
 
 import android.util.Log;
 
-import com.itheima.mobilesafe.MyApplication;
-import com.itheima.mobilesafe.Settings;
-
 import tw.com.softworld.messagescenter.Config;
 
 /**

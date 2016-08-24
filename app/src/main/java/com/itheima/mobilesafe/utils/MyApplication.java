@@ -1,4 +1,4 @@
-package com.itheima.mobilesafe;
+package com.itheima.mobilesafe.utils;
 
 import android.app.Application;
 

@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.utils.StreamTools;
 
 import net.tsz.afinal.FinalHttp;

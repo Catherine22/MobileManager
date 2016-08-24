@@ -1,4 +1,4 @@
-package com.itheima.mobilesafe;
+package com.itheima.mobilesafe.interfaces;
 
 /**
  * Created by Catherine on 2016/8/12.
@@ -11,4 +11,6 @@ public interface MainInterface {
     void clearAllFragments();
 
     void backToPreviousPage();
+
+    void getPermissions(String[] permissions,MyPermissionsResultListener listener);
 }

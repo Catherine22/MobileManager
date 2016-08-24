@@ -12,10 +12,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.itheima.mobilesafe.Constants;
-import com.itheima.mobilesafe.MainInterface;
+import com.itheima.mobilesafe.utils.Constants;
+import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.Settings;
+import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.utils.CLog;
 
 import tw.com.softworld.messagescenter.AsyncResponse;
