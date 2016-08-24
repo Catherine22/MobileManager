@@ -77,7 +77,9 @@ public class Setup2Fragment extends Fragment {
                                 @Override
                                 public void onDenied() {
                                     CLog.d(TAG,"onDenied");
-                                    mainInterface.backToPreviousPage();
+                                    //TODO crash
+//                                    mainInterface.backToPreviousPage();
+                                    getActivity().finish();
                                 }
                             }
                     );

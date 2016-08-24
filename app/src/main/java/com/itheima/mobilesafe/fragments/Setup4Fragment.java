@@ -1,5 +1,6 @@
 package com.itheima.mobilesafe.fragments;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 
+import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.R;
@@ -42,7 +44,7 @@ public class Setup4Fragment extends Fragment {
         cb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(cb.isChecked())
+                if (cb.isChecked())
                     cb.setText("已开启防盗保护");
                 else
                     cb.setText("你没有开启防盗保护");
@@ -52,14 +54,27 @@ public class Setup4Fragment extends Fragment {
         bt_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
-                editor = sp.edit();
-                editor.putString("safe_phone", Settings.safePhone);
-                editor.putBoolean("configed", true);
-                editor.apply();
+                mainInterface.getPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, new MyPermissionsResultListener() {
+                    @Override
+                    public void onGranted() {
+                        SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+                        editor = sp.edit();
+                        editor.putString("safe_phone", Settings.safePhone);
+                        editor.putBoolean("configed", true);
+                        editor.apply();
 
-                mainInterface.clearAllFragments();
-                mainInterface.callFragment(Constants.ANTI_THEFT_FRAG);
+                        mainInterface.clearAllFragments();
+                        mainInterface.callFragment(Constants.ANTI_THEFT_FRAG);
+                    }
+
+                    @Override
+                    public void onDenied() {
+
+                        //TODO crash
+//                                    mainInterface.backToPreviousPage();
+                        getActivity().finish();
+                    }
+                });
             }
         });
         return view;
