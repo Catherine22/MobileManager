@@ -35,6 +35,7 @@ public class Setup2Fragment extends Fragment {
     private MainInterface mainInterface;
     private Server sv;
     private SharedPreferences.Editor editor;
+
     public static Setup2Fragment newInstance() {
         return new Setup2Fragment();
     }
@@ -63,21 +64,24 @@ public class Setup2Fragment extends Fragment {
                                     Manifest.permission.READ_CONTACTS,
                                     Manifest.permission.WRITE_CONTACTS,
                                     Manifest.permission.SEND_SMS,
-                                    Manifest.permission.RECEIVE_SMS},
+                                    Manifest.permission.RECEIVE_SMS,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                                    Manifest.permission.ACCESS_FINE_LOCATION},
                             new MyPermissionsResultListener() {
                                 @Override
                                 public void onGranted() {
-                                    CLog.d(TAG,"onGranted");
+                                    CLog.d(TAG, "onGranted");
                                     siv_sim.setChecked(true);
                                     sv.pushInt("DISABLE_SWIPING", -1);
                                     editor = sp.edit();
                                     editor.putString("sim_serial", Settings.simSerialNumber);
                                     editor.apply();
                                 }
+
                                 @Override
                                 public void onDenied() {
-                                    CLog.d(TAG,"onDenied");
-                                    mainInterface.backToPreviousPage();
+                                    CLog.d(TAG, "onDenied");
+                                    getActivity().finish();
                                 }
                             }
                     );

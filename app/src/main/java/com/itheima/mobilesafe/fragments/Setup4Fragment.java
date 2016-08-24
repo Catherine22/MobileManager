@@ -1,5 +1,6 @@
 package com.itheima.mobilesafe.fragments;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 
+import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.R;
@@ -42,7 +44,7 @@ public class Setup4Fragment extends Fragment {
         cb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(cb.isChecked())
+                if (cb.isChecked())
                     cb.setText("已开启防盗保护");
                 else
                     cb.setText("你没有开启防盗保护");

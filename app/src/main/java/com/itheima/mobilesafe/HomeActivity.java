@@ -2,11 +2,13 @@ package com.itheima.mobilesafe;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -33,6 +35,7 @@ import com.itheima.mobilesafe.fragments.Setup3Fragment;
 import com.itheima.mobilesafe.fragments.Setup4Fragment;
 import com.itheima.mobilesafe.fragments.SetupFragment;
 import com.itheima.mobilesafe.interfaces.MainInterface;
+import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Encryption;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
@@ -77,6 +80,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
      */
     @Override
     public void callFragment(int ID) {
+        CLog.d(TAG, "call " + ID);
         Fragment fragment = null;
         String tag = null;
         String title = "";
@@ -136,7 +140,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         else
             tv_title.setVisibility(View.VISIBLE);
     }
-
 
     /**
      * Clear all fragments in stack
@@ -342,6 +345,12 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     editor.putString("password", Encryption.doMd5(password));
                     editor.apply();
                     alertDialog.dismiss();
+
+                    sp = getSharedPreferences("config", MODE_PRIVATE);
+                    if (!sp.getBoolean("configed", false))
+                        callFragment(Constants.SETUP_FRAG);
+                    else
+                        callFragment(Constants.ANTI_THEFT_FRAG);
                 } else {
                     Toast.makeText(this, "密码不一致", Toast.LENGTH_LONG).show();
                     return;

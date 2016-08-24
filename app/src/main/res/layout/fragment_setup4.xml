@@ -24,8 +24,9 @@
 
         <CheckBox
             android:id="@+id/cb"
+            android:checked="true"
             style="@style/text_content_style"
-            android:text="你没有开启防盗保护" />
+            android:text="已开启防盗保护" />
 
         <!--<FrameLayout-->
         <!--android:layout_width="match_parent"-->
