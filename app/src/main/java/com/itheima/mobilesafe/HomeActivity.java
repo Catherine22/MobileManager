@@ -345,6 +345,12 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     editor.putString("password", Encryption.doMd5(password));
                     editor.apply();
                     alertDialog.dismiss();
+
+                    sp = getSharedPreferences("config", MODE_PRIVATE);
+                    if (!sp.getBoolean("configed", false))
+                        callFragment(Constants.SETUP_FRAG);
+                    else
+                        callFragment(Constants.ANTI_THEFT_FRAG);
                 } else {
                     Toast.makeText(this, "密码不一致", Toast.LENGTH_LONG).show();
                     return;

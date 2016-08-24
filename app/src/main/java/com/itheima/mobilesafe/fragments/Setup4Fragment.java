@@ -54,27 +54,14 @@ public class Setup4Fragment extends Fragment {
         bt_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.getPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, new MyPermissionsResultListener() {
-                    @Override
-                    public void onGranted() {
-                        SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
-                        editor = sp.edit();
-                        editor.putString("safe_phone", Settings.safePhone);
-                        editor.putBoolean("configed", true);
-                        editor.apply();
+                SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+                editor = sp.edit();
+                editor.putString("safe_phone", Settings.safePhone);
+                editor.putBoolean("configed", true);
+                editor.apply();
 
-                        mainInterface.clearAllFragments();
-                        mainInterface.callFragment(Constants.ANTI_THEFT_FRAG);
-                    }
-
-                    @Override
-                    public void onDenied() {
-
-                        //TODO crash
-//                                    mainInterface.backToPreviousPage();
-                        getActivity().finish();
-                    }
-                });
+                mainInterface.clearAllFragments();
+                mainInterface.callFragment(Constants.ANTI_THEFT_FRAG);
             }
         });
         return view;
