@@ -5,8 +5,6 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.itheima.mobilesafe.utils.CLog;
-
 /**
  * Created by Catherine on 2016/8/17.
  * Soft-World Inc.

@@ -15,4 +15,7 @@ public class Constants {
     public final static int SETUP_FRAG = 13;
     public final static int CONSTANTS = 14;
 
+
+    public final static int REQUEST_CODE_ENABLE_ADMIN = 10001;
+
 }

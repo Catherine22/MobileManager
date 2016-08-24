@@ -8,10 +8,16 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.MyAdminManager;
+
+import tw.com.softworld.messagescenter.Client;
+import tw.com.softworld.messagescenter.CustomReceiver;
+import tw.com.softworld.messagescenter.Result;
 
 /**
  * Created by Catherine on 2016/8/12.
@@ -20,23 +26,69 @@ import com.itheima.mobilesafe.utils.CLog;
  */
 public class SettingsFragment extends Fragment {
     private final static String TAG = "SettingsFragment";
-    private SettingItemView siv_update;
+    private SettingItemView siv_update, siv_admin;
+    private TextView tv_uninstall;
     private SharedPreferences sp;
+    private MyAdminManager myAdminManager;
+    private Client client;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         CLog.d(TAG, "onCreateView");
-
         sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+        myAdminManager = new MyAdminManager(getActivity());
+        CustomReceiver cr = new CustomReceiver() {
+            @Override
+            public void onBroadcastReceive(Result result) {
+                if (result.isBoolean())
+                    siv_admin.setChecked(true);
+                else
+                    siv_admin.setChecked(false);
+            }
+        };
+        client = new Client(getActivity(), cr);
+        client.gotMessages("ADMIN_PERMISSION");
+
+        initView(view);
+        return view;
+    }
+
+    private void initView(View view) {
         siv_update = (SettingItemView) view.findViewById(R.id.siv_update);
+        siv_admin = (SettingItemView) view.findViewById(R.id.siv_admin);
+        tv_uninstall = (TextView) view.findViewById(R.id.tv_uninstall);
+        tv_uninstall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myAdminManager.unInstall();
+            }
+        });
+
+        if (myAdminManager.isAdmin()) {
+            siv_admin.setChecked(true);
+        } else {
+            siv_admin.setChecked(false);
+        }
+        siv_admin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (siv_admin.isChecked()) {
+                    myAdminManager.removeAdmin();
+                    siv_admin.setChecked(false);
+                } else {
+                    myAdminManager.getAdminPermission();
+                    siv_admin.setChecked(true);
+                }
+            }
+        });
 
         boolean update = sp.getBoolean("update", false);
-        if(update){
+        if (update) {
             //自动升级已经开启
             siv_update.setChecked(true);
-        }else{
+        } else {
             //自动升级已经关闭
             siv_update.setChecked(false);
         }
@@ -47,10 +99,10 @@ public class SettingsFragment extends Fragment {
                 SharedPreferences.Editor editor = sp.edit();
                 //判断是否有选中
                 //已经打开自动升级了
-                if(siv_update.isChecked()){
+                if (siv_update.isChecked()) {
                     siv_update.setChecked(false);
                     editor.putBoolean("update", false);
-                }else{
+                } else {
                     //没有打开自动升级
                     siv_update.setChecked(true);
                     editor.putBoolean("update", true);
@@ -58,12 +110,12 @@ public class SettingsFragment extends Fragment {
                 editor.apply();
             }
         });
-        return view;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        client.release();
         CLog.d(TAG, "onDestroy");
     }
 

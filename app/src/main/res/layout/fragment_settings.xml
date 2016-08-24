@@ -13,6 +13,30 @@
         android:layout_height="wrap_content"
         itheima:desc_off="设置自动更新已经关闭"
         itheima:desc_on="设置自动更新已经开启"
-        itheima:title_="设置自动更新"></com.itheima.mobilesafe.ui.SettingItemView>
+        itheima:title_="设置自动更新" />
+
+    <com.itheima.mobilesafe.ui.SettingItemView
+        android:id="@+id/siv_admin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        itheima:desc_off="管理员权限已经关闭"
+        itheima:desc_on="管理员权限已经开启"
+        itheima:title_="开启管理员权限" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:id="@+id/tv_uninstall"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/gradient_box_selector"
+            android:paddingLeft="10dp"
+            android:gravity="center_vertical"
+            android:text="卸载安全卫士"
+            android:textSize="20sp" />
+    </RelativeLayout>
 
 </LinearLayout>

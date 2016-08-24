@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -35,14 +34,18 @@ import com.itheima.mobilesafe.fragments.Setup3Fragment;
 import com.itheima.mobilesafe.fragments.Setup4Fragment;
 import com.itheima.mobilesafe.fragments.SetupFragment;
 import com.itheima.mobilesafe.interfaces.MainInterface;
+import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Encryption;
-import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
+import com.itheima.mobilesafe.utils.MyAdminManager;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+
+import tw.com.softworld.messagescenter.AsyncResponse;
+import tw.com.softworld.messagescenter.Server;
 
 public class HomeActivity extends FragmentActivity implements View.OnClickListener, MainInterface {
     private final static String TAG = "HomeActivity";
@@ -51,6 +54,8 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private FragmentManager fm = getSupportFragmentManager();
     private Stack<String> titles = new Stack<>();
     private MyPermissionsResultListener listener;
+    private MyAdminManager myAdminManager;
+    private Server sv;
     private final int ACCESS_PERMISSION = 1001;
     private final static String[] names = {
             "手机防盗", "通讯卫士", "软件管理",
@@ -70,6 +75,14 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         sp = getSharedPreferences("config", MODE_PRIVATE);
+        myAdminManager = new MyAdminManager(this);
+        AsyncResponse ar = new AsyncResponse() {
+            @Override
+            public void onFailure(int errorCode) {
+                CLog.e(TAG, "onFailure" + errorCode);
+            }
+        };
+        sv = new Server(this, ar);
         initComponent();
     }
 
@@ -180,7 +193,12 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     case 8://进入设置中心
                         callFragment(Constants.SETTINGS_FRAG);
                         break;
-
+                    case 1:
+                        myAdminManager.lookScreen();
+                        break;
+                    case 2:
+                        myAdminManager.unInstall();
+                        break;
                     default:
                         break;
                 }
@@ -190,6 +208,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         getPermissions(new String[]{Manifest.permission.INTERNET, Manifest.permission.READ_PHONE_STATE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new MyPermissionsResultListener() {
             @Override
             public void onGranted() {
+                myAdminManager.getAdminPermission();
             }
 
             @Override
@@ -246,6 +265,21 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             else
                 listener.onDenied();// Permission Denied
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case Constants.REQUEST_CODE_ENABLE_ADMIN:
+                if (resultCode == RESULT_OK) {
+                    sv.pushBoolean("ADMIN_PERMISSION", true);
+                } else {
+                    sv.pushBoolean("ADMIN_PERMISSION", false);
+                }
+                break;
+        }
+        CLog.d(TAG, "onActivityResult " + requestCode + " " + resultCode);
     }
 
     /**

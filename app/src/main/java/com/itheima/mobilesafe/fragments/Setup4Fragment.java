@@ -1,6 +1,5 @@
 package com.itheima.mobilesafe.fragments;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,10 +11,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 
-import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
-import com.itheima.mobilesafe.utils.Constants;
-import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.interfaces.MainInterface;
+import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Settings;
 
 /**

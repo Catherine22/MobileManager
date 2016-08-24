@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.itheima.mobilesafe.utils.Constants;
-import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.utils.Settings;
+import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.Constants;
+import com.itheima.mobilesafe.utils.Settings;
 
 /**
  * Created by Catherine on 2016/8/12.

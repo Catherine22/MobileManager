@@ -15,9 +15,9 @@ import android.view.ViewGroup;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
-import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.Settings;
 
 import tw.com.softworld.messagescenter.AsyncResponse;
 import tw.com.softworld.messagescenter.Server;
