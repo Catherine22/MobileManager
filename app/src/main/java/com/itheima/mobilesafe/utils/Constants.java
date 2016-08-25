@@ -20,6 +20,11 @@ public class Constants {
     //activity request code
     public final static int REQUEST_CODE_ENABLE_ADMIN = 10001;
 
+    //response code
+    public static final int FAILED_TO_SEND = 0;
+    public static final int SENT_SUCCESSFULLY = 1;
+    public static final int SEND_TIMEOUT = 2;
+
     //path
     public static String PACKAGE_NAME;
     public static String DB_NAME;

@@ -44,5 +44,4 @@ dependencies {
     compile 'com.android.support:support-v4:24.1.1'
     compile files('libs/afinal_0.5_bin.jar')
     compile 'catherine.mobile:messagescenter:+'
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
 }

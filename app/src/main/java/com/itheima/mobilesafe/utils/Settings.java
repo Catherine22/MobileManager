@@ -12,4 +12,6 @@ public class Settings {
     public static String safePhone;
 
     public static final boolean showDebugLog = true;
+    public static final String taoBaoGetAddressUrl = "https://tcc.taobao.com/cc/json/mobile_tel_segment.htm";//淘宝
+    public static final String tenpayUrl = "http://life.tenpay.com/cgi-bin/mobile/MobileQueryAttribution.cgi";//财付通
 }

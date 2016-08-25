@@ -364,7 +364,7 @@ public class SplashActivity extends Activity {
         try {
             File file = new File(getFilesDir(), Constants.DB_NAME);
             if (file.exists() && file.length() > 0) {//文件已存在,且长度正常,就不需要再拷贝了
-                CLog.d(TAG, Constants.DB_NAME + " 文件已存在");
+//                CLog.d(TAG, Constants.DB_NAME + " 文件已存在");
             } else {
                 InputStream is = getAssets().open(Constants.DB_NAME);
                 FileOutputStream fos = new FileOutputStream(file);

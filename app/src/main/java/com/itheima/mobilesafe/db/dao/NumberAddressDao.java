@@ -28,11 +28,17 @@ public class NumberAddressDao {
         String address = "";
         SQLiteDatabase sqLiteDatabase = SQLiteDatabase.openDatabase(Constants.DB_PATH, null, SQLiteDatabase.OPEN_READONLY);
         Cursor cursor = sqLiteDatabase.rawQuery("select location from data2 where id = (select outkey from data1 where id = ?)", new String[]{number.substring(0, 7)});
-        while (cursor.moveToNext()) {
-            String location = cursor.getString(0);
-            address = location;
+        try {
+            while (cursor.moveToNext()) {
+                String location = cursor.getString(0);
+                address = location;
+            }
+        } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
+            if (sqLiteDatabase.isOpen())
+                sqLiteDatabase.close();
         }
-        cursor.close();
         return address;
     }
 }
