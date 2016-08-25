@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.utils.StreamTools;
 
@@ -34,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -60,11 +62,9 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
-        TextView tv_splash_version = (TextView) findViewById(R.id.tv_splash_version);
-        tv_splash_version.setText("版本号" + getVersionName());
-        tv_update_info = (TextView) findViewById(R.id.tv_update_info);
-
+        initComponents();
         initSettings();
+
         boolean update = sp.getBoolean("update", false);
         if (update) {
             // 检查升级
@@ -82,7 +82,12 @@ public class SplashActivity extends Activity {
             }, 2000);
 
         }
+    }
 
+    private void initComponents() {
+        TextView tv_splash_version = (TextView) findViewById(R.id.tv_splash_version);
+        tv_splash_version.setText("版本号" + getVersionName());
+        tv_update_info = (TextView) findViewById(R.id.tv_update_info);
         AlphaAnimation aa = new AlphaAnimation(0.2f, 1.0f);
         aa.setDuration(500);
         findViewById(R.id.rl_root_splash).startAnimation(aa);
@@ -332,6 +337,7 @@ public class SplashActivity extends Activity {
 
     /**
      * 取得设备信息
+     * 初始化数据库
      */
     private void initSettings() {
         //取得屏幕信息
@@ -347,7 +353,32 @@ public class SplashActivity extends Activity {
 
         //取得安全碼信息
         SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
-        Settings.safePhone = sp.getString("safe_phone","");
+        Settings.safePhone = sp.getString("safe_phone", "");
+
+        //取得包名, 设置常量
+        Constants.DB_NAME = "address.db";
+        Constants.PACKAGE_NAME = getPackageName();
+        Constants.DB_PATH = "/data/data/" + Constants.PACKAGE_NAME + "/files/" + Constants.DB_NAME;
+
+        //拷贝数据库到/data/data/包名/files目录下
+        try {
+            File file = new File(getFilesDir(), Constants.DB_NAME);
+            if (file.exists() && file.length() > 0) {//文件已存在,且长度正常,就不需要再拷贝了
+                CLog.d(TAG, Constants.DB_NAME + " 文件已存在");
+            } else {
+                InputStream is = getAssets().open(Constants.DB_NAME);
+                FileOutputStream fos = new FileOutputStream(file);
+                byte[] buffer = new byte[1024];
+                int len = 0;
+                while ((len = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+                is.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

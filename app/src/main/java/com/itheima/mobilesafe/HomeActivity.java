@@ -25,14 +25,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
+import com.itheima.mobilesafe.fragments.AToolsFragment;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
 import com.itheima.mobilesafe.fragments.ContactsFragment;
+import com.itheima.mobilesafe.fragments.NumberAddressQueryFragment;
 import com.itheima.mobilesafe.fragments.SettingsFragment;
-import com.itheima.mobilesafe.fragments.Setup1Fragment;
-import com.itheima.mobilesafe.fragments.Setup2Fragment;
-import com.itheima.mobilesafe.fragments.Setup3Fragment;
-import com.itheima.mobilesafe.fragments.Setup4Fragment;
-import com.itheima.mobilesafe.fragments.SetupFragment;
+import com.itheima.mobilesafe.fragments.setup.Setup1Fragment;
+import com.itheima.mobilesafe.fragments.setup.Setup2Fragment;
+import com.itheima.mobilesafe.fragments.setup.Setup3Fragment;
+import com.itheima.mobilesafe.fragments.setup.Setup4Fragment;
+import com.itheima.mobilesafe.fragments.setup.SetupFragment;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.utils.CLog;
@@ -98,6 +100,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         String tag = null;
         String title = "";
         switch (ID) {
+            case Constants.A_TOOLS_FRAG:
+                title = "高级工具";
+                fragment = new AToolsFragment();
+                tag = "ATOOLS";
+                break;
             case Constants.SETTINGS_FRAG:
                 title = "设置中心";
                 fragment = new SettingsFragment();
@@ -137,6 +144,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 title = "选择联络人";
                 fragment = new ContactsFragment();
                 tag = "CONSTANTS";
+                break;
+            case Constants.NUM_ADDRESS_QUERY_FRAG:
+                title = "号码归属地查询";
+                fragment = new NumberAddressQueryFragment();
+                tag = "NUM_ADDRESS_QUERY";
                 break;
         }
 
@@ -189,6 +201,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 switch (position) {
                     case 0://进入手机防盗
                         showAntiTheftDialog();
+                        break;
+                    case 7://高级工具
+                        callFragment(Constants.A_TOOLS_FRAG);
                         break;
                     case 8://进入设置中心
                         callFragment(Constants.SETTINGS_FRAG);

@@ -1,4 +1,4 @@
-package com.itheima.mobilesafe.fragments;
+package com.itheima.mobilesafe.fragments.setup;
 
 import android.Manifest;
 import android.content.Context;
