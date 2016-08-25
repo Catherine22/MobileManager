@@ -59,6 +59,10 @@ MD5加密
   - [GPSService]（只有在[SMSReceiver]中收到来自安全码的SMS信息才会触发）
   - [火星坐标偏移算法]
 
+DevicePolicyManager, 设备管理器
+  - [MyAdminManager]（锁屏、解锁屏幕、修改屏幕密码、恢复出厂设置、卸载应用）
+  - 需注册Receiver [MyDeviceAdminReceiver]，并添加资源文件 [device_admin_sample]，详见[device-admin API 文档]
+
 Android6.0或以上权限设置
   - 需要在用到权限的地方，自定义是否检查权限
   - 参考[Android 6.0 运行时权限处理]，改成以注册listener的方式支援批次处理，在Activity接收用户事件，需要权限的fragment或activity则注册listener监听结果，主要代码如下：
@@ -163,4 +167,8 @@ private void doSomethingWithPermissions(){
    [GPSService]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/GPSService.java>
    [火星坐标偏移算法]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/services/gcj02>
    [Android 6.0 运行时权限处理]: <https://www.aswifter.com/2015/11/04/android-6-permission/>
-   [Setup2Fragment]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/Setup2Fragment.java/>
+   [Setup2Fragment]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/Setup2Fragment.java>
+   [MyAdminManager]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/utils/MyAdminManager.java>
+   [MyDeviceAdminReceiver]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/utils/MyDeviceAdminReceiver.java>
+   [device_admin_sample]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/res/xml/device_admin_sample.xml>
+   [device-admin API 文档]: <https://developer.android.com/guide/topics/admin/device-admin.html>

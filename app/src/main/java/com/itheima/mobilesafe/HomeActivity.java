@@ -194,10 +194,8 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                         callFragment(Constants.SETTINGS_FRAG);
                         break;
                     case 1:
-                        myAdminManager.lookScreen();
                         break;
                     case 2:
-                        myAdminManager.unInstall();
                         break;
                     default:
                         break;

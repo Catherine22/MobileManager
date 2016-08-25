@@ -74,6 +74,10 @@ public class SMSReceiver extends BroadcastReceiver {
 
             CLog.d(TAG, address + "\n" + content);
             if (address.equals(safePhone)) {
+
+                MyAdminManager myAdminManager = new MyAdminManager(context);
+
+
                 if (content.contains("#*location*#")) {
                     CLog.d(TAG, "#*location*#");
                     //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
@@ -116,11 +120,15 @@ public class SMSReceiver extends BroadcastReceiver {
                     CLog.d(TAG, "#*wipedata*#");
                     //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
                     abortBroadcast();
+
+                    myAdminManager.wipeData();
                 }
                 if (content.contains("#*lockscreen*#")) {
                     CLog.d(TAG, "#*lockscreen*#");
                     //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
                     abortBroadcast();
+
+                    myAdminManager.lockScreen();
                 }
             }
 

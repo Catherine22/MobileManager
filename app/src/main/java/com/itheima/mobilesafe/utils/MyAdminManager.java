@@ -39,7 +39,7 @@ public class MyAdminManager {
     /**
      * 锁屏
      */
-    public void lookScreen() {
+    public void lockScreen() {
         if (dpm.isAdminActive(myAdmin))
             dpm.lockNow();
         else
@@ -49,9 +49,9 @@ public class MyAdminManager {
     /**
      * 重设锁屏密码
      */
-    public void resetScreenPassword() {
+    public void resetScreenPassword(String password) {
         if (dpm.isAdminActive(myAdmin))
-            dpm.resetPassword("123", 0);
+            dpm.resetPassword(password, 0);
         else
             Toast.makeText(ctx, "哥们还没开启管理员权限", Toast.LENGTH_SHORT).show();
     }
