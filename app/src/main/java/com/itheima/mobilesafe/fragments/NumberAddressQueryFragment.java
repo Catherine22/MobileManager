@@ -52,22 +52,57 @@ public class NumberAddressQueryFragment extends Fragment {
         bt_numberAddressQuery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!TextUtils.isEmpty(ed_phone.getText().toString())) {
-                    String number = ed_phone.getText().toString();
-                    NumberAddressDao nad = new NumberAddressDao();
-                    String address = nad.queryNumber(number);
-                    if (!TextUtils.isEmpty(address))
-                        tv_result.setText(address);
-                    else {
-//                        HttpTools.sendDataByGet(Settings.taoBaoGetAddressUrl,new String[]{"tel"},new String[]{number},myHandler);
-                        HttpTools.sendDataByGet(Settings.tenpayUrl, new String[]{"chgmobile"}, new String[]{number}, myHandler);
-
-                    }
-                } else
-                    Toast.makeText(getActivity(), "您还没输入电话号码!", Toast.LENGTH_SHORT).show();
+                queryAddress();
             }
         });
         return view;
+    }
+
+    /**
+     * 输入手机号码查询归属地
+     * 限中国地区号码
+     * <p/>
+     * 规则如下:
+     * 1. 11码
+     * 2. 13, 14, 15, 16开头
+     *
+     *
+     *
+     */
+    private void queryAddress() {
+        if (!TextUtils.isEmpty(ed_phone.getText().toString())) {
+            String number = ed_phone.getText().toString();
+            //使用正则表达式过滤错误号码
+            //https://msdn.microsoft.com/zh-cn/library/ae5bf541(v=vs.100).aspx
+            /**
+             * ^ 开头
+             * 1 第一位限定1
+             * [3456] 第二位是3、4、5、6任一都行
+             * [0-9] 效果等同于 \d，适用于之后的九位数字，所以是 \d\d\d\d\d\d\d\d\d 等同于 \d{9}
+             * $ 结尾
+             *
+             * 正则式为 ^1[3456]\d{9}$
+             */
+            //符合规则
+            if(number.matches("^1[3456]\\d{9}$")){
+                //手机号码
+                NumberAddressDao nad = new NumberAddressDao();
+                String address = nad.queryNumber(number);
+                if (!TextUtils.isEmpty(address))
+                    tv_result.setText(address);
+                else {
+//                        HttpTools.sendDataByGet(Settings.taoBaoGetAddressUrl,new String[]{"tel"},new String[]{number},myHandler);
+                    HttpTools.sendDataByGet(Settings.tenpayUrl, new String[]{"chgmobile"}, new String[]{number}, myHandler);
+                }
+            } else
+                Toast.makeText(getActivity(), "您还没输入电话号码!", Toast.LENGTH_SHORT).show();
+            }else{
+                //其他号码
+            Toast.makeText(getActivity(), "请输入11码手机号码", Toast.LENGTH_SHORT).show();
+        }
+
+
+
     }
 
     private Handler myHandler = new Handler() {
@@ -83,10 +118,10 @@ public class NumberAddressQueryFragment extends Fragment {
                     InputStream stream = new ByteArrayInputStream(message.getBytes("GBK"));
                     XMLPullParserHandler xmlParser = new XMLPullParserHandler();
                     MobileQuery mobileQuery = xmlParser.parse(stream);
-                    if(mobileQuery.getRetmsg().equals("OK")) {
+                    if (mobileQuery.getRetmsg().equals("OK")) {
                         CLog.v(TAG, mobileQuery.getCity());
-                        tv_result.setText(mobileQuery.getCity());
-                    }else
+                        tv_result.setText(mobileQuery.getCity() + mobileQuery.getSupplier());
+                    } else
                         tv_result.setText("查无此号");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
