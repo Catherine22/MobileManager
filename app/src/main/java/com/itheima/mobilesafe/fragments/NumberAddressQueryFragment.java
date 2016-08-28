@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,6 +22,7 @@ import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.HttpTools;
 import com.itheima.mobilesafe.utils.Settings;
+import com.itheima.mobilesafe.utils.ViewKits;
 import com.itheima.mobilesafe.utils.XMLPullParserHandler;
 import com.itheima.mobilesafe.utils.objects.MobileQuery;
 
@@ -37,6 +40,7 @@ public class NumberAddressQueryFragment extends Fragment {
     private static final String TAG = "NumberAddressQueryFragment";
     private EditText ed_phone;
     private TextView tv_result;
+    private ViewKits viewKits;
 
     public static NumberAddressQueryFragment newInstance() {
         return new NumberAddressQueryFragment();
@@ -46,7 +50,10 @@ public class NumberAddressQueryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_number_address_query, container, false);
+        viewKits = new ViewKits(getActivity());
+        viewKits.showKeyboard();
         ed_phone = (EditText) view.findViewById(R.id.ed_phone);
+        ed_phone.requestFocus();
         tv_result = (TextView) view.findViewById(R.id.tv_result);
         Button bt_numberAddressQuery = (Button) view.findViewById(R.id.bt_numberAddressQuery);
         bt_numberAddressQuery.setOnClickListener(new View.OnClickListener() {
@@ -63,8 +70,15 @@ public class NumberAddressQueryFragment extends Fragment {
                         HttpTools.sendDataByGet(Settings.tenpayUrl, new String[]{"chgmobile"}, new String[]{number}, myHandler);
 
                     }
-                } else
-                    Toast.makeText(getActivity(), "您还没输入电话号码!", Toast.LENGTH_SHORT).show();
+                } else {
+                    viewKits.hideKeyboard();
+                    ed_phone.clearAnimation();
+                    //抖动效果
+                    Animation shake = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
+                    ed_phone.setAnimation(shake);
+//                    Toast.makeText(getActivity(), "您还没输入电话号码!", Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
         return view;
@@ -83,10 +97,10 @@ public class NumberAddressQueryFragment extends Fragment {
                     InputStream stream = new ByteArrayInputStream(message.getBytes("GBK"));
                     XMLPullParserHandler xmlParser = new XMLPullParserHandler();
                     MobileQuery mobileQuery = xmlParser.parse(stream);
-                    if(mobileQuery.getRetmsg().equals("OK")) {
+                    if (mobileQuery.getRetmsg().equals("OK")) {
                         CLog.v(TAG, mobileQuery.getCity());
                         tv_result.setText(mobileQuery.getCity());
-                    }else
+                    } else
                         tv_result.setText("查无此号");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
