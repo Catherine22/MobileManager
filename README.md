@@ -63,6 +63,56 @@
   - [MyAdminManager]（锁屏、解锁屏幕、修改屏幕密码、恢复出厂设置、卸载应用）
   - 需注册Receiver [MyDeviceAdminReceiver]，并添加资源文件 [device_admin_sample]，详见[device-admin API 文档]
 
+#### XmlPullParser
+```XML
+<root>
+<ENV_CgiName>/cgi-bin/mobile/MobileQueryAttribution.cgi</ENV_CgiName>
+<ENV_ClientAgent>
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36
+</ENV_ClientAgent>
+<ENV_ClientIp>203.75.244.133</ENV_ClientIp>
+<ENV_QueryString>chgmobile=13412345678</ENV_QueryString>
+<ENV_RequestMethod>GET</ENV_RequestMethod>
+<ENV_referer/>
+<chgmobile>13412345678</chgmobile>
+<city>东莞</city>
+<province>广东</province>
+<retcode>0</retcode>
+<retmsg>OK</retmsg>
+<supplier>移动</supplier>
+<tid/>
+</root>
+```
+   - [XMLPullParserHandler]
+
+#### 正则式
+  - 对照[正则式语句列表]
+```JAVA
+/**
+ * 输入手机号码查询归属地
+ * 限中国地区号码
+ * 
+ * 规则如下:
+ * 1. 11码
+ * 2. 13, 14, 15, 16开头
+ *
+ */
+private String phone="1351234567";
+if(phone.matches("^1[3456]\\d{9}$")){
+ //符合规则
+ 
+ /**
+ * ^ 开头
+ * 1 第一位限定1
+ * [3456] 第二位是3、4、5、6任一都行
+ * [0-9] 效果等同于 \d，适用于之后的九位数字，所以是 \d\d\d\d\d\d\d\d\d 等同于 \d{9}
+ * $ 结尾
+ * 
+ * 正则式为 ^1[3456]\d{9}$
+ */
+ }
+
+```
 
 ## Android6.0或以上权限设置
   - 需要在用到权限的地方，自定义是否检查权限
@@ -173,3 +223,5 @@ private void doSomethingWithPermissions(){
    [MyDeviceAdminReceiver]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/utils/MyDeviceAdminReceiver.java>
    [device_admin_sample]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/res/xml/device_admin_sample.xml>
    [device-admin API 文档]: <https://developer.android.com/guide/topics/admin/device-admin.html>
+   [正则式语句列表]: <https://msdn.microsoft.com/zh-cn/library/ae5bf541(v=vs.100).aspx>
+   [XMLPullParserHandler]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/XMLPullParserHandler.java>
