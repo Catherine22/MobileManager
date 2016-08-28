@@ -46,12 +46,17 @@ public class HttpTools {
                     // 默认就是GET，所以可省略
                     conn.setRequestMethod("GET");
                     conn.setReadTimeout(5000);
-                    // 目前还没发送数据给服务器
-                    // 只要我们获取任何一个服务器返回的信息，数据就会被提交给服务器，得到服务器返回的流信息
-                    InputStream is = conn.getInputStream();
+                    int responseCode = conn.getResponseCode();
+                    if (responseCode == 200) {
+                        // 目前还没发送数据给服务器
+                        // 只要我们获取任何一个服务器返回的信息，数据就会被提交给服务器，得到服务器返回的流信息
+                        InputStream is = conn.getInputStream();
 //                    byte[] result = StreamTools.getBytes(is);
-                    String result = StreamTools.getString(is);
-                    sendMessage(Constants.SENT_SUCCESSFULLY, result, handler);
+                        String result = StreamTools.getString(is);
+                        sendMessage(Constants.SENT_SUCCESSFULLY, result, handler);
+                    } else {
+                        sendMessage(Constants.FAILED_TO_SEND, responseCode + "", handler);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     sendMessage(Constants.FAILED_TO_SEND, e.toString(), handler);
@@ -59,7 +64,6 @@ public class HttpTools {
 
             }
         }).start();
-
     }
 
     /**
