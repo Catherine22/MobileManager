@@ -26,7 +26,7 @@ import android.widget.Toast;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Settings;
-import com.itheima.mobilesafe.utils.StreamTools;
+import com.itheima.mobilesafe.utils.StreamUtils;
 
 import net.tsz.afinal.FinalHttp;
 import net.tsz.afinal.http.AjaxCallBack;
@@ -155,7 +155,7 @@ public class SplashActivity extends Activity {
                         // 联网成功
                         InputStream is = conn.getInputStream();
                         // 把流转成String
-                        String result = StreamTools.readFromStream(is);
+                        String result = StreamUtils.toString(is);
                         CLog.i(TAG, "联网成功了" + result);
                         // json解析
                         JSONObject obj = new JSONObject(result);

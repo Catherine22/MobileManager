@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class StreamTools {
+public class StreamUtils {
     /**
      * @param is 输入流
      * @return String 返回的字符串
      * @throws IOException
      */
-    public static String readFromStream(InputStream is) throws IOException {
+    public static String toString(InputStream is) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len = 0;
@@ -28,7 +28,7 @@ public class StreamTools {
     /**
      * 把一个inputstream里面的内容转化成一个byte[]
      */
-    public static byte[] getBytes(InputStream is) throws Exception {
+    public static byte[] toBytes(InputStream is) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len = 0;
@@ -48,7 +48,7 @@ public class StreamTools {
      * @return 返回的字符串
      * @throws Exception
      */
-    public static String getString(InputStream is) throws Exception {
+    public static String toGBKString(InputStream is) throws Exception {
         BufferedReader in = new BufferedReader(new InputStreamReader(is, "GBK"));
         StringBuffer buffer = new StringBuffer();
         String line = "";

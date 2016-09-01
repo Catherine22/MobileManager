@@ -23,6 +23,15 @@
         itheima:desc_on="管理员权限已经开启"
         itheima:title_="开启管理员权限" />
 
+
+    <com.itheima.mobilesafe.ui.SettingItemView
+        android:id="@+id/siv_show_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        itheima:desc_off="显示号码归属地已经关闭"
+        itheima:desc_on="显示号码归属地已经开启"
+        itheima:title_="设置显示号码归属地" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp">

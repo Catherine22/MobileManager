@@ -1,6 +1,7 @@
 package com.itheima.mobilesafe.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.services.AddressService;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.MyAdminManager;
@@ -26,7 +28,7 @@ import tw.com.softworld.messagescenter.Result;
  */
 public class SettingsFragment extends Fragment {
     private final static String TAG = "SettingsFragment";
-    private SettingItemView siv_update, siv_admin;
+    private SettingItemView siv_update, siv_admin, siv_show_address;
     private TextView tv_uninstall;
     private SharedPreferences sp;
     private MyAdminManager myAdminManager;
@@ -58,6 +60,7 @@ public class SettingsFragment extends Fragment {
     private void initView(View view) {
         siv_update = (SettingItemView) view.findViewById(R.id.siv_update);
         siv_admin = (SettingItemView) view.findViewById(R.id.siv_admin);
+        siv_show_address = (SettingItemView) view.findViewById(R.id.siv_show_address);
         tv_uninstall = (TextView) view.findViewById(R.id.tv_uninstall);
         tv_uninstall.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,8 +70,10 @@ public class SettingsFragment extends Fragment {
         });
 
         if (myAdminManager.isAdmin()) {
+            //装置管理员已经开启
             siv_admin.setChecked(true);
         } else {
+            //装置管理员已经关闭
             siv_admin.setChecked(false);
         }
         siv_admin.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +86,36 @@ public class SettingsFragment extends Fragment {
                     myAdminManager.getAdminPermission();
                     siv_admin.setChecked(true);
                 }
+            }
+        });
+
+        boolean showAddress = sp.getBoolean("show_address", false);
+        Intent intent = new Intent(getActivity(), AddressService.class);
+        if (showAddress) {
+            //查询手机号码归属地已经开启
+            siv_show_address.setChecked(true);
+            getActivity().startService(intent);
+        } else {
+            //查询手机号码归属地已经关闭
+            siv_show_address.setChecked(false);
+            getActivity().stopService(intent);
+        }
+        siv_show_address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), AddressService.class);
+                SharedPreferences.Editor editor = sp.edit();
+
+                if (siv_show_address.isChecked()) {
+                    editor.putBoolean("show_address", false);
+                    siv_show_address.setChecked(false);
+                    getActivity().stopService(intent);
+                } else {
+                    editor.putBoolean("show_address", true);
+                    siv_show_address.setChecked(true);
+                    getActivity().startService(intent);
+                }
+                editor.apply();
             }
         });
 
