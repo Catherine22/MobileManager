@@ -19,6 +19,12 @@ public class TelephoneUtils {
     private HttpUtils.Callback callback;
     private static String address = "查无此号";
 
+    /**
+     * 取得号码归属地,先用内建的数据库查询,若数据库版本过旧查不到则通过第三方的API查询
+     *
+     * @param number
+     * @return
+     */
     @Nullable
     public static String getAddressFromNum(String number) {
 

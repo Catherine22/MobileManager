@@ -1,8 +1,6 @@
 package com.itheima.mobilesafe.fragments;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -17,18 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.db.dao.NumberAddressDao;
-import com.itheima.mobilesafe.utils.CLog;
-import com.itheima.mobilesafe.utils.Constants;
-import com.itheima.mobilesafe.utils.HttpUtils;
-import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.utils.TelephoneUtils;
-import com.itheima.mobilesafe.utils.XMLPullParserHandler;
-import com.itheima.mobilesafe.utils.objects.MobileQuery;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
 /**
  * Created by Catherine on 2016/8/25.

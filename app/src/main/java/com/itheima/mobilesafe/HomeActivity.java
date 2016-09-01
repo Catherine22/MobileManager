@@ -431,4 +431,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 break;
         }
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        sv.pushString("MAIN_ACTIVITY_STATE","onResume");
+    }
 }

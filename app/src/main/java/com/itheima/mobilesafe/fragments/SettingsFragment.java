@@ -16,6 +16,7 @@ import com.itheima.mobilesafe.services.AddressService;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.MyAdminManager;
+import com.itheima.mobilesafe.utils.ServiceUtils;
 
 import tw.com.softworld.messagescenter.Client;
 import tw.com.softworld.messagescenter.CustomReceiver;
@@ -41,17 +42,7 @@ public class SettingsFragment extends Fragment {
         CLog.d(TAG, "onCreateView");
         sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
         myAdminManager = new MyAdminManager(getActivity());
-        CustomReceiver cr = new CustomReceiver() {
-            @Override
-            public void onBroadcastReceive(Result result) {
-                if (result.isBoolean())
-                    siv_admin.setChecked(true);
-                else
-                    siv_admin.setChecked(false);
-            }
-        };
-        client = new Client(getActivity(), cr);
-        client.gotMessages("ADMIN_PERMISSION");
+
 
         initView(view);
         return view;
@@ -68,6 +59,18 @@ public class SettingsFragment extends Fragment {
                 myAdminManager.unInstall();
             }
         });
+
+        CustomReceiver cr = new CustomReceiver() {
+            @Override
+            public void onBroadcastReceive(Result result) {
+                if (result.isBoolean())
+                    siv_admin.setChecked(true);
+                else
+                    siv_admin.setChecked(false);
+            }
+        };
+        client = new Client(getActivity(), cr);
+        client.gotMessages("ADMIN_PERMISSION");
 
         if (myAdminManager.isAdmin()) {
             //装置管理员已经开启
@@ -89,33 +92,46 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        boolean showAddress = sp.getBoolean("show_address", false);
-        Intent intent = new Intent(getActivity(), AddressService.class);
-        if (showAddress) {
-            //查询手机号码归属地已经开启
-            siv_show_address.setChecked(true);
-            getActivity().startService(intent);
-        } else {
-            //查询手机号码归属地已经关闭
-            siv_show_address.setChecked(false);
-            getActivity().stopService(intent);
-        }
+        CustomReceiver cr2 = new CustomReceiver() {
+            @Override
+            public void onBroadcastReceive(Result result) {
+                if (result.getString().equals("onResume")) {
+                    boolean showAddress = ServiceUtils.isRunningService(getActivity(), "com.itheima.mobilesafe.services.AddressService");
+                    if (showAddress) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                //查询手机号码归属地已经开启
+                                siv_show_address.setChecked(true);
+                            }
+                        });
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                //查询手机号码归属地已经关闭
+                                siv_show_address.setChecked(false);
+                            }
+                        });
+                    }
+
+                }
+            }
+        };
+        client = new Client(getActivity(), cr2);
+        client.gotMessages("MAIN_ACTIVITY_STATE");
+        //用户可手动关闭服务,所以需做一个工具来监听服务是否正在运作
+
         siv_show_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AddressService.class);
-                SharedPreferences.Editor editor = sp.edit();
 
                 if (siv_show_address.isChecked()) {
-                    editor.putBoolean("show_address", false);
                     siv_show_address.setChecked(false);
                     getActivity().stopService(intent);
                 } else {
-                    editor.putBoolean("show_address", true);
                     siv_show_address.setChecked(true);
                     getActivity().startService(intent);
                 }
-                editor.apply();
             }
         });
 
