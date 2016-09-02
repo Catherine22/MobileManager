@@ -92,32 +92,19 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        CustomReceiver cr2 = new CustomReceiver() {
-            @Override
-            public void onBroadcastReceive(Result result) {
-                if (result.getString().equals("onResume")) {
-                    boolean showAddress = ServiceUtils.isRunningService(getActivity(), "com.itheima.mobilesafe.services.AddressService");
-                    if (showAddress) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            public void run() {
-                                //查询手机号码归属地已经开启
-                                siv_show_address.setChecked(true);
-                            }
-                        });
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            public void run() {
-                                //查询手机号码归属地已经关闭
-                                siv_show_address.setChecked(false);
-                            }
-                        });
-                    }
+        boolean showAddress = ServiceUtils.isRunningService(getActivity(), "com.itheima.mobilesafe.services.AddressService");
+        if (showAddress) {
+            //查询手机号码归属地已经开启
+            siv_show_address.setChecked(true);
+        } else {
+//            getActivity().runOnUiThread(new Runnable() {
+//                public void run() {
+//                }
+//            });
+            //查询手机号码归属地已经关闭
+            siv_show_address.setChecked(false);
 
-                }
-            }
-        };
-        client = new Client(getActivity(), cr2);
-        client.gotMessages("MAIN_ACTIVITY_STATE");
+        }
         //用户可手动关闭服务,所以需做一个工具来监听服务是否正在运作
 
         siv_show_address.setOnClickListener(new View.OnClickListener() {
