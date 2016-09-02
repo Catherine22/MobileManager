@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'productiongg'
             keyPassword 'ggcompany123!'
-            storeFile file('/Users/Nexton/Dropbox/Keystores/Other/productiongg.jks')
+            storeFile file('D:/workspace_android/Keystores/Other/productiongg.jks')
             storePassword 'ggcompany123!'
         }
     }
@@ -29,12 +29,12 @@ android {
     productFlavors {
         MobileManager {
             applicationId "com.itheima.mobilesafe"
-            versionName "0.1"
+            versionName "0.3"
             versionCode 1
         }
         MobileManagerTest {
             applicationId "com.itheima.mobilesafe.test"
-            versionName "0.1"
+            versionName "0.3"
             versionCode 1
         }
     }

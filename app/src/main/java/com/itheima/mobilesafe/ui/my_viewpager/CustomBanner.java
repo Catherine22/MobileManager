@@ -13,7 +13,7 @@ import android.widget.RelativeLayout;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.my_viewpager.transformers.BasePageTransformer;
-import com.itheima.mobilesafe.utils.ViewUtils;
+import com.itheima.mobilesafe.utils.ViewKits;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class CustomBanner extends RelativeLayout {
     private final static String TAG = "CustomBanner";
     private MyViewPager vp_container, vp_background;
     private Context ctx;
-    private ViewUtils viewUtils;
+    private ViewKits viewUtils;
     private LinearLayout ll_dots;
     private List<ImageView> dots = new ArrayList<>();
     private boolean showDots;
@@ -38,7 +38,7 @@ public class CustomBanner extends RelativeLayout {
     public CustomBanner(Context context, AttributeSet attrs) {
         super(context, attrs);
         ctx = context;
-        viewUtils = new ViewUtils(ctx);
+        viewUtils = new ViewKits(ctx);
         initAttr(attrs);
         initView();
     }
