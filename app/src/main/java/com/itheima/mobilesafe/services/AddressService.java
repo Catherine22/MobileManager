@@ -5,6 +5,7 @@ import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
@@ -18,6 +19,8 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.TelephoneUtils;
 
 /**
@@ -31,7 +34,7 @@ public class AddressService extends Service {
     private TelephonyManager tm;//监听来电
     private MyPhoneStateListener psListener;
     private WindowManager wm;//窗体管理者,也是一个服务
-
+    private View mytoast;//自定义吐司
 
     @Nullable
     @Override
@@ -48,6 +51,12 @@ public class AddressService extends Service {
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         tm.listen(psListener, PhoneStateListener.LISTEN_CALL_STATE);
+
+
+        //取得包名, 设置常量
+        Constants.DB_NAME = "address.db";
+        Constants.PACKAGE_NAME = getPackageName();
+        Constants.DB_PATH = "/data/data/" + Constants.PACKAGE_NAME + "/files/" + Constants.DB_NAME;
     }
 
     @Override
@@ -68,13 +77,16 @@ public class AddressService extends Service {
             switch (state) {
                 case TelephonyManager.CALL_STATE_RINGING://铃声响起时,也就是来电时
                     address = TelephoneUtils.getAddressFromNum(incomingNumber);
-                    Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
-                    myToast(address);
+//                    Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
+                    showMyToast(address);
+                    break;
+                case TelephonyManager.CALL_STATE_IDLE://电话的空闲状态 e.q. 挂电话, 来电拒接
+                    dismissMyToast();
                     break;
                 case TelephonyManager.CALL_STATE_OFFHOOK://去电时
                     address = TelephoneUtils.getAddressFromNum(incomingNumber);
-                    Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
-                    myToast(address);
+//                    Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
+                    showMyToast(address);
                     break;
             }
         }
@@ -88,11 +100,10 @@ public class AddressService extends Service {
          * 在themes中找到 <item name="toastFrameBackground">@drawable/toast_frame</item>,
          * 再回到sdk目录下找到toast_frame图片
          */
-        public void myToast(String text) {
-            TextView tv = new TextView(getApplicationContext());
+        public void showMyToast(String text) {
+            mytoast = View.inflate(AddressService.this, R.layout.toast_show_address, null);
+            TextView tv = (TextView) mytoast.findViewById(R.id.tv_address);
             tv.setText(text);
-            tv.setTextSize(22);
-            tv.setTextColor(Color.BLUE);
 
             //窗体的参数
             // XXX This should be changed to use a Dialog, with a Theme.Toast
@@ -101,11 +112,21 @@ public class AddressService extends Service {
             params.height = WindowManager.LayoutParams.WRAP_CONTENT;
             params.width = WindowManager.LayoutParams.WRAP_CONTENT;
             params.format = PixelFormat.TRANSLUCENT;//半透明
-            params.windowAnimations = com.android.internal.R.style.Animation_Toast;//吐司的动画
+            params.windowAnimations = Resources.getSystem().getIdentifier("Animation_Toast", "style", "android");//com.android.internal.R.style.Animation_Toast;//吐司的动画
             params.type = WindowManager.LayoutParams.TYPE_TOAST;
             params.flags = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON//不让锁屏
                     | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE//不让吐司获得焦点
                     | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+
+            wm.addView(mytoast, params);
+        }
+
+        /**
+         * 移除自定义toast
+         */
+        public void dismissMyToast() {
+            if (mytoast != null)
+                wm.removeView(mytoast);
         }
 
     }
