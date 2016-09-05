@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-<<<<<<< HEAD
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/itheima/mobilesafe/HomeActivity.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/itheima/mobilesafe/SplashActivity.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/itheima/mobilesafe/ui/FocusedTextView.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/itheima/mobilesafe/ui/SettingItemView.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/itheima/mobilesafe/utils/StreamUtils.java" charset="UTF-8" />
-    <file url="file:///Volumes/NO NAME/day4/coder/MobileSafe/src/com/itheima/mobilesafe/service/AddressService.java" charset="UTF-8" />
-=======
->>>>>>> 9b01e5eaaa4cc8d3b8ecaf29118bb3c28ced29f9
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>
