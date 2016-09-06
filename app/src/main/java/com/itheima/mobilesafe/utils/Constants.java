@@ -1,5 +1,7 @@
 package com.itheima.mobilesafe.utils;
 
+import com.itheima.mobilesafe.R;
+
 /**
  * Created by Catherine on 2016/8/12.
  * Soft-World Inc.
@@ -29,4 +31,8 @@ public class Constants {
     public static String PACKAGE_NAME;
     public static String DB_NAME;
     public static String DB_PATH;
+
+    public static String[] addressBgs = new String[]{"半透明", "活力橙", "卫士蓝", "金属灰", "苹果绿"};
+    public static int[] addressBgRes = new int[]{R.drawable.call_locate_white, R.drawable.call_locate_orange, R.drawable.call_locate_blue, R.drawable.call_locate_gray, R.drawable.call_locate_green};
+
 }

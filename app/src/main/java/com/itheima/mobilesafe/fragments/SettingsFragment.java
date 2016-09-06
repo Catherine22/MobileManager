@@ -1,6 +1,8 @@
 package com.itheima.mobilesafe.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,7 +16,9 @@ import android.widget.TextView;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.services.AddressService;
 import com.itheima.mobilesafe.ui.SettingItemView;
+import com.itheima.mobilesafe.ui.SettingNextView;
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.MyAdminManager;
 import com.itheima.mobilesafe.utils.ServiceUtils;
 
@@ -30,6 +34,7 @@ import tw.com.softworld.messagescenter.Result;
 public class SettingsFragment extends Fragment {
     private final static String TAG = "SettingsFragment";
     private SettingItemView siv_update, siv_admin, siv_show_address;
+    private SettingNextView snv_set_background;
     private TextView tv_uninstall;
     private SharedPreferences sp;
     private MyAdminManager myAdminManager;
@@ -52,6 +57,7 @@ public class SettingsFragment extends Fragment {
         siv_update = (SettingItemView) view.findViewById(R.id.siv_update);
         siv_admin = (SettingItemView) view.findViewById(R.id.siv_admin);
         siv_show_address = (SettingItemView) view.findViewById(R.id.siv_show_address);
+        snv_set_background = (SettingNextView) view.findViewById(R.id.snv_set_background);
         tv_uninstall = (TextView) view.findViewById(R.id.tv_uninstall);
         tv_uninstall.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,6 +152,29 @@ public class SettingsFragment extends Fragment {
                     editor.putBoolean("update", true);
                 }
                 editor.apply();
+            }
+        });
+
+        //设置归属地限时框背景
+        snv_set_background.setTitle("归属地提示框风格");
+        snv_set_background.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //弹出对话框
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+                dialog.setTitle("归属地提示框风格");
+                dialog.setSingleChoiceItems(Constants.addressBgs, sp.getInt("address_bg", 0), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        snv_set_background.setDesc(Constants.addressBgs[which]);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putInt("address_bg", which);
+                        editor.apply();
+                        dialog.dismiss();
+                    }
+                });
+                dialog.setNegativeButton("cancel", null);
+                dialog.show();
             }
         });
     }

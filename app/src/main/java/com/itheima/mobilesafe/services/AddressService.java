@@ -1,23 +1,19 @@
 package com.itheima.mobilesafe.services;
 
-import android.app.Activity;
-import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.utils.Constants;
@@ -101,7 +97,11 @@ public class AddressService extends Service {
          * 再回到sdk目录下找到toast_frame图片
          */
         public void showMyToast(String text) {
+            SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+            int index = sp.getInt("address_bg", 0);
+
             mytoast = View.inflate(AddressService.this, R.layout.toast_show_address, null);
+            mytoast.setBackgroundResource(Constants.addressBgRes[index]);
             TextView tv = (TextView) mytoast.findViewById(R.id.tv_address);
             tv.setText(text);
 
