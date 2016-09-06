@@ -25,6 +25,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!--获取拨号权限-->
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+    <!--toast获得TYPE_PRIORITY_PHONE优先级-->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
