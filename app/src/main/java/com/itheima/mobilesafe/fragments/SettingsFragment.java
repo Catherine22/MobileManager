@@ -1,5 +1,6 @@
 package com.itheima.mobilesafe.fragments;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.interfaces.MainInterface;
+import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.services.AddressService;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.ui.SettingNextView;
@@ -21,6 +24,7 @@ import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.MyAdminManager;
 import com.itheima.mobilesafe.utils.ServiceUtils;
+import com.itheima.mobilesafe.utils.Settings;
 
 import tw.com.softworld.messagescenter.Client;
 import tw.com.softworld.messagescenter.CustomReceiver;
@@ -37,7 +41,9 @@ public class SettingsFragment extends Fragment {
     private SettingNextView snv_set_background;
     private TextView tv_uninstall;
     private SharedPreferences sp;
+    private MainInterface mainInterface;
     private MyAdminManager myAdminManager;
+    private Intent addService;
     private Client client;
 
     @Nullable
@@ -46,6 +52,8 @@ public class SettingsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         CLog.d(TAG, "onCreateView");
         sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+        addService = new Intent(getActivity(), AddressService.class);
+        mainInterface = (MainInterface) getActivity();
         myAdminManager = new MyAdminManager(getActivity());
 
 
@@ -116,15 +124,28 @@ public class SettingsFragment extends Fragment {
         siv_show_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddressService.class);
+                mainInterface.getPermissions(new String[]{
+                                Manifest.permission.SYSTEM_ALERT_WINDOW},
+                        new MyPermissionsResultListener() {
+                            @Override
+                            public void onGranted() {
+                                CLog.d(TAG,"onGranted()");
+                                if (siv_show_address.isChecked()) {
+                                    siv_show_address.setChecked(false);
+                                    getActivity().stopService(addService);
+                                } else {
+                                    siv_show_address.setChecked(true);
+                                    getActivity().startService(addService);
+                                }
+                            }
 
-                if (siv_show_address.isChecked()) {
-                    siv_show_address.setChecked(false);
-                    getActivity().stopService(intent);
-                } else {
-                    siv_show_address.setChecked(true);
-                    getActivity().startService(intent);
-                }
+                            @Override
+                            public void onDenied() {
+                                CLog.d(TAG,"onDenied()");
+                                siv_show_address.setChecked(false);
+                                getActivity().stopService(addService);
+                            }
+                        });
             }
         });
 

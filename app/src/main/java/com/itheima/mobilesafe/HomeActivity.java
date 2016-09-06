@@ -1,13 +1,18 @@
 package com.itheima.mobilesafe;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -232,8 +237,15 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         });
     }
 
+
+    private boolean grantedSpec = true;//同意特殊权限(SYSTEM_ALERT_WINDOW 和 WRITE_SETTINGS)
+    private boolean grantedAll = true;//同意一般权限
+
     /**
      * 要求用户打开权限,仅限android 6.0 以上
+     * <p/>
+     * SYSTEM_ALERT_WINDOW 和 WRITE_SETTINGS, 这两个权限比较特殊，
+     * 不能通过代码申请方式获取，必须得用户打开软件设置页手动打开，才能授权。
      *
      * @param permissions 手机权限 e.g. Manifest.permission.ACCESS_FINE_LOCATION
      * @param listener    此变量implements事件的接口,负责传递信息
@@ -242,11 +254,26 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     public void getPermissions(String[] permissions, MyPermissionsResultListener listener) {
         this.listener = listener;
         List<String> deniedPermissionsList = new LinkedList<>();
+
         for (String p : permissions) {
-            if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED)
+            if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED && !p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW) && !p.equals(Manifest.permission.WRITE_SETTINGS))
                 deniedPermissionsList.add(p);
+            else if (p.equals(Manifest.permission.WRITE_SETTINGS) || p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(HomeActivity.this)) {
+                    grantedSpec = false;
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
+                    startActivityForResult(intent, Constants.OVERLAY_PERMISSION_REQ_CODE);
+                } else {
+                    grantedSpec = true;
+                    // You've got SYSTEM_ALERT_WINDOW permission.
+                }
+
+            }
         }
+
+
         if (deniedPermissionsList.size() != 0) {
+            grantedAll = false;
             String[] deniedPermissions = new String[deniedPermissionsList.size()];
             for (int i = 0; i < deniedPermissionsList.size(); i++) {
                 deniedPermissions[i] = deniedPermissionsList.get(i);
@@ -254,7 +281,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
         } else {
             // All of the permissions granted
-            listener.onGranted();
+            grantedAll = true;
+            if (grantedSpec)
+                listener.onGranted();
         }
         return;
     }
@@ -273,10 +302,13 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
                     count++;
             }
-            if (count == grantResults.length)//全部同意
-                listener.onGranted();// Permission Granted
+            if (count == grantResults.length)
+                grantedAll = true;
             else
-                listener.onDenied();// Permission Denied
+                grantedAll = false;
+
+            if (grantedAll && grantedSpec)//全部同意
+                listener.onGranted();// Permission Granted
         }
     }
 
@@ -289,6 +321,21 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     sv.pushBoolean("ADMIN_PERMISSION", true);
                 } else {
                     sv.pushBoolean("ADMIN_PERMISSION", false);
+                }
+                break;
+            case Constants.OVERLAY_PERMISSION_REQ_CODE:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!Settings.canDrawOverlays(this)) {
+                        // Special permission not granted...
+                        grantedSpec = false;
+                        if (grantedAll)
+                            listener.onDenied();
+                    } else {
+                        grantedSpec = true;
+                        if (grantedAll)
+                            listener.onGranted();
+                        // You've got SYSTEM_ALERT_WINDOW permission.
+                    }
                 }
                 break;
         }

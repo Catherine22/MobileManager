@@ -6,6 +6,8 @@
   - [SettingItemView]
   - [attrs]     
 
+#### 自定义Toast
+
 #### 自定义对话框
 ```JAVA
     /**
@@ -115,14 +117,20 @@ if(phone.matches("^1[3456]\\d{9}$")){
 ```
 
 ## Android6.0或以上权限设置
-  - 需要在用到权限的地方，自定义是否检查权限
-  - 参考[Android 6.0 运行时权限处理]，改成以注册listener的方式支援批次处理，在Activity接收用户事件，需要权限的fragment或activity则注册listener监听结果，主要代码如下：
+  - 需要在用到权限的地方，自定义是否检查权限，处理SYSTEM_ALERT_WINDOW和WRITE_SETTINGS例外
+  - 参考[Android 6.0 运行时权限处理]、[权限无法获取问题]，改成以注册listener的方式支援批次处理，在Activity接收用户事件，需要权限的fragment或activity则注册listener监听结果，主要代码如下：
 
 [HomeActivity]
 ```JAVA
 private MyPermissionsResultListener listener;
+private boolean grantedSpec = true;//同意特殊权限(SYSTEM_ALERT_WINDOW 和 WRITE_SETTINGS)
+private boolean grantedAll = true;//同意一般权限
+
 /**
  * 要求用户打开权限,仅限android 6.0 以上
+ * <p/>
+ * SYSTEM_ALERT_WINDOW 和 WRITE_SETTINGS, 这两个权限比较特殊，
+ * 不能通过代码申请方式获取，必须得用户打开软件设置页手动打开，才能授权。
  *
  * @param permissions 手机权限 e.g. Manifest.permission.ACCESS_FINE_LOCATION
  * @param listener    此变量implements事件的接口,负责传递信息
@@ -131,11 +139,24 @@ private MyPermissionsResultListener listener;
 public void getPermissions(String[] permissions, MyPermissionsResultListener listener) {
     this.listener = listener;
     List<String> deniedPermissionsList = new LinkedList<>();
+
     for (String p : permissions) {
-        if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED)
+        if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED && !p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW) && !p.equals(Manifest.permission.WRITE_SETTINGS))
             deniedPermissionsList.add(p);
+        else if (p.equals(Manifest.permission.WRITE_SETTINGS) || p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(HomeActivity.this)) {
+                grantedSpec = false;
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
+                startActivityForResult(intent, Constants.OVERLAY_PERMISSION_REQ_CODE);
+            } else {
+                grantedSpec = true;
+                // You've got SYSTEM_ALERT_WINDOW permission.
+            }
+        }
     }
+
     if (deniedPermissionsList.size() != 0) {
+        grantedAll = false;
         String[] deniedPermissions = new String[deniedPermissionsList.size()];
         for (int i = 0; i < deniedPermissionsList.size(); i++) {
             deniedPermissions[i] = deniedPermissionsList.get(i);
@@ -143,7 +164,9 @@ public void getPermissions(String[] permissions, MyPermissionsResultListener lis
         ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
     } else {
         // All of the permissions granted
-        listener.onGranted();
+        grantedAll = true;
+        if (grantedSpec)
+            listener.onGranted();
     }
     return;
 }
@@ -161,11 +184,36 @@ private void doNext(int requestCode, int[] grantResults) {
             if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
                 count++;
         }
-        if (count == grantResults.length)//全部同意
-            listener.onGranted();// Permission Granted
+        if (count == grantResults.length)
+            grantedAll = true;
         else
-            listener.onDenied();// Permission Denied
+            grantedAll = false;
+            if (grantedAll && grantedSpec)//全部同意
+            listener.onGranted();// Permission Granted
     }
+}
+
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    switch (requestCode) {
+        case Constants.OVERLAY_PERMISSION_REQ_CODE:
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this)) {
+                    // Special permission not granted...
+                    grantedSpec = false;
+                    if (grantedAll)
+                        listener.onDenied();
+                } else {
+                    grantedSpec = true;
+                    if (grantedAll)
+                        listener.onGranted();
+                    // You've got SYSTEM_ALERT_WINDOW permission.
+                }
+            }
+            break;
+    }
+    CLog.d(TAG, "onActivityResult " + requestCode + " " + resultCode);
 }
 ```
 [Setup2Fragment]
@@ -225,3 +273,4 @@ private void doSomethingWithPermissions(){
    [device-admin API 文档]: <https://developer.android.com/guide/topics/admin/device-admin.html>
    [正则式语句列表]: <https://msdn.microsoft.com/zh-cn/library/ae5bf541(v=vs.100).aspx>
    [XMLPullParserHandler]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/XMLPullParserHandler.java>
+   [权限无法获取问题]: <http://www.jianshu.com/p/2746a627c6d2>
