@@ -6,7 +6,7 @@
   - [SettingItemView]
   - [attrs]     
 
-#### 自定义Toast
+#### [自定义Toast]
 
 #### 自定义对话框
 ```JAVA
@@ -274,3 +274,4 @@ private void doSomethingWithPermissions(){
    [正则式语句列表]: <https://msdn.microsoft.com/zh-cn/library/ae5bf541(v=vs.100).aspx>
    [XMLPullParserHandler]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/XMLPullParserHandler.java>
    [权限无法获取问题]: <http://www.jianshu.com/p/2746a627c6d2>
+   [自定义Toast]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/MyToast.java>
