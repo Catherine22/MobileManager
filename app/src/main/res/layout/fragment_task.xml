@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundPrimary"
+    android:clickable="true"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/tv_progress_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="运行中进程："
+        android:textColor="#000000"
+        android:textSize="20sp" />
+
+
+    <com.itheima.mobilesafe.ui.AutoResizeTextView
+        android:id="@+id/tv_memory_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:text="剩余/总内存："
+        android:textColor="#000000"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/ll_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="正在加载中......"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_user_tasks_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ff33b5e5"
+        android:text="用户进程（）"
+        android:textColor="#ffffff"
+        android:textSize="20sp" />
+
+    <ListView
+        android:id="@+id/ll_user_tasks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </ListView>
+
+
+    <TextView
+        android:id="@+id/tv_sys_tasks_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ff33b5e5"
+        android:text="系统进程（）"
+        android:textColor="#ffffff"
+        android:textSize="20sp" />
+
+    <ListView
+        android:id="@+id/ll_sys_tasks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </ListView>
+</LinearLayout>
