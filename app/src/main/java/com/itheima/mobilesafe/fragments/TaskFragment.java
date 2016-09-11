@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -91,6 +93,13 @@ public class TaskFragment extends Fragment {
                         tv_sys_tasks_count.setText("系统进程（" + sysAdapter.getCount()+ "）");
                         ll_user_tasks.setAdapter(userAdapter);
                         ll_sys_tasks.setAdapter(sysAdapter);
+
+
+                        Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.tran_in);
+                        tv_user_tasks_count.startAnimation(animation);
+                        tv_sys_tasks_count.startAnimation(animation);
+                        ll_user_tasks.startAnimation(animation);
+                        ll_sys_tasks.startAnimation(animation);
                     }
                 });
             }

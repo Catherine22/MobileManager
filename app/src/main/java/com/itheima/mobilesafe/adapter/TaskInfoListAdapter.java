@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
@@ -58,6 +60,8 @@ public class TaskInfoListAdapter extends BaseAdapter {
         tv_name.setText(taskInfos.get(position).name);
         tv_memory_info.setText(SystemInfoUtils.formatFileSize(taskInfos.get(position).memSize));
 
+//        Animation animation = AnimationUtils.loadAnimation(ctx, R.anim.tran_in);
+//        view.startAnimation(animation);
         return view;
 
     }
