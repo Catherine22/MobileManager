@@ -121,7 +121,6 @@ if(phone.matches("^1[3456]\\d{9}$")){
   - 参考[Android 6.0 运行时权限处理]、[权限无法获取问题]，改成以注册listener的方式支援批次处理，在Activity接收用户事件，需要权限的fragment或activity则注册listener监听结果，主要代码如下：
 
 
-[MyPermissionsResultListener]
 [HomeActivity]
 ```JAVA
 private MyPermissionsResultListener listener;
@@ -250,7 +249,20 @@ private void doSomethingWithPermissions(){
     );
 }
 ```
+[MyPermissionsResultListener]
+```JAVA
+public interface MyPermissionsResultListener {
+    /**
+     * 用户开启权限
+     */
+    void onGranted();
 
+    /**
+     * 用户拒绝打开权限
+     */
+    void onDenied();
+}
+```
 
 
 
