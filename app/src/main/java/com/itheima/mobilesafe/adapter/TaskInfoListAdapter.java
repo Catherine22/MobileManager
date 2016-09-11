@@ -6,13 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.AutoResizeTextView;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.SystemInfoUtils;
-import com.itheima.mobilesafe.utils.objects.Contact;
 import com.itheima.mobilesafe.utils.objects.TaskInfo;
 
 import java.util.List;

@@ -2,8 +2,6 @@ package com.itheima.mobilesafe.utils.objects;
 
 import android.graphics.drawable.Drawable;
 
-import java.text.DecimalFormat;
-
 /**
  * Created by Yi-Jing on 2016/9/11.
  * 进程信息的业务bean

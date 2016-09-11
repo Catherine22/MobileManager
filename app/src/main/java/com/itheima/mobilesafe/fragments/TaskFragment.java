@@ -12,14 +12,10 @@ import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.TaskInfoListAdapter;
-import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.ui.AutoResizeTextView;
-import com.itheima.mobilesafe.utils.CLog;
-import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.SystemInfoUtils;
 import com.itheima.mobilesafe.utils.objects.TaskInfo;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,7 +33,6 @@ public class TaskFragment extends Fragment {
     private ListView ll_user_tasks, ll_sys_tasks;
     private List<TaskInfo> returns;
     private TaskInfoListAdapter userAdapter, sysAdapter;
-    private MainInterface mainInterface;
 
     public static TaskFragment newInstance() {
         return new TaskFragment();
@@ -47,7 +42,6 @@ public class TaskFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_task, container, false);
-        mainInterface = (MainInterface) getActivity();
 
         tv_progress_count = (TextView) view.findViewById(R.id.tv_progress_count);
         tv_user_tasks_count = (TextView) view.findViewById(R.id.tv_user_tasks_count);
