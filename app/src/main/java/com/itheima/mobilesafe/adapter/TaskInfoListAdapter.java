@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.AutoResizeTextView;
@@ -48,7 +50,7 @@ public class TaskInfoListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        CLog.d("TaskInfoListAdapter","getView");
+        CLog.d("TaskInfoListAdapter", "getView");
         LayoutInflater inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.list_item_task_info, null);
@@ -59,6 +61,17 @@ public class TaskInfoListAdapter extends BaseAdapter {
         iv_icon.setImageDrawable(taskInfos.get(position).icon);
         tv_name.setText(taskInfos.get(position).name);
         tv_memory_info.setText(SystemInfoUtils.formatFileSize(taskInfos.get(position).memSize));
+
+//        Switch s_kill = (Switch) view.findViewById(R.id.s_kill);
+//        s_kill.setChecked(true);
+//        s_kill.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if(!isChecked){
+//
+//                }
+//            }
+//        });
 
 //        Animation animation = AnimationUtils.loadAnimation(ctx, R.anim.tran_in);
 //        view.startAnimation(animation);

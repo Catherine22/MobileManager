@@ -6,7 +6,9 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Debug;
+import android.support.v4.content.ContextCompat;
 
+import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.utils.objects.TaskInfo;
 
 import java.io.BufferedReader;
@@ -134,10 +136,9 @@ public class SystemInfoUtils {
         List<ActivityManager.RunningAppProcessInfo> infos = am.getRunningAppProcesses();
 
         for (ActivityManager.RunningAppProcessInfo processInfo : infos) {
+            TaskInfo tInfo = new TaskInfo();
             try {
-                TaskInfo tInfo = new TaskInfo();
                 tInfo.packageName = processInfo.processName;
-
                 ApplicationInfo applicationInfo = pm.getApplicationInfo(processInfo.processName, 0);
 
                 tInfo.name = applicationInfo.loadLabel(pm).toString();
@@ -156,6 +157,13 @@ public class SystemInfoUtils {
                 returns.add(tInfo);
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
+
+                //之所以没有包名是因为程序不是完全用JAVA写的，本身没有apk
+                tInfo.icon = ContextCompat.getDrawable(ctx, R.drawable.ic_default);
+                tInfo.name = processInfo.processName;
+                //系统进程
+                tInfo.userTask = false;
+                returns.add(tInfo);
             }
         }
         return returns;
