@@ -35,11 +35,4 @@
             android:textSize="15sp" />
     </LinearLayout>
 
-
-    <!--<CheckBox-->
-        <!--android:id="@+id/s_kill"-->
-        <!--android:layout_gravity="center_vertical|right"-->
-        <!--android:layout_width="80dp"-->
-        <!--android:layout_height="wrap_content" />-->
-
 </LinearLayout>

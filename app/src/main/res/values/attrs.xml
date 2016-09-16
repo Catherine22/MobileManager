@@ -13,4 +13,10 @@
         <attr name="dots_src_on" format="integer" />
         <attr name="dots_src_off" format="integer" />
     </declare-styleable>
+
+
+    <declare-styleable name="SwipeListView">
+        <attr name="background_color" format="integer" />
+        <attr name="swipe_type" format="string" />
+    </declare-styleable>
 </resources>

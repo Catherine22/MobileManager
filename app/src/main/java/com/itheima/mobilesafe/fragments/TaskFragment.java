@@ -9,12 +9,12 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.TaskInfoListAdapter;
 import com.itheima.mobilesafe.ui.AutoResizeTextView;
+import com.itheima.mobilesafe.ui.SwipeListView;
 import com.itheima.mobilesafe.utils.SystemInfoUtils;
 import com.itheima.mobilesafe.utils.objects.TaskInfo;
 
@@ -32,7 +32,7 @@ public class TaskFragment extends Fragment {
     private AutoResizeTextView tv_memory_info;
     private TextView tv_progress_count, tv_user_tasks_count, tv_sys_tasks_count;
     private LinearLayout ll_loading;
-    private ListView ll_user_tasks, ll_sys_tasks;
+    private SwipeListView ll_user_tasks, ll_sys_tasks;
     private List<TaskInfo> returns;
     private TaskInfoListAdapter userAdapter, sysAdapter;
 
@@ -50,8 +50,20 @@ public class TaskFragment extends Fragment {
         tv_sys_tasks_count = (TextView) view.findViewById(R.id.tv_sys_tasks_count);
         tv_memory_info = (AutoResizeTextView) view.findViewById(R.id.tv_memory_info);
         ll_loading = (LinearLayout) view.findViewById(R.id.ll_loading);
-        ll_user_tasks = (ListView) view.findViewById(R.id.ll_user_tasks);
-        ll_sys_tasks = (ListView) view.findViewById(R.id.ll_sys_tasks);
+        ll_user_tasks = (SwipeListView) view.findViewById(R.id.ll_user_tasks);
+        ll_user_tasks.setRemoveListener(new SwipeListView.RemoveListener() {
+            @Override
+            public void removeItem(SwipeListView.RemoveDirection direction, int position) {
+
+            }
+        });
+        ll_sys_tasks = (SwipeListView) view.findViewById(R.id.ll_sys_tasks);
+        ll_sys_tasks.setRemoveListener(new SwipeListView.RemoveListener() {
+            @Override
+            public void removeItem(SwipeListView.RemoveDirection direction, int position) {
+
+            }
+        });
 
         int progressCount = SystemInfoUtils.getRunningProcessCount(getActivity());
         tv_progress_count.setText("运行中进程：" + progressCount + "个");
@@ -90,7 +102,7 @@ public class TaskFragment extends Fragment {
                     public void run() {
                         ll_loading.setVisibility(View.GONE);
                         tv_user_tasks_count.setText("用户进程（" + userAdapter.getCount() + "）");
-                        tv_sys_tasks_count.setText("系统进程（" + sysAdapter.getCount()+ "）");
+                        tv_sys_tasks_count.setText("系统进程（" + sysAdapter.getCount() + "）");
                         ll_user_tasks.setAdapter(userAdapter);
                         ll_sys_tasks.setAdapter(sysAdapter);
 

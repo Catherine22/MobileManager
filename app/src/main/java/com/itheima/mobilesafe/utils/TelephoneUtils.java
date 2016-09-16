@@ -16,7 +16,7 @@ import java.io.UnsupportedEncodingException;
  * catherine919@soft-world.com.tw
  */
 public class TelephoneUtils {
-    private HttpUtils.Callback callback;
+    private NetUtils.Callback callback;
     private static String address = "查无此号";
 
     /**
@@ -68,7 +68,7 @@ public class TelephoneUtils {
                     address = nad.queryNumber(number);
                     if (TextUtils.isEmpty(address)) {
 //                        HttpTools.sendDataByGet(Settings.taoBaoGetAddressUrl,new String[]{"tel"},new String[]{number},myHandler);
-                        HttpUtils.get(Settings.tenpayUrl, new String[]{"chgmobile"}, new String[]{number}, new HttpUtils.Callback() {
+                        NetUtils.get(Settings.tenpayUrl, new String[]{"chgmobile"}, new String[]{number}, new NetUtils.Callback() {
                             @Override
                             public void onResponse(String response) {
                                 if (!TextUtils.isEmpty(response)) {

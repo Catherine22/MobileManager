@@ -62,16 +62,7 @@ public class TaskInfoListAdapter extends BaseAdapter {
         tv_name.setText(taskInfos.get(position).name);
         tv_memory_info.setText(SystemInfoUtils.formatFileSize(taskInfos.get(position).memSize));
 
-//        Switch s_kill = (Switch) view.findViewById(R.id.s_kill);
-//        s_kill.setChecked(true);
-//        s_kill.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if(!isChecked){
-//
-//                }
-//            }
-//        });
+
 
 //        Animation animation = AnimationUtils.loadAnimation(ctx, R.anim.tran_in);
 //        view.startAnimation(animation);
