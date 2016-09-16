@@ -78,7 +78,7 @@ public class SwipeListView extends ListView {
     /**
      * 限制滑动方向
      */
-    private int swipeType;
+    private int swipeMode;
     /**
      * 不可滑动
      */
@@ -120,21 +120,21 @@ public class SwipeListView extends ListView {
         mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
         if (attrs != null) {
             backgroundColor = attrs.getAttributeIntValue("http://schemas.android.com/apk/com.itheima.mobilesafe", "background_color", Color.GRAY);
-            String type = attrs.getAttributeValue("http://schemas.android.com/apk/com.itheima.mobilesafe", "swipe_type");
-            if(TextUtils.isEmpty(type))
-                swipeType = LEFT_RIGHT;
+            String type = attrs.getAttributeValue("http://schemas.android.com/apk/com.itheima.mobilesafe", "swipe_mode");
+            if (TextUtils.isEmpty(type))
+                swipeMode = LEFT_RIGHT;
             else if (type.equals("left") || type.equals("LEFT"))
-                swipeType = LEFT;
+                swipeMode = LEFT;
             else if (type.equals("right") || type.equals("RIGHT"))
-                swipeType = RIGHT;
+                swipeMode = RIGHT;
             else if (type.equals("none") || type.equals("NONE"))
-                swipeType = NONE;
+                swipeMode = NONE;
             else
-                swipeType = LEFT_RIGHT;
+                swipeMode = LEFT_RIGHT;
         } else {
             //预设
             backgroundColor = Color.GRAY;
-            swipeType = LEFT_RIGHT;
+            swipeMode = LEFT_RIGHT;
         }
     }
 
@@ -146,8 +146,8 @@ public class SwipeListView extends ListView {
     /**
      * 设定滑动方向
      */
-    public void setSwipeType(int swipeType) {
-        this.swipeType = swipeType;
+    public void setswipeMode(int swipeMode) {
+        this.swipeMode = swipeMode;
     }
 
 
@@ -234,11 +234,14 @@ public class SwipeListView extends ListView {
     private void scrollByDistanceX() {
         // 如果向左滚动的距离大于屏幕的二分之一，就让其删除
         if (itemView.getScrollX() >= screenWidth / 2) {
+            if (swipeMode == LEFT || swipeMode == LEFT_RIGHT)
                 scrollLeft();
         } else if (itemView.getScrollX() <= -screenWidth / 2) {
+            if (swipeMode == RIGHT || swipeMode == LEFT_RIGHT)
                 scrollRight();
         } else {
             // 滚回到原始位置,为了偷下懒这里是直接调用scrollTo滚动
+            if (swipeMode != NONE) ;
             itemView.scrollTo(0, 0);
         }
 
@@ -268,18 +271,21 @@ public class SwipeListView extends ListView {
                     downX = x;
 
                     // 手指拖动itemView滚动, deltaX大于0向左滚动，小于0向右滚
-                    itemView.scrollBy(deltaX, 0);
-
+                    if (deltaX < 0 && swipeMode == RIGHT || swipeMode == LEFT_RIGHT)
+                        itemView.scrollBy(deltaX, 0);
+                    else if (deltaX > 0 && swipeMode == LEFT || swipeMode == LEFT_RIGHT)
+                        itemView.scrollBy(deltaX, 0);
                     return true;  //拖动的时候ListView不滚动
                 case MotionEvent.ACTION_UP:
                     int velocityX = getScrollVelocity();
                     if (velocityX > SNAP_VELOCITY) {
-                        if (swipeType == RIGHT || swipeType == LEFT_RIGHT)
+                        if (swipeMode == RIGHT || swipeMode == LEFT_RIGHT)
                             scrollRight();
                     } else if (velocityX < -SNAP_VELOCITY) {
-                        if (swipeType == LEFT || swipeType == LEFT_RIGHT)
+                        if (swipeMode == LEFT || swipeMode == LEFT_RIGHT)
                             scrollLeft();
                     } else {
+                        if (swipeMode != NONE) ;
                         scrollByDistanceX();
                     }
 
