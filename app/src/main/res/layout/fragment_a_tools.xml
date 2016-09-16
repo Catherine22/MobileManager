@@ -2,21 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="true"
     android:background="@color/backgroundPrimary"
+    android:clickable="true"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_number_query"
+    <com.andexert.library.RippleView
+        rv_centered="true"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dip"
-        android:layout_marginTop="10dip"
-        android:clickable="true"
-        android:drawableLeft="@android:drawable/ic_menu_camera"
-        android:gravity="center_vertical"
-        android:text="号码归属地查询"
-        android:textColor="#000000"
-        android:textSize="20sp" />
+        android:layout_marginTop="10dip">
 
+        <TextView
+            android:id="@+id/tv_number_query"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawableLeft="@android:drawable/ic_menu_camera"
+            android:gravity="center_vertical"
+            android:text="号码归属地查询"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+    </com.andexert.library.RippleView>
 </LinearLayout>

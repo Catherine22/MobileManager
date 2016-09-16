@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:ellipsize="marquee"
-            android:singleLine="true"
+            android:maxLines="1"
             android:text="最新的手机卫士，快来下载啊，下载送好吃的，最新的手机卫士，快来下载啊，下载送好吃的"
             android:textSize="18sp" />
 

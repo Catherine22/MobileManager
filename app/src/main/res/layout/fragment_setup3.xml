@@ -32,33 +32,43 @@
 
         <EditText
             android:id="@+id/et_phone_number"
-            android:inputType="number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
             android:gravity="center"
+            android:inputType="number"
             android:textSize="20sp" />
 
-        <Button
-            android:id="@+id/bt_choose_contacts"
+        <com.andexert.library.RippleView
+            rv_centered="true"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/button_selector"
-            android:gravity="center"
-            android:text="选择联络人" />
+            android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/bt_choose_contacts"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_box"
+                android:gravity="center"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:text="选择联络人" />
+        </com.andexert.library.RippleView>
 
         <!--<FrameLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent">-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
 
-            <!--<ImageView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_gravity="center"-->
-                <!--android:src="@drawable/phone" />-->
+        <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:src="@drawable/phone" />-->
 
         <!--</FrameLayout>-->
     </LinearLayout>

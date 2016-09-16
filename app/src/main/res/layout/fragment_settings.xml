@@ -37,7 +37,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <RelativeLayout
+    <com.andexert.library.RippleView
+        rv_centered="true"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
@@ -46,12 +47,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
-            android:background="@drawable/gradient_box_selector"
-            android:paddingLeft="10dp"
+            android:background="@drawable/gradient_box"
             android:gravity="center_vertical"
-            android:textColor="@android:color/white"
+            android:paddingLeft="10dp"
             android:text="卸载安全卫士"
+            android:textColor="@android:color/white"
             android:textSize="20sp" />
-    </RelativeLayout>
+    </com.andexert.library.RippleView>
 
 </LinearLayout>

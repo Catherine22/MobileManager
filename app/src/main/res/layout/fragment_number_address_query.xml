@@ -14,14 +14,6 @@
 
     </EditText>
 
-    <Button
-        android:id="@+id/bt_numberAddressQuery"
-        android:layout_width="140dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="10dp"
-        android:background="@drawable/button_selector"
-        android:text="查询" />
-
     <TextView
         android:id="@+id/tv_result"
         android:layout_width="wrap_content"

@@ -34,8 +34,8 @@
             android:id="@+id/ll_loading"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:background="@android:color/transparent"
+            android:gravity="center"
             android:orientation="vertical"
             android:visibility="gone">
 
@@ -55,7 +55,7 @@
             android:id="@+id/tv_user_tasks_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ff33b5e5"
+            android:background="@color/colorPrimary3"
             android:text="用户进程（）"
             android:textColor="#ffffff"
             android:textSize="20sp" />
@@ -74,7 +74,7 @@
             android:id="@+id/tv_sys_tasks_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ff33b5e5"
+            android:background="@color/colorPrimary3"
             android:text="系统进程（）"
             android:textColor="#ffffff"
             android:textSize="20sp" />
@@ -89,15 +89,21 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_release_all"
+    <com.andexert.library.RippleView
+        rv_centered="true"
         android:layout_width="match_parent"
-        android:layout_gravity="bottom"
         android:layout_height="45dp"
-        android:background="@drawable/gradient_box_selector"
-        android:textColor="@android:color/white"
-        android:gravity="center_vertical"
-        android:paddingLeft="10dp"
-        android:text="释放全部进程"
-        android:textSize="20sp" />
+        android:layout_gravity="bottom">
+
+        <TextView
+            android:id="@+id/tv_release_all"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/gradient_box"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:text="释放全部进程"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+    </com.andexert.library.RippleView>
 </FrameLayout>

@@ -44,4 +44,5 @@ dependencies {
     compile 'com.android.support:support-v4:24.1.1'
     compile 'catherine.mobile:messagescenter:+'
     compile'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.github.traex.rippleeffect:library:1.3'
 }

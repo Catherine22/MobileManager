@@ -24,8 +24,8 @@
 
         <CheckBox
             android:id="@+id/cb"
-            android:checked="true"
             style="@style/text_content_style"
+            android:checked="true"
             android:text="已开启防盗保护" />
 
         <!--<FrameLayout-->
@@ -41,8 +41,14 @@
         <!--</FrameLayout>-->
     </LinearLayout>
 
-    <Button
-        android:id="@+id/bt_next"
-        style="@style/button_next_style"
-        android:text="Done" />
+    <com.andexert.library.RippleView
+        rv_centered="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/bt_next"
+            style="@style/button_next_style"
+            android:text="Done" />
+    </com.andexert.library.RippleView>
 </FrameLayout>
