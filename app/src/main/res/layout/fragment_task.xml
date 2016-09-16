@@ -56,14 +56,23 @@
         android:textColor="#ffffff"
         android:textSize="20sp" />
 
-    <com.itheima.mobilesafe.ui.SwipeListView
-        android:id="@+id/ll_user_tasks"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:listSelector="@android:color/transparent"
-        itheima:swipe_mode="none">
+    <com.itheima.mobilesafe.ui.swipe_list_view.SwipeListView xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_sys_tasks"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:listSelector="#00000000"
+    swipe:swipeActionLeft="reveal"
+    swipe:swipeActionRight="dismiss"
+    swipe:swipeAnimationTime="1500"
+    swipe:swipeBackView="@+id/back"
+    swipe:swipeCloseAllItemsWhenMoveList="true"
+    swipe:swipeFrontView="@+id/front"
+    swipe:swipeMode="both"
+    swipe:swipeOffsetLeft="100dp"
+    swipe:swipeOffsetRight="100dp"
+    swipe:swipeOpenOnLongPress="true">
 
-    </com.itheima.mobilesafe.ui.SwipeListView>
+    </com.itheima.mobilesafe.ui.swipe_list_view.SwipeListView>
 
 
     <TextView
@@ -75,11 +84,21 @@
         android:textColor="#ffffff"
         android:textSize="20sp" />
 
-    <com.itheima.mobilesafe.ui.SwipeListView
-        android:id="@+id/ll_sys_tasks"
-        android:layout_width="match_parent"
+    <com.itheima.mobilesafe.ui.swipe_list_view.SwipeListView xmlns:swipe="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ll_user_tasks"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:listSelector="@android:color/transparent">
+        android:listSelector="#00000000"
+        swipe:swipeActionLeft="reveal"
+        swipe:swipeActionRight="dismiss"
+        swipe:swipeAnimationTime="1500"
+        swipe:swipeBackView="@+id/back"
+        swipe:swipeCloseAllItemsWhenMoveList="true"
+        swipe:swipeFrontView="@+id/front"
+        swipe:swipeMode="both"
+        swipe:swipeOffsetLeft="100dp"
+        swipe:swipeOffsetRight="100dp"
+        swipe:swipeOpenOnLongPress="true">
 
-    </com.itheima.mobilesafe.ui.SwipeListView>
+    </com.itheima.mobilesafe.ui.swipe_list_view.SwipeListView>
 </LinearLayout>

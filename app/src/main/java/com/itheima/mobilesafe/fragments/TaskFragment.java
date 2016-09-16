@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.TaskInfoListAdapter;
 import com.itheima.mobilesafe.ui.AutoResizeTextView;
-import com.itheima.mobilesafe.ui.SwipeListView;
+import com.itheima.mobilesafe.ui.swipe_list_view.SwipeListView;
 import com.itheima.mobilesafe.utils.SystemInfoUtils;
 import com.itheima.mobilesafe.utils.objects.TaskInfo;
 
@@ -51,19 +51,8 @@ public class TaskFragment extends Fragment {
         tv_memory_info = (AutoResizeTextView) view.findViewById(R.id.tv_memory_info);
         ll_loading = (LinearLayout) view.findViewById(R.id.ll_loading);
         ll_user_tasks = (SwipeListView) view.findViewById(R.id.ll_user_tasks);
-        ll_user_tasks.setRemoveListener(new SwipeListView.RemoveListener() {
-            @Override
-            public void removeItem(SwipeListView.RemoveDirection direction, int position) {
-
-            }
-        });
         ll_sys_tasks = (SwipeListView) view.findViewById(R.id.ll_sys_tasks);
-        ll_sys_tasks.setRemoveListener(new SwipeListView.RemoveListener() {
-            @Override
-            public void removeItem(SwipeListView.RemoveDirection direction, int position) {
 
-            }
-        });
 
         int progressCount = SystemInfoUtils.getRunningProcessCount(getActivity());
         tv_progress_count.setText("运行中进程：" + progressCount + "个");
