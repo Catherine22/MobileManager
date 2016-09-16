@@ -1,85 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:itheima="http://schemas.android.com/apk/com.itheima.mobilesafe"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundPrimary"
-    android:clickable="true"
-    android:orientation="vertical">
-
-
-    <TextView
-        android:id="@+id/tv_progress_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="运行中进程："
-        android:textColor="#000000"
-        android:textSize="20sp" />
-
-
-    <com.itheima.mobilesafe.ui.AutoResizeTextView
-        android:id="@+id/tv_memory_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:text="剩余/总内存："
-        android:textColor="#000000"
-        android:textSize="20sp" />
+    android:clickable="true">
 
     <LinearLayout
-        android:id="@+id/ll_loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
 
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
         <TextView
+            android:id="@+id/tv_progress_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="正在加载中......"
+            android:text="运行中进程："
             android:textColor="#000000"
             android:textSize="20sp" />
+
+
+        <com.itheima.mobilesafe.ui.AutoResizeTextView
+            android:id="@+id/tv_memory_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="剩余/总内存："
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:id="@+id/ll_loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:background="@android:color/transparent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="正在加载中......"
+                android:textColor="#000000"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_user_tasks_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ff33b5e5"
+            android:text="用户进程（）"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_user_tasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:listSelector="@android:color/transparent"
+            itheima:swipe_mode="none">
+
+        </android.support.v7.widget.RecyclerView>
+
+
+        <TextView
+            android:id="@+id/tv_sys_tasks_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ff33b5e5"
+            android:text="系统进程（）"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_sys_tasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="45dp">
+
+        </android.support.v7.widget.RecyclerView>
+
     </LinearLayout>
 
     <TextView
-        android:id="@+id/tv_user_tasks_count"
+        android:id="@+id/tv_release_all"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#ff33b5e5"
-        android:text="用户进程（）"
-        android:textColor="#ffffff"
+        android:layout_gravity="bottom"
+        android:layout_height="45dp"
+        android:background="@drawable/gradient_box_selector"
+        android:textColor="@android:color/white"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:text="释放全部进程"
         android:textSize="20sp" />
-
-    <com.itheima.mobilesafe.ui.SwipeListView
-        android:id="@+id/ll_user_tasks"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:listSelector="@android:color/transparent"
-        itheima:swipe_mode="none">
-
-    </com.itheima.mobilesafe.ui.SwipeListView>
-
-
-    <TextView
-        android:id="@+id/tv_sys_tasks_count"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#ff33b5e5"
-        android:text="系统进程（）"
-        android:textColor="#ffffff"
-        android:textSize="20sp" />
-
-    <com.itheima.mobilesafe.ui.SwipeListView
-        android:id="@+id/ll_sys_tasks"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:listSelector="@android:color/transparent">
-
-    </com.itheima.mobilesafe.ui.SwipeListView>
-</LinearLayout>
+</FrameLayout>
