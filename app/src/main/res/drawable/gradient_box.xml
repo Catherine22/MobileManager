@@ -11,26 +11,26 @@
         </shape>
     </item>
     <!-- layout foreground -->
-    <!--<item android:bottom="5px">-->
-        <!--<shape android:shape="rectangle">-->
+    <item><!--打开阴影 添加android:bottom="5dp"-->
+        <shape android:shape="rectangle">
             <!--<corners-->
                 <!--android:bottomLeftRadius="3dp"-->
                 <!--android:bottomRightRadius="3dp"-->
                 <!--android:topLeftRadius="3dp"-->
                 <!--android:topRightRadius="3dp" />-->
-            <!--&lt;!&ndash;渐变-->
-            <!--<gradient-->
-                <!--android:angle="270"-->
-                <!--android:endColor="#fe7171"-->
-                <!--android:startColor="#ff4444" />&ndash;&gt;-->
+            <!--渐变
+            <gradient
+                android:angle="270"
+                android:endColor="#fe7171"
+                android:startColor="#ff4444" />-->
 
-            <!--&lt;!&ndash;固定的颜色&ndash;&gt;-->
-            <!--<solid android:color="#fe7171" />-->
+            <!--固定的颜色-->
+            <solid android:color="#fe7171" />
 
-            <!--&lt;!&ndash;边框大小-->
-            <!--<stroke-->
-                <!--android:width="1dp"-->
-                <!--android:color="#00ffffff" />&ndash;&gt;-->
-        <!--</shape>-->
-    <!--</item>-->
+            <!--边框大小
+            <stroke
+                android:width="1dp"
+                android:color="#00ffffff" />-->
+        </shape>
+    </item>
 </layer-list>
