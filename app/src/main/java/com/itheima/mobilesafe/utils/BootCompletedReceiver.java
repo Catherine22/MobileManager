@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 /**
@@ -19,6 +20,7 @@ import android.widget.Toast;
  */
 public class BootCompletedReceiver extends BroadcastReceiver {
     private static final String TAG = "BootCompletedReceiver";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
@@ -26,20 +28,22 @@ public class BootCompletedReceiver extends BroadcastReceiver {
             String savedSIM = sp.getString("sim_serial", null);
 
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-//        String currentSIM = tm.getSimSerialNumber();
-            String currentSIM = "651235761111";
+            String currentSIM = tm.getSimSerialNumber();
+//            String currentSIM = "651235761111";
             if (!currentSIM.equals(savedSIM)) {
                 Toast.makeText(context, "SIM卡已变更", Toast.LENGTH_LONG).show();
 
                 //sim卡变更了，需要偷偷发短信
-                CLog.e(TAG,"sim卡变更了，需要偷偷发短信");
+                CLog.e(TAG, "sim卡变更了，需要偷偷发短信");
                 SmsManager smsManager = SmsManager.getDefault();
-                smsManager.sendTextMessage(sp.getString("safe_phone", ""), null, "SIM卡换啦!", null, null);
-
-                //偷偷发email
-
+                String destinationAddress = sp.getString("safe_phone", null);
+                if (!TextUtils.isEmpty(destinationAddress))
+                    smsManager.sendTextMessage(destinationAddress, null, "SIM卡换啦!", null, null);
+                else {
+                    //偷偷发email
+                }
             } else {
-                Toast.makeText(context, "SIM卡没变", Toast.LENGTH_LONG).show();
+//                Toast.makeText(context, "SIM卡没变", Toast.LENGTH_LONG).show();
             }
         }
 

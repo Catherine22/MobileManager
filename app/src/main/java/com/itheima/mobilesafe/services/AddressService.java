@@ -11,13 +11,7 @@ import android.support.annotation.Nullable;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.TextView;
-
-import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.MyToast;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
@@ -50,7 +44,19 @@ public class AddressService extends Service {
         tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         tm.listen(psListener, PhoneStateListener.LISTEN_CALL_STATE);
         mytoast = new MyToast(this);
+        mytoast.setOnDoubleClickListener(new MyToast.OnDoubleClickListener() {
+            @Override
+            public void onClick(View v) {
+                CLog.d(TAG, "Double clicked!");
+            }
+        });
+        mytoast.setOnClickListener(new MyToast.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CLog.d(TAG, "clicked!");
 
+            }
+        });
         //取得包名, 设置常量
         Constants.DB_NAME = "address.db";
         Constants.PACKAGE_NAME = getPackageName();

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
+import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,12 +20,13 @@ import com.itheima.mobilesafe.utils.Constants;
  * catherine919@soft-world.com.tw
  */
 public class MyToast {
-    private boolean duplicatable;//吐司能不能重复出现
     private WindowManager wm;//窗体管理者,也是一个服务
     private View mytoast;//自定义吐司
     private WindowManager.LayoutParams params;
     private SharedPreferences sp;
     private Context ctx;
+    private OnDoubleClickListener onDoubleClickListener;
+    private OnClickListener onClickListener;
 
     public MyToast(Context ctx) {
         this.ctx = ctx;
@@ -32,15 +34,34 @@ public class MyToast {
         wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
     }
 
-    /**
-     * 设置能不能同时出现多个吐司
-     *
-     * @param duplicatable
-     */
-    public void setDuplicatable(boolean duplicatable) {
-        this.duplicatable = duplicatable;
+    public interface OnDoubleClickListener {
+        void onClick(View v);
     }
 
+    public interface OnClickListener {
+        void onClick(View v);
+    }
+
+    /**
+     * 单击吐司事件
+     *
+     * @param onClickListener
+     */
+    public void setOnClickListener(final OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+
+    private long firstClickedTime = 0;
+
+    /**
+     * 双击吐司事件
+     *
+     * @param onDoubleClickListener
+     */
+    public void setOnDoubleClickListener(final OnDoubleClickListener onDoubleClickListener) {
+        this.onDoubleClickListener = onDoubleClickListener;
+    }
 
     /**
      * 找到吐司的背景图
@@ -52,9 +73,8 @@ public class MyToast {
      * 再回到sdk目录下找到toast_frame图片
      */
     public void showMyToast(String text) {
-        if ((!duplicatable && mytoast == null) || duplicatable) {
-            int index = sp.getInt("address_bg", 0);
-
+        int index = sp.getInt("address_bg", 0);
+        if (mytoast != null) {
             mytoast = View.inflate(ctx, R.layout.toast_show_address, null);
             mytoast.setBackgroundResource(Constants.addressBgRes[index]);
             mytoast.setOnTouchListener(new View.OnTouchListener() {
@@ -62,6 +82,23 @@ public class MyToast {
 
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
+                    if (firstClickedTime != 0) {
+                        long secondClickedTime = SystemClock.uptimeMillis();
+                        long duraction = secondClickedTime - firstClickedTime;
+
+                        if (duraction <= 500/*ms*/) {
+                            if (onDoubleClickListener != null)
+                                onDoubleClickListener.onClick(mytoast);
+                        } else {
+                            if (onClickListener != null)
+                                onClickListener.onClick(mytoast);
+                        }
+                    } else {
+                        if (onClickListener != null)
+                            onClickListener.onClick(mytoast);
+                    }
+                    firstClickedTime = SystemClock.uptimeMillis();//代表cpu开机运行的时间,重启就会归0
+
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN://手指按下屏幕
                             /**
@@ -116,7 +153,6 @@ public class MyToast {
             params.flags = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON//不让锁屏
                     | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//不让吐司获得焦点
 //                    | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;//原本toast是预设不能触摸的,所以无法取得点击事件
-
             wm.addView(mytoast, params);
         }
     }
