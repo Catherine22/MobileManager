@@ -9,6 +9,7 @@ import com.itheima.mobilesafe.R;
  */
 public class Constants {
     public final static int ANTI_THEFT_FRAG = 0;
+    public final static int TASK_FRAG = 3;
     public final static int A_TOOLS_FRAG = 7;
     public final static int SETTINGS_FRAG = 8;
     public final static int SETUP1_FRAG = 9;

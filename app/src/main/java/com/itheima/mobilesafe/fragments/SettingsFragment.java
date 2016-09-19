@@ -24,7 +24,6 @@ import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.MyAdminManager;
 import com.itheima.mobilesafe.utils.ServiceUtils;
-import com.itheima.mobilesafe.utils.Settings;
 
 import tw.com.softworld.messagescenter.Client;
 import tw.com.softworld.messagescenter.CustomReceiver;

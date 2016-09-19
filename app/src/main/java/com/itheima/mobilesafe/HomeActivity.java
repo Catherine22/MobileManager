@@ -1,11 +1,9 @@
 package com.itheima.mobilesafe;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -35,6 +33,7 @@ import com.itheima.mobilesafe.fragments.AntiTheftFragment;
 import com.itheima.mobilesafe.fragments.ContactsFragment;
 import com.itheima.mobilesafe.fragments.NumberAddressQueryFragment;
 import com.itheima.mobilesafe.fragments.SettingsFragment;
+import com.itheima.mobilesafe.fragments.TaskFragment;
 import com.itheima.mobilesafe.fragments.setup.Setup1Fragment;
 import com.itheima.mobilesafe.fragments.setup.Setup2Fragment;
 import com.itheima.mobilesafe.fragments.setup.Setup3Fragment;
@@ -105,6 +104,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         String tag = null;
         String title = "";
         switch (ID) {
+            case Constants.TASK_FRAG:
+                title = "进程管理";
+                fragment = new TaskFragment();
+                tag = "TASK";
+                break;
             case Constants.A_TOOLS_FRAG:
                 title = "高级工具";
                 fragment = new AToolsFragment();
@@ -206,6 +210,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 switch (position) {
                     case 0://进入手机防盗
                         showAntiTheftDialog();
+                        break;
+                    case 3://进程管理
+                        callFragment(Constants.TASK_FRAG);
                         break;
                     case 7://高级工具
                         callFragment(Constants.A_TOOLS_FRAG);

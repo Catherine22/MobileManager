@@ -2,8 +2,8 @@ package com.itheima.mobilesafe.ui.view_helper;
 
 import android.view.View;
 
-import static com.itheima.mobilesafe.ui.view_helper.AnimatorProxy.NEEDS_PROXY;
-import static com.itheima.mobilesafe.ui.view_helper.AnimatorProxy.wrap;
+import static com.itheima.mobilesafe.ui.view_helper.animation.AnimatorProxy.NEEDS_PROXY;
+import static com.itheima.mobilesafe.ui.view_helper.animation.AnimatorProxy.wrap;
 public final class ViewHelper {
     private ViewHelper() {}
 

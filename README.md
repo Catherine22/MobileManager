@@ -120,6 +120,7 @@ if(phone.matches("^1[3456]\\d{9}$")){
   - 需要在用到权限的地方，自定义是否检查权限，处理SYSTEM_ALERT_WINDOW和WRITE_SETTINGS例外
   - 参考[Android 6.0 运行时权限处理]、[权限无法获取问题]，改成以注册listener的方式支援批次处理，在Activity接收用户事件，需要权限的fragment或activity则注册listener监听结果，主要代码如下：
 
+
 [HomeActivity]
 ```JAVA
 private MyPermissionsResultListener listener;
@@ -248,7 +249,20 @@ private void doSomethingWithPermissions(){
     );
 }
 ```
+[MyPermissionsResultListener]
+```JAVA
+public interface MyPermissionsResultListener {
+    /**
+     * 用户开启权限
+     */
+    void onGranted();
 
+    /**
+     * 用户拒绝打开权限
+     */
+    void onDenied();
+}
+```
 
 
 
@@ -275,3 +289,4 @@ private void doSomethingWithPermissions(){
    [XMLPullParserHandler]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/XMLPullParserHandler.java>
    [权限无法获取问题]: <http://www.jianshu.com/p/2746a627c6d2>
    [自定义Toast]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/MyToast.java>
+   [MyPermissionsResultListener]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/interfaces/MyPermissionsResultListener.java>
