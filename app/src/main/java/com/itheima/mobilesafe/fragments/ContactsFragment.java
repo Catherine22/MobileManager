@@ -3,7 +3,9 @@ package com.itheima.mobilesafe.fragments;
 import android.app.Dialog;
 import android.content.ContentUris;
 import android.content.res.AssetFileDescriptor;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -23,6 +25,7 @@ import android.widget.ListView;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.ContactsListAdapter;
 import com.itheima.mobilesafe.interfaces.MainInterface;
+import com.itheima.mobilesafe.ui.AdjustView;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.utils.objects.Contact;
@@ -181,8 +184,16 @@ public class ContactsFragment extends Fragment {
                         null);
                 if (dataCursor != null) {
                     //取得照片
-                    item.photo = BitmapFactory.decodeStream(openPhoto(Long.parseLong(item.id)));
+                    Resources res = getResources();
+                    Bitmap defaultPhoto = BitmapFactory.decodeResource(res, R.drawable.profile);
 
+                    if (openPhoto(Long.parseLong(item.id)) != null) {
+                        item.photo = BitmapFactory.decodeStream(openPhoto(Long.parseLong(item.id)));
+                        item.circlarPhoto = AdjustView.drawCircularImage(item.photo, false);
+                    } else {
+                        item.photo = defaultPhoto;
+                        item.circlarPhoto = AdjustView.drawCircularImage(item.photo, false);
+                    }
                     while (dataCursor.moveToNext()) {
                         String mimetype = dataCursor.getString(dataCursor
                                 .getColumnIndex("mimetype"));

@@ -58,12 +58,7 @@ public class ContactsListAdapter extends BaseAdapter {
         for (String s : contactMap.get(position).phone)
             phone += s + "\n";
         tv_phone.setText(phone);
-
-        if (contactMap.get(position).photo != null) {
-            iv_photo.setImageBitmap(contactMap.get(position).photo);
-        } else {
-            iv_photo.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.profile));
-        }
+        iv_photo.setImageBitmap(contactMap.get(position).circlarPhoto);
         return view;
 
     }

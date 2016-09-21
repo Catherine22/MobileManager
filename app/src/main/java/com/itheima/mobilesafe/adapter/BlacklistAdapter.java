@@ -67,11 +67,7 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
 
         holder.tv_name.setText(mDatas.get(position).name);
         holder.tv_phone.setText(sb.toString());
-        if (mDatas.get(position).photo != null) {
-            holder.iv_photo.setImageBitmap(mDatas.get(position).photo);
-        } else {
-            holder.iv_photo.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.profile));
-        }
+        holder.iv_photo.setImageBitmap(mDatas.get(position).photo);
 
         // 如果设置了回调，则设置点击事件
         if (mOnItemClickLitener != null) {

@@ -23,4 +23,5 @@ public class Contact {
     public String company;
     public String address;
     public Bitmap photo;
+    public Bitmap circlarPhoto;
 }
