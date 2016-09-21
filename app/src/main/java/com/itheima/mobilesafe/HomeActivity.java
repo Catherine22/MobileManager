@@ -47,10 +47,15 @@ import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Encryption;
 import com.itheima.mobilesafe.utils.MyAdminManager;
 
+import org.json.JSONObject;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
+import io.branch.referral.util.BranchEvent;
 import tw.com.softworld.messagescenter.AsyncResponse;
 import tw.com.softworld.messagescenter.Server;
 
@@ -77,6 +82,31 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             R.drawable.sysoptimize, R.drawable.atools, R.drawable.settings
     };
 
+    //Branch.io
+    @Override
+    public void onStart() {
+        super.onStart();
+        Branch branch = Branch.getInstance();
+
+        branch.initSession(new Branch.BranchReferralInitListener(){
+            @Override
+            public void onInitFinished(JSONObject referringParams, BranchError error) {
+                if (error == null) {
+                    // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
+                    // params will be empty if no data found
+                    // ... insert custom logic here ...
+                } else {
+                    CLog.i(TAG, error.getMessage());
+                }
+            }
+        }, this.getIntent().getData(), this);
+    }
+    //Branch.io
+    @Override
+    public void onNewIntent(Intent intent) {
+        this.setIntent(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +121,8 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         };
         sv = new Server(this, ar);
         initComponent();
+
+        Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
     }
 
     /**
