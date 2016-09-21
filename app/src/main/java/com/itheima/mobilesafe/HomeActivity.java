@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
 import com.itheima.mobilesafe.fragments.AToolsFragment;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
+import com.itheima.mobilesafe.fragments.BlacklistFragment;
 import com.itheima.mobilesafe.fragments.ContactsFragment;
 import com.itheima.mobilesafe.fragments.NumberAddressQueryFragment;
 import com.itheima.mobilesafe.fragments.SettingsFragment;
@@ -149,16 +150,20 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 fragment = new SetupFragment();
                 tag = "SETUP";
                 break;
-            case Constants.CONSTANTS:
+            case Constants.CONTACTS_FRAG:
                 title = "选择联络人";
                 fragment = new ContactsFragment();
-                tag = "CONSTANTS";
+                tag = "CONTACTS";
                 break;
             case Constants.NUM_ADDRESS_QUERY_FRAG:
                 title = "号码归属地查询";
                 fragment = new NumberAddressQueryFragment();
                 tag = "NUM_ADDRESS_QUERY";
                 break;
+            case Constants.BLACKLIST_FRAG:
+                title = "黑名单拦截";
+                fragment = new BlacklistFragment();
+                tag = "BLACKLIST";
         }
 
         titles.push(title);
@@ -211,6 +216,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     case 0://进入手机防盗
                         showAntiTheftDialog();
                         break;
+                    case 1://黑名单拦截
+                        callFragment(Constants.BLACKLIST_FRAG);
+                        break;
                     case 3://进程管理
                         callFragment(Constants.TASK_FRAG);
                         break;
@@ -219,10 +227,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                         break;
                     case 8://进入设置中心
                         callFragment(Constants.SETTINGS_FRAG);
-                        break;
-                    case 1:
-                        break;
-                    case 2:
                         break;
                     default:
                         break;

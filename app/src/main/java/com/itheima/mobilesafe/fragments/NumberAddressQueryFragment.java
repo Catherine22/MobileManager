@@ -65,23 +65,22 @@ public class NumberAddressQueryFragment extends Fragment {
             }
         });
         tv_result = (TextView) view.findViewById(R.id.tv_result);
-        Button bt_numberAddressQuery = (Button) view.findViewById(R.id.bt_numberAddressQuery);
-        bt_numberAddressQuery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!TextUtils.isEmpty(ed_phone.getText().toString())) {
-                    queryAddress();
-                } else {
-                    viewKits.hideKeyboard();
-                    ed_phone.clearAnimation();
-                    //抖动效果
-                    Animation shake = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
-                    ed_phone.setAnimation(shake);
-//                    Toast.makeText(getActivity(), "您还没输入电话号码!", Toast.LENGTH_SHORT).show();
-
-                }
-            }
-        });
+//        Button bt_numberAddressQuery = (Button) view.findViewById(R.id.bt_numberAddressQuery);
+//        bt_numberAddressQuery.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (!TextUtils.isEmpty(ed_phone.getText().toString())) {
+//                    queryAddress();
+//                } else {
+//                    viewKits.hideKeyboard();
+//                    ed_phone.clearAnimation();
+//                    //抖动效果
+//                    Animation shake = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
+//                    ed_phone.setAnimation(shake);
+//
+//                }
+//            }
+//        });
         return view;
     }
 
