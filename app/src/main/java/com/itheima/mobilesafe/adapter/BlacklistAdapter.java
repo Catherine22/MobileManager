@@ -34,7 +34,7 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         MyViewHolder holder = new MyViewHolder(LayoutInflater.from(
-                ctx).inflate(R.layout.list_item_contact, parent,
+                ctx).inflate(R.layout.list_item_blacklist, parent,
                 false));
         return holder;
     }
@@ -67,7 +67,7 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
 
         holder.tv_name.setText(mDatas.get(position).name);
         holder.tv_phone.setText(sb.toString());
-        holder.iv_photo.setImageBitmap(mDatas.get(position).photo);
+        holder.iv_icon.setImageBitmap(mDatas.get(position).photo);
 
         // 如果设置了回调，则设置点击事件
         if (mOnItemClickLitener != null) {
@@ -93,13 +93,13 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
     class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView tv_name, tv_phone;
-        ImageView iv_photo;
+        ImageView iv_icon;
 
         public MyViewHolder(View view) {
             super(view);
             tv_name = (TextView) view.findViewById(R.id.tv_name);
             tv_phone = (TextView) view.findViewById(R.id.tv_phone);
-            iv_photo = (ImageView) view.findViewById(R.id.iv_photo);
+            iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
         }
     }
 

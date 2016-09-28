@@ -281,8 +281,10 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     }
 
 
-    private boolean grantedSpec = true;//同意特殊权限(SYSTEM_ALERT_WINDOW 和 WRITE_SETTINGS)
+    private boolean grantedSAW = true;//同意特殊权限(SYSTEM_ALERT_WINDOW)
+    private boolean grantedWS = true;//同意特殊权限(WRITE_SETTINGS)
     private boolean grantedAll = true;//同意一般权限
+    private int specCount = 0;//等待同意特殊權限數
 
     /**
      * 要求用户打开权限,仅限android 6.0 以上
@@ -297,17 +299,26 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     public void getPermissions(String[] permissions, MyPermissionsResultListener listener) {
         this.listener = listener;
         List<String> deniedPermissionsList = new LinkedList<>();
-
+        specCount =0;
         for (String p : permissions) {
             if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED && !p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW) && !p.equals(Manifest.permission.WRITE_SETTINGS))
                 deniedPermissionsList.add(p);
-            else if (p.equals(Manifest.permission.WRITE_SETTINGS) || p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
+            else if (p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(HomeActivity.this)) {
-                    grantedSpec = false;
+                    grantedSAW = false;
+                    specCount++;
                     Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
                     startActivityForResult(intent, Constants.OVERLAY_PERMISSION_REQ_CODE);
-                } else {
-                    grantedSpec = true;
+                }else if(p.equals(Manifest.permission.WRITE_SETTINGS)) {
+                    grantedWS = false;
+                    specCount++;
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                            Uri.parse("package:" + HomeActivity.this.getPackageName()));
+                    startActivityForResult(intent, Constants.PERMISSION_WRITE_SETTINGS);
+                }
+                else {
+                    grantedSAW = true;
+                    grantedWS = true;
                     // You've got SYSTEM_ALERT_WINDOW permission.
                 }
 
@@ -325,7 +336,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         } else {
             // All of the permissions granted
             grantedAll = true;
-            if (grantedSpec)
+            if (grantedSAW && grantedWS)
                 listener.onGranted();
         }
         return;
@@ -350,7 +361,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             else
                 grantedAll = false;
 
-            if (grantedAll && grantedSpec)//全部同意
+            if (grantedAll && grantedSAW && grantedWS)//全部同意
                 listener.onGranted();// Permission Granted
         }
     }
@@ -368,16 +379,35 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case Constants.OVERLAY_PERMISSION_REQ_CODE:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    specCount--;
                     if (!Settings.canDrawOverlays(this)) {
                         // Special permission not granted...
-                        grantedSpec = false;
-                        if (grantedAll)
+                        grantedSAW = false;
                             listener.onDenied();
                     } else {
-                        grantedSpec = true;
-                        if (grantedAll)
+                        grantedSAW = true;
+                        if (grantedAll && grantedWS)
                             listener.onGranted();
                         // You've got SYSTEM_ALERT_WINDOW permission.
+                        if(!grantedSAW && specCount==1)//表示用戶不同意另一個特殊權限
+                            listener.onDenied();
+                    }
+                }
+                break;
+            case Constants.PERMISSION_WRITE_SETTINGS:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    specCount--;
+                    if (!Settings.System.canWrite(this)) {
+                        // Special permission not granted...
+                        grantedWS = false;
+                            listener.onDenied();
+                    } else {
+                        grantedWS = true;
+                        if (grantedAll && grantedSAW)
+                            listener.onGranted();
+                        // You've got SYSTEM_ALERT_WINDOW permission.
+                        if(!grantedSAW && specCount==1)//表示用戶不同意另一個特殊權限
+                            listener.onDenied();
                     }
                 }
                 break;

@@ -59,6 +59,7 @@ public class Setup2Fragment extends Fragment {
                     editor.apply();
                 } else {
                     mainInterface.getPermissions(new String[]{
+                            Manifest.permission.WRITE_SETTINGS,
                                     Manifest.permission.WAKE_LOCK,
                                     Manifest.permission.RECEIVE_BOOT_COMPLETED,
                                     Manifest.permission.READ_CONTACTS,
