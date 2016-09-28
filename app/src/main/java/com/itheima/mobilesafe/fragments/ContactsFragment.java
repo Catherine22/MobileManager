@@ -1,11 +1,17 @@
 package com.itheima.mobilesafe.fragments;
 
 import android.app.Dialog;
+import android.content.ContentUris;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,10 +25,14 @@ import android.widget.ListView;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.ContactsListAdapter;
 import com.itheima.mobilesafe.interfaces.MainInterface;
+import com.itheima.mobilesafe.ui.AdjustView;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.utils.objects.Contact;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -156,7 +166,8 @@ public class ContactsFragment extends Fragment {
          * 4.打开该项目的Manifest，找到provider的配置
          * 5.找到android:authorities="contacts;com.android.contacts"（分号代表contacts或com.android.contacts都可以）
          * 6.打开该项目的com.android.providers.contacts/ContactsProvider2.java
-         * 7.搜寻urimatcher *8.找到一堆matcher.addURI()...
+         * 7.搜寻urimatcher
+         * 8.找到一堆matcher.addURI()...
          */
         Uri rawbase = Uri.parse("content://com.android.contacts/raw_contacts");
         Uri database = Uri.parse("content://com.android.contacts/data");
@@ -172,6 +183,17 @@ public class ContactsFragment extends Fragment {
                         database, null, "raw_contact_id=?", new String[]{item.id},
                         null);
                 if (dataCursor != null) {
+                    //取得照片
+                    Resources res = getResources();
+                    Bitmap defaultPhoto = BitmapFactory.decodeResource(res, R.drawable.profile);
+
+                    if (openPhoto(Long.parseLong(item.id)) != null) {
+                        item.photo = BitmapFactory.decodeStream(openPhoto(Long.parseLong(item.id)));
+                        item.circlarPhoto = AdjustView.drawCircularImage(item.photo, false);
+                    } else {
+                        item.photo = defaultPhoto;
+                        item.circlarPhoto = AdjustView.drawCircularImage(item.photo, false);
+                    }
                     while (dataCursor.moveToNext()) {
                         String mimetype = dataCursor.getString(dataCursor
                                 .getColumnIndex("mimetype"));
@@ -209,6 +231,52 @@ public class ContactsFragment extends Fragment {
             cursor.close();
         }
         return myContacts;
+    }
+
+
+    /**
+     * Retrieving the thumbnail-sized photo
+     *
+     * @param contactId
+     * @return
+     */
+    public InputStream openPhoto(long contactId) {
+        Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+        Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
+        Cursor cursor = getActivity().getContentResolver().query(photoUri,
+                new String[]{ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
+        if (cursor == null) {
+            return null;
+        }
+        try {
+            if (cursor.moveToFirst()) {
+                byte[] data = cursor.getBlob(0);
+                if (data != null) {
+                    return new ByteArrayInputStream(data);
+                }
+            }
+        } finally {
+            cursor.close();
+        }
+        return null;
+    }
+
+    /**
+     * Retrieving the larger photo version
+     *
+     * @param contactId
+     * @return
+     */
+    public InputStream openDisplayPhoto(long contactId) {
+        Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+        Uri displayPhotoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.DISPLAY_PHOTO);
+        try {
+            AssetFileDescriptor fd =
+                    getActivity().getContentResolver().openAssetFileDescriptor(displayPhotoUri, "r");
+            return fd.createInputStream();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
 }

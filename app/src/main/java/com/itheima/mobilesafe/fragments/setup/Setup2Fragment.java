@@ -103,8 +103,8 @@ public class Setup2Fragment extends Fragment {
         sv = new Server(getActivity(), ar);
         //取得sim卡信息
         TelephonyManager tm = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-//        Settings.simSerialNumber = tm.getSimSerialNumber();
-        Settings.simSerialNumber = "65123576";
+        Settings.simSerialNumber = tm.getSimSerialNumber();
+//        Settings.simSerialNumber = "65123576";
     }
 
     @Override

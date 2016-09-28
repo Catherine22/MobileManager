@@ -6,6 +6,9 @@ package com.itheima.mobilesafe.utils.objects;
  * catherine919@soft-world.com.tw
  */
 
+import android.graphics.Bitmap;
+
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,4 +22,6 @@ public class Contact {
     public String email;
     public String company;
     public String address;
+    public Bitmap photo;
+    public Bitmap circlarPhoto;
 }

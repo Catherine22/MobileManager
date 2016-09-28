@@ -13,5 +13,4 @@
         <attr name="dots_src_on" format="integer" />
         <attr name="dots_src_off" format="integer" />
     </declare-styleable>
-
 </resources>

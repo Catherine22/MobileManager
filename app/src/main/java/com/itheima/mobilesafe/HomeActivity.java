@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
 import com.itheima.mobilesafe.fragments.AToolsFragment;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
+import com.itheima.mobilesafe.fragments.BlacklistFragment;
 import com.itheima.mobilesafe.fragments.ContactsFragment;
 import com.itheima.mobilesafe.fragments.NumberAddressQueryFragment;
 import com.itheima.mobilesafe.fragments.SettingsFragment;
@@ -46,10 +47,15 @@ import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Encryption;
 import com.itheima.mobilesafe.utils.MyAdminManager;
 
+import org.json.JSONObject;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
+import io.branch.referral.util.BranchEvent;
 import tw.com.softworld.messagescenter.AsyncResponse;
 import tw.com.softworld.messagescenter.Server;
 
@@ -76,6 +82,31 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             R.drawable.sysoptimize, R.drawable.atools, R.drawable.settings
     };
 
+    //Branch.io
+    @Override
+    public void onStart() {
+        super.onStart();
+        Branch branch = Branch.getInstance();
+
+        branch.initSession(new Branch.BranchReferralInitListener(){
+            @Override
+            public void onInitFinished(JSONObject referringParams, BranchError error) {
+                if (error == null) {
+                    // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
+                    // params will be empty if no data found
+                    // ... insert custom logic here ...
+                } else {
+                    CLog.i(TAG, error.getMessage());
+                }
+            }
+        }, this.getIntent().getData(), this);
+    }
+    //Branch.io
+    @Override
+    public void onNewIntent(Intent intent) {
+        this.setIntent(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +121,8 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         };
         sv = new Server(this, ar);
         initComponent();
+
+        Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
     }
 
     /**
@@ -149,16 +182,20 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 fragment = new SetupFragment();
                 tag = "SETUP";
                 break;
-            case Constants.CONSTANTS:
+            case Constants.CONTACTS_FRAG:
                 title = "选择联络人";
                 fragment = new ContactsFragment();
-                tag = "CONSTANTS";
+                tag = "CONTACTS";
                 break;
             case Constants.NUM_ADDRESS_QUERY_FRAG:
                 title = "号码归属地查询";
                 fragment = new NumberAddressQueryFragment();
                 tag = "NUM_ADDRESS_QUERY";
                 break;
+            case Constants.BLACKLIST_FRAG:
+                title = "黑名单拦截";
+                fragment = new BlacklistFragment();
+                tag = "BLACKLIST";
         }
 
         titles.push(title);
@@ -211,6 +248,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     case 0://进入手机防盗
                         showAntiTheftDialog();
                         break;
+                    case 1://黑名单拦截
+                        callFragment(Constants.BLACKLIST_FRAG);
+                        break;
                     case 3://进程管理
                         callFragment(Constants.TASK_FRAG);
                         break;
@@ -219,10 +259,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                         break;
                     case 8://进入设置中心
                         callFragment(Constants.SETTINGS_FRAG);
-                        break;
-                    case 1:
-                        break;
-                    case 2:
                         break;
                     default:
                         break;
