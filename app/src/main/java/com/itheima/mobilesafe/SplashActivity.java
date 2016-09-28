@@ -28,9 +28,6 @@ import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.utils.StreamUtils;
 
-import net.tsz.afinal.FinalHttp;
-import net.tsz.afinal.http.AjaxCallBack;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -241,52 +238,52 @@ public class SplashActivity extends Activity {
                         Environment.MEDIA_MOUNTED)) {
                     // sdcard存在
                     // afnal
-                    FinalHttp finalhttp = new FinalHttp();
-                    finalhttp.download(apkurl, Environment
-                                    .getExternalStorageDirectory().getAbsolutePath() + "/mobilesafe2.0.apk",
-                            new AjaxCallBack<File>() {
-
-                                @Override
-                                public void onFailure(Throwable t, int errorNo,
-                                                      String strMsg) {
-                                    t.printStackTrace();
-                                    Toast.makeText(getApplicationContext(), "下载失败", Toast.LENGTH_LONG).show();
-                                    super.onFailure(t, errorNo, strMsg);
-                                }
-
-                                @Override
-                                public void onLoading(long count, long current) {
-
-                                    super.onLoading(count, current);
-                                    tv_update_info.setVisibility(View.VISIBLE);
-                                    //当前下载百分比
-                                    int progress = (int) (current * 100 / count);
-                                    tv_update_info.setText("下载进度：" + progress + "%");
-                                }
-
-                                @Override
-                                public void onSuccess(File t) {
-
-                                    super.onSuccess(t);
-                                    installAPK(t);
-                                }
-
-                                /**
-                                 * 安装APK
-                                 * @param t
-                                 */
-                                private void installAPK(File t) {
-                                    Intent intent = new Intent();
-                                    intent.setAction("android.intent.action.VIEW");
-                                    intent.addCategory("android.intent.category.DEFAULT");
-                                    intent.setDataAndType(Uri.fromFile(t), "application/vnd.android.package-archive");
-
-                                    startActivity(intent);
-
-                                }
-
-
-                            });
+//                    FinalHttp finalhttp = new FinalHttp();
+//                    finalhttp.download(apkurl, Environment
+//                                    .getExternalStorageDirectory().getAbsolutePath() + "/mobilesafe2.0.apk",
+//                            new AjaxCallBack<File>() {
+//
+//                                @Override
+//                                public void onFailure(Throwable t, int errorNo,
+//                                                      String strMsg) {
+//                                    t.printStackTrace();
+//                                    Toast.makeText(getApplicationContext(), "下载失败", Toast.LENGTH_LONG).show();
+//                                    super.onFailure(t, errorNo, strMsg);
+//                                }
+//
+//                                @Override
+//                                public void onLoading(long count, long current) {
+//
+//                                    super.onLoading(count, current);
+//                                    tv_update_info.setVisibility(View.VISIBLE);
+//                                    //当前下载百分比
+//                                    int progress = (int) (current * 100 / count);
+//                                    tv_update_info.setText("下载进度：" + progress + "%");
+//                                }
+//
+//                                @Override
+//                                public void onSuccess(File t) {
+//
+//                                    super.onSuccess(t);
+//                                    installAPK(t);
+//                                }
+//
+//                                /**
+//                                 * 安装APK
+//                                 * @param t
+//                                 */
+//                                private void installAPK(File t) {
+//                                    Intent intent = new Intent();
+//                                    intent.setAction("android.intent.action.VIEW");
+//                                    intent.addCategory("android.intent.category.DEFAULT");
+//                                    intent.setDataAndType(Uri.fromFile(t), "application/vnd.android.package-archive");
+//
+//                                    startActivity(intent);
+//
+//                                }
+//
+//
+//                            });
                 } else {
                     Toast.makeText(getApplicationContext(), "没有sdcard，请安装上在试",
                             Toast.LENGTH_SHORT).show();
@@ -348,8 +345,8 @@ public class SplashActivity extends Activity {
 
         //取得sim卡信息
         TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-//        Settings.simSerialNumber = tm.getSimSerialNumber();
-        Settings.simSerialNumber = "65123576";
+        Settings.simSerialNumber = tm.getSimSerialNumber();
+//        Settings.simSerialNumber = "65123576";
 
         //取得安全碼信息
         SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);

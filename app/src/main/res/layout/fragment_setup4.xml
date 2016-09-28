@@ -10,7 +10,7 @@
         android:id="@+id/tv_title"
         android:layout_width="fill_parent"
         android:layout_height="55dip"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorPrimary1"
         android:gravity="center"
         android:text="恭喜您设置完成"
         android:textColor="#ffffff"

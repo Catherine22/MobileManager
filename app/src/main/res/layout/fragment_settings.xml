@@ -49,6 +49,7 @@
             android:background="@drawable/gradient_box_selector"
             android:paddingLeft="10dp"
             android:gravity="center_vertical"
+            android:textColor="@android:color/white"
             android:text="卸载安全卫士"
             android:textSize="20sp" />
     </RelativeLayout>

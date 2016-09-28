@@ -75,7 +75,7 @@ public class Setup3Fragment extends Fragment {
         bt_choose_contacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.callFragment(Constants.CONSTANTS);
+                mainInterface.callFragment(Constants.CONTACTS_FRAG);
             }
         });
         return view;
