@@ -1,49 +1,49 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        config {
-            keyAlias 'productiongg'
-            keyPassword 'ggcompany123!'
-            storeFile file('D:/workspace_android/Keystores/Other/productiongg.jks')
-            storePassword 'ggcompany123!'
-        }
+  signingConfigs {
+    config {
+      keyAlias 'productiongg'
+      keyPassword 'ggcompany123!'
+      storeFile file('/Users/Nexton/Dropbox/Keystores/Other/productiongg.jks')
+      storePassword 'ggcompany123!'
     }
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
-    defaultConfig {
-        applicationId "tw.com.softworld.mobilemanager"
-        minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
-        signingConfig signingConfigs.config
+  }
+  compileSdkVersion 23
+  buildToolsVersion "23.0.3"
+  defaultConfig {
+    applicationId "tw.com.softworld.mobilemanager"
+    minSdkVersion 15
+    targetSdkVersion 23
+    versionCode 1
+    versionName "1.0"
+    signingConfig signingConfigs.config
 
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      signingConfig signingConfigs.config
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
-        }
+  }
+  productFlavors {
+    MobileManager {
+      applicationId "com.itheima.mobilesafe"
+      versionName "0.3"
+      versionCode 1
     }
-    productFlavors {
-        MobileManager {
-            applicationId "com.itheima.mobilesafe"
-            versionName "0.3"
-            versionCode 1
-        }
-        MobileManagerTest {
-            applicationId "com.itheima.mobilesafe.test"
-            versionName "0.3"
-            versionCode 1
-        }
+    MobileManagerTest {
+      applicationId "com.itheima.mobilesafe.test"
+      versionName "0.3"
+      versionCode 1
     }
+  }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:24.1.1'
-    compile 'catherine.mobile:messagescenter:+'
-    compile'com.android.support:recyclerview-v7:23.4.0'
-    compile 'io.branch.sdk.android:library:2.+'
+  compile 'com.android.support:support-v4:24.1.1'
+  compile 'catherine.mobile:messagescenter:+'
+  compile'com.android.support:recyclerview-v7:23.4.0'
+  compile 'io.branch.sdk.android:library:2.+'
 }

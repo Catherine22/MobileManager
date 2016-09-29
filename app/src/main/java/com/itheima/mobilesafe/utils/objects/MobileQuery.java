@@ -61,4 +61,16 @@ public class MobileQuery {
     private String retcode;
     private String retmsg;
     private String supplier;
+
+    @Override
+    public String toString() {
+        return "MobileQuery{" +
+                "chgmobile='" + chgmobile + '\'' +
+                ", city='" + city + '\'' +
+                ", province='" + province + '\'' +
+                ", retcode='" + retcode + '\'' +
+                ", retmsg='" + retmsg + '\'' +
+                ", supplier='" + supplier + '\'' +
+                '}';
+    }
 }

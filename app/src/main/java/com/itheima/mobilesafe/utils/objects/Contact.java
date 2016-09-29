@@ -24,4 +24,18 @@ public class Contact {
     public String address;
     public Bitmap photo;
     public Bitmap circlarPhoto;
+
+    @Override
+    public String toString() {
+        return "Contact{" +
+                "address='" + address + '\'' +
+                ", id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", phone=" + phone +
+                ", email='" + email + '\'' +
+                ", company='" + company + '\'' +
+                ", photo=" + photo +
+                ", circlarPhoto=" + circlarPhoto +
+                '}';
+    }
 }

@@ -18,7 +18,14 @@ public class TaskInfo {
      */
     public boolean userTask;
 
+    @Override
     public String toString() {
-        return "name:" + name + " packageName:" + packageName + " memSize:" + memSize + " userTask:" + userTask;
+        return "TaskInfo{" +
+                "icon=" + icon +
+                ", name='" + name + '\'' +
+                ", packageName='" + packageName + '\'' +
+                ", memSize=" + memSize +
+                ", userTask=" + userTask +
+                '}';
     }
 }
