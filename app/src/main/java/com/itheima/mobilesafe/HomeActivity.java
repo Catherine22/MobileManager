@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -68,6 +69,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private MyPermissionsResultListener listener;
     private MyAdminManager myAdminManager;
     private Server sv;
+    private TelephonyManager tm;
     private final int ACCESS_PERMISSION = 1001;
     private final static String[] names = {
             "手机防盗", "通讯卫士", "软件管理",
@@ -88,7 +90,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         super.onStart();
         Branch branch = Branch.getInstance();
 
-        branch.initSession(new Branch.BranchReferralInitListener(){
+        branch.initSession(new Branch.BranchReferralInitListener() {
             @Override
             public void onInitFinished(JSONObject referringParams, BranchError error) {
                 if (error == null) {
@@ -101,6 +103,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             }
         }, this.getIntent().getData(), this);
     }
+
     //Branch.io
     @Override
     public void onNewIntent(Intent intent) {
@@ -121,6 +124,15 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         };
         sv = new Server(this, ar);
         initComponent();
+
+        //取得sim卡信息
+        tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        try {
+            com.itheima.mobilesafe.utils.Settings.simSerialNumber = tm.getSimSerialNumber();
+        } catch (SecurityException e) {
+            CLog.e(TAG, e.toString());
+        }
+//        Settings.simSerialNumber = "65123576";
 
         Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
     }
@@ -284,7 +296,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private boolean grantedSAW = true;//同意特殊权限(SYSTEM_ALERT_WINDOW)
     private boolean grantedWS = true;//同意特殊权限(WRITE_SETTINGS)
     private boolean grantedAll = true;//同意一般权限
-    private int specCount = 0;//等待同意特殊權限數
+    private int specCount = 0;//等待同意特殊權限數(没有获取就不用添加)
 
     /**
      * 要求用户打开权限,仅限android 6.0 以上
@@ -299,7 +311,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     public void getPermissions(String[] permissions, MyPermissionsResultListener listener) {
         this.listener = listener;
         List<String> deniedPermissionsList = new LinkedList<>();
-        specCount =0;
+        specCount = 0;
         for (String p : permissions) {
             if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED && !p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW) && !p.equals(Manifest.permission.WRITE_SETTINGS))
                 deniedPermissionsList.add(p);
@@ -309,19 +321,22 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     specCount++;
                     Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
                     startActivityForResult(intent, Constants.OVERLAY_PERMISSION_REQ_CODE);
-                }else if(p.equals(Manifest.permission.WRITE_SETTINGS)) {
+                } else
+                    grantedSAW = true;
+
+            } else if (p.equals(Manifest.permission.WRITE_SETTINGS)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(HomeActivity.this)) {
                     grantedWS = false;
                     specCount++;
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                            Uri.parse("package:" + HomeActivity.this.getPackageName()));
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + HomeActivity.this.getPackageName()));
                     startActivityForResult(intent, Constants.PERMISSION_WRITE_SETTINGS);
-                }
-                else {
-                    grantedSAW = true;
+                } else
                     grantedWS = true;
-                    // You've got SYSTEM_ALERT_WINDOW permission.
-                }
 
+            } else {
+                grantedSAW = true;
+                grantedWS = true;
+                // You've got SYSTEM_ALERT_WINDOW permission.
             }
         }
 
@@ -383,13 +398,13 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     if (!Settings.canDrawOverlays(this)) {
                         // Special permission not granted...
                         grantedSAW = false;
-                            listener.onDenied();
+                        listener.onDenied();
                     } else {
                         grantedSAW = true;
                         if (grantedAll && grantedWS)
                             listener.onGranted();
                         // You've got SYSTEM_ALERT_WINDOW permission.
-                        if(!grantedSAW && specCount==1)//表示用戶不同意另一個特殊權限
+                        if (!grantedSAW && specCount == 1)//表示用戶不同意另一個特殊權限
                             listener.onDenied();
                     }
                 }
@@ -400,13 +415,13 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     if (!Settings.System.canWrite(this)) {
                         // Special permission not granted...
                         grantedWS = false;
-                            listener.onDenied();
+                        listener.onDenied();
                     } else {
                         grantedWS = true;
                         if (grantedAll && grantedSAW)
                             listener.onGranted();
                         // You've got SYSTEM_ALERT_WINDOW permission.
-                        if(!grantedSAW && specCount==1)//表示用戶不同意另一個特殊權限
+                        if (!grantedSAW && specCount == 1)//表示用戶不同意另一個特殊權限
                             listener.onDenied();
                     }
                 }

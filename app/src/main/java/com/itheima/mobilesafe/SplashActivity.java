@@ -343,11 +343,6 @@ public class SplashActivity extends Activity {
         Settings.DISPLAY_WIDTH_PX = metrics.widthPixels;
         Settings.DISPLAY_HEIGHT_PX = metrics.heightPixels;
 
-        //取得sim卡信息
-        TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        Settings.simSerialNumber = tm.getSimSerialNumber();
-//        Settings.simSerialNumber = "65123576";
-
         //取得安全碼信息
         SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
         Settings.safePhone = sp.getString("safe_phone", "");

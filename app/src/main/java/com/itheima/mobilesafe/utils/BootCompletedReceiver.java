@@ -28,9 +28,19 @@ public class BootCompletedReceiver extends BroadcastReceiver {
             String savedSIM = sp.getString("sim_serial", null);
 
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            String currentSIM = tm.getSimSerialNumber();
+            String currentSIM = "";
+            try {
+                currentSIM = tm.getSimSerialNumber();
+            } catch (SecurityException e) {
+                CLog.e(TAG,e.toString());
+            }
 //            String currentSIM = "651235761111";
-            if (!currentSIM.equals(savedSIM)) {
+            if (TextUtils.isEmpty(currentSIM)||TextUtils.isEmpty(savedSIM)) {
+                //权限不足
+                CLog.e(TAG, "权限不足");
+                Toast.makeText(context, "权限不足", Toast.LENGTH_LONG).show();
+            }
+            else if (!TextUtils.isEmpty(savedSIM) && !currentSIM.equals(savedSIM)) {
                 Toast.makeText(context, "SIM卡已变更", Toast.LENGTH_LONG).show();
 
                 //sim卡变更了，需要偷偷发短信
