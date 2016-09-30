@@ -48,7 +48,7 @@ public class BlacklistDao {
     }
 
     /**
-     * Add a blocked-number and set blocked-mode
+     * Add a blocked-number and set mode
      * @param number the name would be add into the blacklist
      * @param number the number would be add into the blacklist
      * @param MODE   MODE_BOTH_BLOCKED, MODE_CALLS_BLOCKED or MODE_SMS_BLOCKED
@@ -66,18 +66,18 @@ public class BlacklistDao {
     }
 
     /**
-     * Modify mode of blocking the caller
+     * Modify mode and name of the blocked-caller
      *
      * @param name
      * @param number
-     * @param NEW_MODE
+     * @param mode
      */
-    public void modifyMode(String name, String number, int NEW_MODE) {
+    public void modify(String name, String number, int mode) {
         SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
         if (db.isOpen()) {
             ContentValues values = new ContentValues();
             values.put("number", number);
-            values.put("mode", NEW_MODE);
+            values.put("mode", mode);
             values.put("name", name);
             db.update(TABLE, values, "number=?", new String[]{number});
             db.close();

@@ -1,6 +1,7 @@
 package com.itheima.mobilesafe.adapter;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,8 +9,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.ui.recycler_view.OnItemTouch;
 import com.itheima.mobilesafe.utils.objects.BlockedCaller;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,12 +21,12 @@ import java.util.List;
  * catherine919@soft-world.com.tw
  */
 
-public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyViewHolder> {
+public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyViewHolder>  implements OnItemTouch {
 
     private Context ctx;
     private List<BlockedCaller> mDatas;
 
-    public BlacklistAdapter(Context ctx, List<BlockedCaller> mDatas, OnItemClickLitener mOnItemClickLitener) {
+    public BlacklistAdapter(Context ctx, List<BlockedCaller> mDatas, @Nullable OnItemClickLitener mOnItemClickLitener) {
         this.mOnItemClickLitener = mOnItemClickLitener;
         this.ctx = ctx;
         this.mDatas = mDatas;
@@ -42,10 +45,37 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
         return mDatas.size();
     }
 
+    /**
+     * 交换items(同时各自的position也会交换)
+     * @param fromPosition
+     * @param toPosition
+     */
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        Collections.swap(mDatas, fromPosition, toPosition);
+        //非常重要，调用后Adapter才能知道发生了改变。
+        notifyItemMoved(fromPosition, toPosition);
+        mOnItemClickLitener.onItemSwap(fromPosition, toPosition);
+    }
+
+    /**
+     * 滑动事件(移除该item)
+     * @param position
+     */
+    @Override
+    public void onItemDismiss(int position) {
+        mDatas.remove(position);
+        //非常重要，调用后Adapter才能知道发生了改变。
+        notifyItemRemoved(position);
+        mOnItemClickLitener.onItemDismiss(position);
+    }
+
     public interface OnItemClickLitener {
         void onItemClick(View view, int position);
-
         void onItemLongClick(View view, int position);
+        void onItemSwap(int fromPosition, int toPosition);
+        void onItemDismiss(int position);
+
     }
 
     private OnItemClickLitener mOnItemClickLitener;

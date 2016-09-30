@@ -40,7 +40,7 @@ public class TaskFragment extends Fragment {
     private RecyclerView rv_user_tasks, rv_sys_tasks;
     private List<TaskInfo> returns;
     private TaskInfoListAdapter userAdapter, sysAdapter;
-    private ItemTouchHelper mItemTouchHelper;
+    private ItemTouchHelper userItemTouchHelper, sysItemTouchHelper;
 
     public static TaskFragment newInstance() {
         return new TaskFragment();
@@ -138,12 +138,12 @@ public class TaskFragment extends Fragment {
                             tv_user_tasks_count.setText("用户进程（" + userAdapter.getItemCount() + "）");
                             tv_sys_tasks_count.setText("系统进程（" + sysAdapter.getItemCount() + "）");
                             rv_user_tasks.setAdapter(userAdapter);
-                            mItemTouchHelper = new ItemTouchHelper(new ItemTouchCallback(userAdapter));
-                            mItemTouchHelper.attachToRecyclerView(rv_user_tasks);
+                            userItemTouchHelper = new ItemTouchHelper(new ItemTouchCallback(userAdapter));
+                            userItemTouchHelper.attachToRecyclerView(rv_user_tasks);
 
                             rv_sys_tasks.setAdapter(sysAdapter);
-                            mItemTouchHelper = new ItemTouchHelper(new ItemTouchCallback(sysAdapter));
-                            mItemTouchHelper.attachToRecyclerView(rv_sys_tasks);
+                            sysItemTouchHelper = new ItemTouchHelper(new ItemTouchCallback(sysAdapter));
+                            sysItemTouchHelper.attachToRecyclerView(rv_sys_tasks);
 
 
                             Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.tran_in);

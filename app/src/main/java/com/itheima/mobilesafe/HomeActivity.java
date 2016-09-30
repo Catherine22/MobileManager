@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
+import com.itheima.mobilesafe.db.dao.BlacklistDao;
 import com.itheima.mobilesafe.fragments.AToolsFragment;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
 import com.itheima.mobilesafe.fragments.BlacklistFragment;
@@ -134,7 +135,10 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         }
 //        Settings.simSerialNumber = "65123576";
 
-        Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
+//        Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
+//        BlacklistDao dao = new BlacklistDao(this);
+//        for (int i = 0; i < 100; i++)
+//            dao.add("Lisi", "1351234567" + i, BlacklistDao.MODE_CALLS_BLOCKED);
     }
 
     /**

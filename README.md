@@ -29,7 +29,9 @@
     }
 ```
   - [HomeActivity]
- 
+ #### 可滑动、上下交换的RecyclerView
+  - [BlacklistFragment]
+  - [BlacklistAdapter]
 
 ## 其他应用
 #### MD5加密
@@ -123,9 +125,10 @@ if(phone.matches("^1[3456]\\d{9}$")){
 
 [HomeActivity]
 ```JAVA
-private MyPermissionsResultListener listener;
-private boolean grantedSpec = true;//同意特殊权限(SYSTEM_ALERT_WINDOW 和 WRITE_SETTINGS)
+private boolean grantedSAW = true;//同意特殊权限(SYSTEM_ALERT_WINDOW)
+private boolean grantedWS = true;//同意特殊权限(WRITE_SETTINGS)
 private boolean grantedAll = true;//同意一般权限
+private int specCount = 0;//等待同意特殊權限數(没有获取就不用添加)
 
 /**
  * 要求用户打开权限,仅限android 6.0 以上
@@ -140,19 +143,30 @@ private boolean grantedAll = true;//同意一般权限
 public void getPermissions(String[] permissions, MyPermissionsResultListener listener) {
     this.listener = listener;
     List<String> deniedPermissionsList = new LinkedList<>();
-
+    specCount = 0;
     for (String p : permissions) {
         if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED && !p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW) && !p.equals(Manifest.permission.WRITE_SETTINGS))
             deniedPermissionsList.add(p);
-        else if (p.equals(Manifest.permission.WRITE_SETTINGS) || p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(HomeActivity.this)) {
-                grantedSpec = false;
+        else if (p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(HomeActivity.this)) {
+                grantedSAW = false;
+                specCount++;
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
                 startActivityForResult(intent, Constants.OVERLAY_PERMISSION_REQ_CODE);
-            } else {
-                grantedSpec = true;
-                // You've got SYSTEM_ALERT_WINDOW permission.
-            }
+            } else
+                grantedSAW = true;
+        } else if (p.equals(Manifest.permission.WRITE_SETTINGS)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(HomeActivity.this)) {
+                grantedWS = false;
+                specCount++;
+                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + HomeActivity.this.getPackageName()));
+                startActivityForResult(intent, Constants.PERMISSION_WRITE_SETTINGS);
+            } else
+                grantedWS = true;
+        } else {
+            grantedSAW = true;
+            grantedWS = true;
+            // You've got SYSTEM_ALERT_WINDOW permission.
         }
     }
 
@@ -166,7 +180,7 @@ public void getPermissions(String[] permissions, MyPermissionsResultListener lis
     } else {
         // All of the permissions granted
         grantedAll = true;
-        if (grantedSpec)
+        if (grantedSAW && grantedWS)
             listener.onGranted();
     }
     return;
@@ -189,7 +203,8 @@ private void doNext(int requestCode, int[] grantResults) {
             grantedAll = true;
         else
             grantedAll = false;
-            if (grantedAll && grantedSpec)//全部同意
+
+        if (grantedAll && grantedSAW && grantedWS)//全部同意
             listener.onGranted();// Permission Granted
     }
 }
@@ -198,18 +213,44 @@ private void doNext(int requestCode, int[] grantResults) {
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     switch (requestCode) {
+        case Constants.REQUEST_CODE_ENABLE_ADMIN:
+            if (resultCode == RESULT_OK) {
+                sv.pushBoolean("ADMIN_PERMISSION", true);
+            } else {
+                sv.pushBoolean("ADMIN_PERMISSION", false);
+            }
+            break;
         case Constants.OVERLAY_PERMISSION_REQ_CODE:
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                specCount--;
                 if (!Settings.canDrawOverlays(this)) {
                     // Special permission not granted...
-                    grantedSpec = false;
-                    if (grantedAll)
-                        listener.onDenied();
+                    grantedSAW = false;
+                    listener.onDenied();
                 } else {
-                    grantedSpec = true;
-                    if (grantedAll)
+                    grantedSAW = true;
+                    if (grantedAll && grantedWS)
                         listener.onGranted();
                     // You've got SYSTEM_ALERT_WINDOW permission.
+                    if (!grantedSAW && specCount == 1)//表示用戶不同意另一個特殊權限
+                        listener.onDenied();
+                }
+            }
+            break;
+        case Constants.PERMISSION_WRITE_SETTINGS:
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                specCount--;
+                if (!Settings.System.canWrite(this)) {
+                    // Special permission not granted...
+                    grantedWS = false;
+                    listener.onDenied();
+                } else {
+                    grantedWS = true;
+                    if (grantedAll && grantedSAW)
+                        listener.onGranted();
+                    // You've got SYSTEM_ALERT_WINDOW permission.
+                    if (!grantedSAW && specCount == 1)//表示用戶不同意另一個特殊權限
+                        listener.onDenied();
                 }
             }
             break;
@@ -290,3 +331,5 @@ public interface MyPermissionsResultListener {
    [权限无法获取问题]: <http://www.jianshu.com/p/2746a627c6d2>
    [自定义Toast]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/MyToast.java>
    [MyPermissionsResultListener]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/interfaces/MyPermissionsResultListener.java>
+   [BlacklistFragment]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/BlacklistFragment.java>
+   [BlacklistAdapter]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/adapter/BlacklistAdapter.java>
