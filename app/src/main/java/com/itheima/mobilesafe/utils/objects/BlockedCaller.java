@@ -8,6 +8,7 @@ package com.itheima.mobilesafe.utils.objects;
 
 public class BlockedCaller {
     public String name;
+    public String number;
     public int MODE;
 
     @Override
@@ -15,6 +16,7 @@ public class BlockedCaller {
         return "BlockedCaller{" +
                 "MODE=" + MODE +
                 ", name='" + name + '\'' +
+                ", number='" + number + '\'' +
                 '}';
     }
 }

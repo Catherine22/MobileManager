@@ -65,16 +65,15 @@ public class TaskFragment extends Fragment {
         });
         ll_loading = (LinearLayout) view.findViewById(R.id.ll_loading);
         rv_user_tasks = (RecyclerView) view.findViewById(R.id.rv_user_tasks);
+        rv_sys_tasks = (RecyclerView) view.findViewById(R.id.rv_sys_tasks);
+
         //添加分割线
         rv_user_tasks.addItemDecoration(new DividerItemDecoration(
                 getActivity(), DividerItemDecoration.VERTICAL_LIST));
-        //设置布局管理器,可实现GridVIew
-        rv_user_tasks.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-        rv_sys_tasks = (RecyclerView) view.findViewById(R.id.rv_sys_tasks);
-        //添加分割线
         rv_sys_tasks.addItemDecoration(new DividerItemDecoration(
                 getActivity(), DividerItemDecoration.VERTICAL_LIST));
         //设置布局管理器,可实现GridVIew
+        rv_user_tasks.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
         rv_sys_tasks.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
 
         int progressCount = SystemInfoUtils.getRunningProcessCount(getActivity());

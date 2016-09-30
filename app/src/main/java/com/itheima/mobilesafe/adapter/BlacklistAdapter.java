@@ -1,16 +1,14 @@
 package com.itheima.mobilesafe.adapter;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.utils.objects.Contact;
+import com.itheima.mobilesafe.utils.objects.BlockedCaller;
 
 import java.util.List;
 
@@ -23,9 +21,9 @@ import java.util.List;
 public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyViewHolder> {
 
     private Context ctx;
-    private List<Contact> mDatas;
+    private List<BlockedCaller> mDatas;
 
-    public BlacklistAdapter(Context ctx, List<Contact> mDatas, OnItemClickLitener mOnItemClickLitener) {
+    public BlacklistAdapter(Context ctx, List<BlockedCaller> mDatas, OnItemClickLitener mOnItemClickLitener) {
         this.mOnItemClickLitener = mOnItemClickLitener;
         this.ctx = ctx;
         this.mDatas = mDatas;
@@ -58,16 +56,8 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0;i<mDatas.get(position).phone.size();i++ ){
-            sb.append(mDatas.get(position).phone.get(i));
-            if(i!=mDatas.get(position).phone.size()-1)
-                sb.append("\n");
-        }
-
         holder.tv_name.setText(mDatas.get(position).name);
-        holder.tv_phone.setText(sb.toString());
-        holder.iv_icon.setImageBitmap(mDatas.get(position).photo);
+        holder.tv_phone.setText(mDatas.get(position).number);
 
         // 如果设置了回调，则设置点击事件
         if (mOnItemClickLitener != null) {
@@ -93,13 +83,11 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
     class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView tv_name, tv_phone;
-        ImageView iv_icon;
 
         public MyViewHolder(View view) {
             super(view);
             tv_name = (TextView) view.findViewById(R.id.tv_name);
             tv_phone = (TextView) view.findViewById(R.id.tv_phone);
-            iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
         }
     }
 

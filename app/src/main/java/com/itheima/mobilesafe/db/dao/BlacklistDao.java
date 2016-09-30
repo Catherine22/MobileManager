@@ -19,6 +19,7 @@ import java.util.List;
 
 public class BlacklistDao {
     private BlacklistDbOpenHelper dbOpenHelper;
+    public static final int MODE_BOTH_BLOCKED = 0;
     public static final int MODE_CALLS_BLOCKED = 1;
     public static final int MODE_SMS_BLOCKED = 2;
     private final String TABLE = "blacklist";
@@ -48,15 +49,17 @@ public class BlacklistDao {
 
     /**
      * Add a blocked-number and set blocked-mode
+     * @param number the name would be add into the blacklist
      * @param number the number would be add into the blacklist
-     * @param MODE   MODE_CALLS_BLOCKED or MODE_SMS_BLOCKED
+     * @param MODE   MODE_BOTH_BLOCKED, MODE_CALLS_BLOCKED or MODE_SMS_BLOCKED
      */
-    public void add(String number, int MODE) {
+    public void add(String name, String number, int MODE) {
         SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
         if (db.isOpen()) {
             ContentValues values = new ContentValues();
             values.put("number", number);
             values.put("mode", MODE);
+            values.put("name", name);
             db.insert(TABLE, null, values);
             db.close();
         }
@@ -65,15 +68,17 @@ public class BlacklistDao {
     /**
      * Modify mode of blocking the caller
      *
+     * @param name
      * @param number
      * @param NEW_MODE
      */
-    public void modifyMode(String number, int NEW_MODE) {
+    public void modifyMode(String name, String number, int NEW_MODE) {
         SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
         if (db.isOpen()) {
             ContentValues values = new ContentValues();
             values.put("number", number);
             values.put("mode", NEW_MODE);
+            values.put("name", name);
             db.update(TABLE, values, "number=?", new String[]{number});
             db.close();
         }
@@ -102,12 +107,14 @@ public class BlacklistDao {
         if (db.isOpen()) {
             myList = new ArrayList<>();
             Cursor cursor = db.rawQuery("select * from " + TABLE, null);
-            if(cursor.moveToNext()){
+            while(cursor.moveToNext()){
                 int numberIndex = cursor.getColumnIndex("number");
+                int nameIndex = cursor.getColumnIndex("name");
                 int modeIndex = cursor.getColumnIndex("mode");
 
                 BlockedCaller blockedCaller = new BlockedCaller();
-                blockedCaller.name = cursor.getString(numberIndex);
+                blockedCaller.number = cursor.getString(numberIndex);
+                blockedCaller.name = cursor.getString(nameIndex);
                 blockedCaller.MODE = cursor.getInt(modeIndex);
                 myList.add(blockedCaller);
             }
