@@ -14,9 +14,9 @@ public class BlockedCaller {
     @Override
     public String toString() {
         return "BlockedCaller{" +
-                "MODE=" + MODE +
                 ", name='" + name + '\'' +
                 ", number='" + number + '\'' +
+                ", MODE=" + MODE +
                 '}';
     }
 }

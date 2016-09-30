@@ -22,6 +22,7 @@ public class BlacklistDao {
     public static final int MODE_BOTH_BLOCKED = 0;
     public static final int MODE_CALLS_BLOCKED = 1;
     public static final int MODE_SMS_BLOCKED = 2;
+    public static final String MODES[] = {"全部拦截", "短信拦截", "电话拦截"};
     private final String TABLE = "blacklist";
 
     public BlacklistDao(Context ctx) {
@@ -49,6 +50,7 @@ public class BlacklistDao {
 
     /**
      * Add a blocked-number and set mode
+     *
      * @param number the name would be add into the blacklist
      * @param number the number would be add into the blacklist
      * @param MODE   MODE_BOTH_BLOCKED, MODE_CALLS_BLOCKED or MODE_SMS_BLOCKED
@@ -69,7 +71,7 @@ public class BlacklistDao {
      * Modify mode and name of the blocked-caller
      *
      * @param name
-     * @param number
+     * @param number identify
      * @param mode
      */
     public void modify(String name, String number, int mode) {
@@ -99,6 +101,7 @@ public class BlacklistDao {
 
     /**
      * Get all blocked-callers
+     *
      * @return
      */
     public List<BlockedCaller> queryAll() {
@@ -107,7 +110,7 @@ public class BlacklistDao {
         if (db.isOpen()) {
             myList = new ArrayList<>();
             Cursor cursor = db.rawQuery("select * from " + TABLE, null);
-            while(cursor.moveToNext()){
+            while (cursor.moveToNext()) {
                 int numberIndex = cursor.getColumnIndex("number");
                 int nameIndex = cursor.getColumnIndex("name");
                 int modeIndex = cursor.getColumnIndex("mode");

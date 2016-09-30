@@ -90,11 +90,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     public void onStart() {
         super.onStart();
         Branch branch = Branch.getInstance();
-
         branch.initSession(new Branch.BranchReferralInitListener() {
             @Override
             public void onInitFinished(JSONObject referringParams, BranchError error) {
                 if (error == null) {
+                    CLog.d(TAG,referringParams.toString());
                     // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
                     // params will be empty if no data found
                     // ... insert custom logic here ...
@@ -135,7 +135,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         }
 //        Settings.simSerialNumber = "65123576";
 
-//        Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
+        Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
 //        BlacklistDao dao = new BlacklistDao(this);
 //        for (int i = 0; i < 100; i++)
 //            dao.add("Lisi", "1351234567" + i, BlacklistDao.MODE_CALLS_BLOCKED);

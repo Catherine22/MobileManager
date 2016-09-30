@@ -1,19 +1,31 @@
 package com.itheima.mobilesafe.fragments;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.BlacklistAdapter;
 import com.itheima.mobilesafe.db.dao.BlacklistDao;
+import com.itheima.mobilesafe.ui.MyToast;
 import com.itheima.mobilesafe.ui.recycler_view.DividerItemDecoration;
 import com.itheima.mobilesafe.ui.recycler_view.ItemTouchCallback;
 import com.itheima.mobilesafe.utils.CLog;
@@ -27,13 +39,14 @@ import java.util.List;
  * catherine919@soft-world.com.tw
  */
 
-public class BlacklistFragment extends Fragment {
+public class BlacklistFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "BlacklistFragment";
     private RecyclerView rv_blacklist;
-    private TextView tv_no_data;
-    private List<BlockedCaller> blockedCallers;
+    private TextView tv_no_data, tv_add;
     private ItemTouchHelper itemTouchHelper;
+    private BlacklistDao dao;
+    private BlacklistAdapter adapter;
 
     public static TestFragment newInstance() {
         return new TestFragment();
@@ -44,37 +57,41 @@ public class BlacklistFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_blacklist, container, false);
         tv_no_data = (TextView) view.findViewById(R.id.tv_no_data);
+        tv_add = (TextView) view.findViewById(R.id.tv_add);
+        tv_add.setOnClickListener(this);
         rv_blacklist = (RecyclerView) view.findViewById(R.id.rv_blacklist);
-        BlacklistDao dao = new BlacklistDao(getActivity());
-        blockedCallers = dao.queryAll();
+        dao = new BlacklistDao(getActivity());
+        List<BlockedCaller> blockedCallers = dao.queryAll();
         if (blockedCallers != null) {
             tv_no_data.setVisibility(View.INVISIBLE);
 
             rv_blacklist.addItemDecoration(new DividerItemDecoration(
                     getActivity(), DividerItemDecoration.VERTICAL_LIST));
             rv_blacklist.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-            BlacklistAdapter adapter = new BlacklistAdapter(getActivity(), blockedCallers, new BlacklistAdapter.OnItemClickLitener() {
+            adapter = new BlacklistAdapter(getActivity(), blockedCallers, new BlacklistAdapter.OnItemClickLitener() {
                 @Override
                 public void onItemClick(View view, int position) {
-                    CLog.d(TAG, "onItemClick " + blockedCallers.get(position).toString());
+                    CLog.d(TAG, "onItemClick " + adapter.getList().get(position).toString());
                 }
 
                 @Override
                 public void onItemLongClick(View view, int position) {
-                    CLog.d(TAG, "onItemLongClick " + blockedCallers.get(position).toString());
-
+                    CLog.d(TAG, "onItemLongClick " + adapter.getList().get(position).toString());
                 }
 
                 @Override
                 public void onItemSwap(int fromPosition, int toPosition) {
-                    CLog.d(TAG, "onItemSwap " + "swap "+fromPosition+" for "+toPosition);
-
+                    CLog.d(TAG, "onItemSwap " + "swap " + fromPosition + " for " + toPosition);
+                    BlockedCaller newItemOnP1 = adapter.getList().get(toPosition);
+                    BlockedCaller newItemOnP2 = adapter.getList().get(fromPosition);
+                    dao.modify(newItemOnP1.name, newItemOnP2.number, newItemOnP1.MODE);
+                    dao.modify(newItemOnP2.name, newItemOnP1.number, newItemOnP2.MODE);
                 }
 
                 @Override
-                public void onItemDismiss(int position) {
-                    CLog.d(TAG, "onItemDismiss " + position);
-
+                public void onItemDismiss(int position, BlockedCaller item) {
+                    CLog.d(TAG, "onItemDismiss " + position + " " + item.number);
+                    dao.remove(item.number);
                 }
             });
             rv_blacklist.setAdapter(adapter);
@@ -85,5 +102,81 @@ public class BlacklistFragment extends Fragment {
             tv_no_data.setVisibility(View.VISIBLE);
 
         return view;
+    }
+
+    //Dialog components
+    private EditText et_name, et_phone;
+    private Button bt_ok, bt_cancel;
+    private Spinner s_mode;
+    private Dialog alertDialog;
+    private int mode;
+
+    private void showSetupDialog() {
+        alertDialog = new Dialog(getActivity());
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertDialog.setContentView(R.layout.dialog_setup_blacklist);
+        //设置dialog背景透明
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
+
+        et_name = (EditText) alertDialog.findViewById(R.id.et_name);
+        et_phone = (EditText) alertDialog.findViewById(R.id.et_phone);
+        s_mode = (Spinner) alertDialog.findViewById(R.id.s_mode);
+        s_mode.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, BlacklistDao.MODES));
+        s_mode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mode = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                mode = BlacklistDao.MODE_BOTH_BLOCKED;
+            }
+        });
+        bt_ok = (Button) alertDialog.findViewById(R.id.bt_setup_ok);
+        bt_ok.setOnClickListener(this);
+        bt_cancel = (Button) alertDialog.findViewById(R.id.bt_setup_cancel);
+        bt_cancel.setOnClickListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        CLog.d(TAG,"onPause");
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        CLog.d(TAG,"onResume");
+        dao = new BlacklistDao(getActivity());
+        super.onResume();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tv_add:
+                showSetupDialog();
+                break;
+            case R.id.bt_setup_ok:
+                BlockedCaller item = new BlockedCaller();
+                item.name = et_name.getText().toString();
+                item.number = et_phone.getText().toString();
+                item.MODE = mode;
+                if (TextUtils.isEmpty(item.name))
+                    Toast.makeText(getActivity(), "姓名不得为空", Toast.LENGTH_SHORT).show();
+                else if (TextUtils.isEmpty(item.number))
+                    Toast.makeText(getActivity(), "号码不得为空", Toast.LENGTH_SHORT).show();
+                else {
+                    dao.add(item.name, item.number, item.MODE);
+                    adapter.addItem(item);
+                    alertDialog.dismiss();
+                }
+                break;
+            case R.id.bt_setup_cancel:
+                alertDialog.dismiss();
+                break;
+        }
     }
 }

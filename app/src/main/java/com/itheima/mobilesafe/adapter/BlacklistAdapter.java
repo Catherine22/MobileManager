@@ -21,7 +21,7 @@ import java.util.List;
  * catherine919@soft-world.com.tw
  */
 
-public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyViewHolder>  implements OnItemTouch {
+public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyViewHolder> implements OnItemTouch {
 
     private Context ctx;
     private List<BlockedCaller> mDatas;
@@ -40,6 +40,20 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
         return holder;
     }
 
+    /**
+     * 取得交换过、移除过的正确的列表
+     *
+     * @return
+     */
+    public List<BlockedCaller> getList() {
+        return mDatas;
+    }
+
+    public void addItem(BlockedCaller item) {
+        mDatas.add(item);
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return mDatas.size();
@@ -47,6 +61,7 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
 
     /**
      * 交换items(同时各自的position也会交换)
+     *
      * @param fromPosition
      * @param toPosition
      */
@@ -60,21 +75,25 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
 
     /**
      * 滑动事件(移除该item)
+     *
      * @param position
      */
     @Override
     public void onItemDismiss(int position) {
+        mOnItemClickLitener.onItemDismiss(position, mDatas.get(position));
         mDatas.remove(position);
         //非常重要，调用后Adapter才能知道发生了改变。
         notifyItemRemoved(position);
-        mOnItemClickLitener.onItemDismiss(position);
     }
 
     public interface OnItemClickLitener {
         void onItemClick(View view, int position);
+
         void onItemLongClick(View view, int position);
+
         void onItemSwap(int fromPosition, int toPosition);
-        void onItemDismiss(int position);
+
+        void onItemDismiss(int position, BlockedCaller item);
 
     }
 

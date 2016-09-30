@@ -9,9 +9,24 @@
         android:id="@+id/rv_blacklist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="5dp">
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="45dp">
 
     </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/tv_add"
+        android:layout_width="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_height="45dp"
+        android:background="@drawable/gradient_box_selector"
+        android:textColor="@android:color/white"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:text="添加黑名单"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/tv_no_data"
