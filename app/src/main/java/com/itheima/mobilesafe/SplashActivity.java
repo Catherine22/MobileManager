@@ -23,6 +23,8 @@ import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.itheima.mobilesafe.designpattern.abstract_factory.CarFactory;
+import com.itheima.mobilesafe.designpattern.factory.ColorFactory;
 import com.itheima.mobilesafe.designpattern.singleton.BillPughSingleton;
 import com.itheima.mobilesafe.designpattern.singleton.EagerInitializingSingleton;
 import com.itheima.mobilesafe.designpattern.singleton.EnumSingleton;
@@ -66,7 +68,10 @@ public class SplashActivity extends Activity {
         SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
         initComponents();
         initSettings();
-        testSingleton();
+//        testSingleton();
+//        testFactory();
+        testAbstractFactory();
+
 
         boolean update = sp.getBoolean("update", false);
         if (update) {
@@ -149,6 +154,18 @@ public class SplashActivity extends Activity {
                 CLog.e("Singleton", "SafeLazyInitializingSingleton 不同实例");
         }
     };
+
+    private void testFactory() {
+        ColorFactory cf = new ColorFactory();
+        cf.getColor(ColorFactory.BLUE).onDraw();
+        cf.getColor(ColorFactory.RED).onDraw();
+    }
+
+    private void testAbstractFactory() {
+        CarFactory cf = new CarFactory();
+        cf.getColor(CarFactory.RED).onDraw();
+        cf.getBrand(CarFactory.BENTLEY).show();
+    }
 
     //————————————————————————Design Pattern end————————————————————————
     private void initComponents() {
