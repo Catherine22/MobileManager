@@ -24,6 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.designpattern.abstract_factory.CarFactory;
+import com.itheima.mobilesafe.designpattern.builder.OldStyleRobotBuilder;
+import com.itheima.mobilesafe.designpattern.builder.Robot;
+import com.itheima.mobilesafe.designpattern.builder.RobotDirector;
 import com.itheima.mobilesafe.designpattern.factory.ColorFactory;
 import com.itheima.mobilesafe.designpattern.singleton.BillPughSingleton;
 import com.itheima.mobilesafe.designpattern.singleton.EagerInitializingSingleton;
@@ -68,9 +71,11 @@ public class SplashActivity extends Activity {
         SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
         initComponents();
         initSettings();
+        
 //        testSingleton();
 //        testFactory();
-        testAbstractFactory();
+//        testAbstractFactory();
+        testBuilder();
 
 
         boolean update = sp.getBoolean("update", false);
@@ -165,6 +170,16 @@ public class SplashActivity extends Activity {
         CarFactory cf = new CarFactory();
         cf.getColor(CarFactory.RED).onDraw();
         cf.getBrand(CarFactory.BENTLEY).show();
+    }
+
+    private void testBuilder(){
+        RobotDirector rd = new RobotDirector(new OldStyleRobotBuilder());
+        rd.makeRobot();
+        Robot robot = rd.getRobot();
+        CLog.d("Builder",robot.getArms());
+        CLog.d("Builder",robot.getHead());
+        CLog.d("Builder",robot.getLegs());
+        CLog.d("Builder",robot.getTorso());
     }
 
     //————————————————————————Design Pattern end————————————————————————
