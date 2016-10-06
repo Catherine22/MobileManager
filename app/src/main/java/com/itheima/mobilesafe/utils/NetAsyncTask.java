@@ -22,14 +22,15 @@ public class NetAsyncTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... type) {
         String response = "";
-        switch (Integer.parseInt(type[0])) {
-            case NetUtils.TYPE_GET:
+        NetUtils.TYPE whichType = NetUtils.TYPE.values()[Integer.parseInt(type[0])];
+        switch (whichType) {
+            case GET:
                 response = NetUtils.sendDataByGet(url, name, data);
                 break;
-            case NetUtils.TYPE_POST:
+            case POST:
                 response = NetUtils.sendDataByPost(url, name, data);
                 break;
-            case NetUtils.TYPE_POST_JSON:
+            case POST_JSON:
                 response = NetUtils.sendJSONByPost(url, name, data);
                 break;
             default:

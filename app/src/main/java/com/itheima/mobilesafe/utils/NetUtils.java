@@ -16,12 +16,14 @@ import android.os.Handler;
 
 public class NetUtils {
     private final static String TAG = "NetUtils";
-    public static final String DOMAIN = "http://devservices.mygame.com.tw/MCHCouponApi/api/";
+    public static final String DOMAIN = "http://xxx/xxx/api/";
     private static final int READ_TIMEOUT = 5000;
     private static final int CONNECT_TIMEOUT = 10000;
-    public static final int TYPE_GET = 0;
-    public static final int TYPE_POST = 1;
-    public static final int TYPE_POST_JSON = 2;
+    enum TYPE{
+        GET,
+        POST,
+        POST_JSON
+    }
 
     public interface Callback {
         void onResponse(String response);
@@ -47,7 +49,7 @@ public class NetUtils {
 
     // Using AsyncTask
     public static void get(final String url, final String[] name, final String[] data, final Callback callback) {
-        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE_GET));
+        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE.GET));
     }
 
     // Using handle
@@ -70,7 +72,7 @@ public class NetUtils {
 
     // Using AsyncTask
     public static void post(final String url, final String[] name, final String[] data, final Callback callback) {
-        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE_POST));
+        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE.POST));
     }
 
     // Using handle
@@ -93,7 +95,7 @@ public class NetUtils {
 
     // Using AsyncTask
     public static void postJSON(final String url, final String[] name, final String[] data, final Callback callback) {
-        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE_POST_JSON));
+        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE.POST_JSON));
     }
 
     protected static String sendDataByGet(final String path, final String[] name, final String[] data) {

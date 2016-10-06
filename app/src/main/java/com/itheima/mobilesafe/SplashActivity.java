@@ -11,14 +11,11 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
-import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,7 +68,7 @@ public class SplashActivity extends Activity {
         SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
         initComponents();
         initSettings();
-        
+
 //        testSingleton();
 //        testFactory();
 //        testAbstractFactory();

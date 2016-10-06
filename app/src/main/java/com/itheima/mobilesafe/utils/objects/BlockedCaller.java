@@ -6,10 +6,19 @@ package com.itheima.mobilesafe.utils.objects;
  * catherine919@soft-world.com.tw
  */
 
-public class BlockedCaller {
-    public String name;
-    public String number;
-    public int MODE;
+public class BlockedCaller implements BaseContact {
+    private String name;
+    private String number;
+
+    public int getMODE() {
+        return MODE;
+    }
+
+    public void setMODE(int MODE) {
+        this.MODE = MODE;
+    }
+
+    private int MODE;
 
     @Override
     public String toString() {
@@ -18,5 +27,25 @@ public class BlockedCaller {
                 ", number='" + number + '\'' +
                 ", MODE=" + MODE +
                 '}';
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getNumber() {
+        return number;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void setNumber(String number) {
+        this.number = number;
     }
 }

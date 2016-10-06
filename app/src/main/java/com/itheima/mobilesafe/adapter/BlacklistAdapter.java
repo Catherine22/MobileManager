@@ -105,8 +105,8 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        holder.tv_name.setText(mDatas.get(position).name);
-        holder.tv_phone.setText(mDatas.get(position).number);
+        holder.tv_name.setText(mDatas.get(position).getName());
+        holder.tv_phone.setText(mDatas.get(position).getNumber());
 
         // 如果设置了回调，则设置点击事件
         if (mOnItemClickLitener != null) {

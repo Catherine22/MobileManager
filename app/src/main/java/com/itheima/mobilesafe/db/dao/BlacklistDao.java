@@ -51,7 +51,7 @@ public class BlacklistDao {
     /**
      * Add a blocked-number and set mode
      *
-     * @param number the name would be add into the blacklist
+     * @param name   the name would be add into the blacklist
      * @param number the number would be add into the blacklist
      * @param MODE   MODE_BOTH_BLOCKED, MODE_CALLS_BLOCKED or MODE_SMS_BLOCKED
      */
@@ -59,9 +59,9 @@ public class BlacklistDao {
         SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
         if (db.isOpen()) {
             ContentValues values = new ContentValues();
+            values.put("name", name);
             values.put("number", number);
             values.put("mode", MODE);
-            values.put("name", name);
             db.insert(TABLE, null, values);
             db.close();
         }
@@ -116,9 +116,9 @@ public class BlacklistDao {
                 int modeIndex = cursor.getColumnIndex("mode");
 
                 BlockedCaller blockedCaller = new BlockedCaller();
-                blockedCaller.number = cursor.getString(numberIndex);
-                blockedCaller.name = cursor.getString(nameIndex);
-                blockedCaller.MODE = cursor.getInt(modeIndex);
+                blockedCaller.setNumber(cursor.getString(numberIndex));
+                blockedCaller.setName(cursor.getString(nameIndex));
+                blockedCaller.setMODE(cursor.getInt(modeIndex));
                 myList.add(blockedCaller);
             }
             cursor.close();

@@ -25,7 +25,6 @@ import android.widget.Toast;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.BlacklistAdapter;
 import com.itheima.mobilesafe.db.dao.BlacklistDao;
-import com.itheima.mobilesafe.ui.MyToast;
 import com.itheima.mobilesafe.ui.recycler_view.DividerItemDecoration;
 import com.itheima.mobilesafe.ui.recycler_view.ItemTouchCallback;
 import com.itheima.mobilesafe.utils.CLog;
@@ -47,6 +46,7 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
     private ItemTouchHelper itemTouchHelper;
     private BlacklistDao dao;
     private BlacklistAdapter adapter;
+    private List<BlockedCaller> blockedCallers;
 
     public static TestFragment newInstance() {
         return new TestFragment();
@@ -61,7 +61,7 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
         tv_add.setOnClickListener(this);
         rv_blacklist = (RecyclerView) view.findViewById(R.id.rv_blacklist);
         dao = new BlacklistDao(getActivity());
-        List<BlockedCaller> blockedCallers = dao.queryAll();
+        blockedCallers = dao.queryAll();
         if (blockedCallers != null) {
             tv_no_data.setVisibility(View.INVISIBLE);
 
@@ -84,14 +84,14 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
                     CLog.d(TAG, "onItemSwap " + "swap " + fromPosition + " for " + toPosition);
                     BlockedCaller newItemOnP1 = adapter.getList().get(toPosition);
                     BlockedCaller newItemOnP2 = adapter.getList().get(fromPosition);
-                    dao.modify(newItemOnP1.name, newItemOnP2.number, newItemOnP1.MODE);
-                    dao.modify(newItemOnP2.name, newItemOnP1.number, newItemOnP2.MODE);
+                    dao.modify(newItemOnP1.getName(), newItemOnP2.getNumber(), newItemOnP1.getMODE());
+                    dao.modify(newItemOnP2.getName(), newItemOnP1.getNumber(), newItemOnP2.getMODE());
                 }
 
                 @Override
                 public void onItemDismiss(int position, BlockedCaller item) {
-                    CLog.d(TAG, "onItemDismiss " + position + " " + item.number);
-                    dao.remove(item.number);
+                    CLog.d(TAG, "onItemDismiss " + position + " " + item.getNumber());
+                    dao.remove(item.getNumber());
                 }
             });
             rv_blacklist.setAdapter(adapter);
@@ -142,14 +142,13 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
 
     @Override
     public void onPause() {
-        CLog.d(TAG,"onPause");
+        CLog.d(TAG, "onPause");
         super.onPause();
     }
 
     @Override
     public void onResume() {
-        CLog.d(TAG,"onResume");
-        dao = new BlacklistDao(getActivity());
+        CLog.d(TAG, "onResume");
         super.onResume();
     }
 
@@ -161,15 +160,15 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
                 break;
             case R.id.bt_setup_ok:
                 BlockedCaller item = new BlockedCaller();
-                item.name = et_name.getText().toString();
-                item.number = et_phone.getText().toString();
-                item.MODE = mode;
-                if (TextUtils.isEmpty(item.name))
+                item.setName(et_name.getText().toString());
+                item.setNumber(et_phone.getText().toString());
+                item.setMODE(mode);
+                if (TextUtils.isEmpty(item.getName()))
                     Toast.makeText(getActivity(), "姓名不得为空", Toast.LENGTH_SHORT).show();
-                else if (TextUtils.isEmpty(item.number))
+                else if (TextUtils.isEmpty(item.getNumber()))
                     Toast.makeText(getActivity(), "号码不得为空", Toast.LENGTH_SHORT).show();
                 else {
-                    dao.add(item.name, item.number, item.MODE);
+                    dao.add(item.getName(), item.getNumber(), item.getMODE());
                     adapter.addItem(item);
                     alertDialog.dismiss();
                 }
