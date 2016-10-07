@@ -1,12 +1,14 @@
 package com.itheima.mobilesafe.fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.services.AddressService;
+import com.itheima.mobilesafe.services.BlockCallsSmsService;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.ui.SettingNextView;
 import com.itheima.mobilesafe.utils.CLog;
@@ -36,13 +39,13 @@ import tw.com.softworld.messagescenter.Result;
  */
 public class SettingsFragment extends Fragment {
     private final static String TAG = "SettingsFragment";
-    private SettingItemView siv_update, siv_admin, siv_show_address;
+    private SettingItemView siv_update, siv_admin, siv_show_address, siv_block;
     private SettingNextView snv_set_background;
     private TextView tv_uninstall;
     private SharedPreferences sp;
     private MainInterface mainInterface;
     private MyAdminManager myAdminManager;
-    private Intent addService;
+    private Intent addService, blockService;
     private Client client;
 
     @Nullable
@@ -52,6 +55,7 @@ public class SettingsFragment extends Fragment {
         CLog.d(TAG, "onCreateView");
         sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
         addService = new Intent(getActivity(), AddressService.class);
+        blockService = new Intent(getActivity(), BlockCallsSmsService.class);
         mainInterface = (MainInterface) getActivity();
         myAdminManager = new MyAdminManager(getActivity());
 
@@ -65,6 +69,7 @@ public class SettingsFragment extends Fragment {
         siv_admin = (SettingItemView) view.findViewById(R.id.siv_admin);
         siv_show_address = (SettingItemView) view.findViewById(R.id.siv_show_address);
         snv_set_background = (SettingNextView) view.findViewById(R.id.snv_set_background);
+        siv_block = (SettingItemView) view.findViewById(R.id.siv_block);
         tv_uninstall = (TextView) view.findViewById(R.id.tv_uninstall);
         tv_uninstall.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,7 +124,6 @@ public class SettingsFragment extends Fragment {
 
         }
         //用户可手动关闭服务,所以需做一个工具来监听服务是否正在运作
-
         siv_show_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,7 +132,7 @@ public class SettingsFragment extends Fragment {
                         new MyPermissionsResultListener() {
                             @Override
                             public void onGranted() {
-                                CLog.d(TAG,"onGranted()");
+                                CLog.d(TAG, "onGranted()");
                                 if (siv_show_address.isChecked()) {
                                     siv_show_address.setChecked(false);
                                     getActivity().stopService(addService);
@@ -140,7 +144,7 @@ public class SettingsFragment extends Fragment {
 
                             @Override
                             public void onDenied() {
-                                CLog.d(TAG,"onDenied()");
+                                CLog.d(TAG, "onDenied()");
                                 siv_show_address.setChecked(false);
                                 getActivity().stopService(addService);
                             }
@@ -148,7 +152,8 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        boolean update = sp.getBoolean("update", false);
+        boolean update = sp.getBoolean("update", true);
+
         if (update) {
             //自动升级已经开启
             siv_update.setChecked(true);
@@ -172,6 +177,46 @@ public class SettingsFragment extends Fragment {
                     editor.putBoolean("update", true);
                 }
                 editor.apply();
+            }
+        });
+
+        boolean block = ServiceUtils.isRunningService(getActivity(), "com.itheima.mobilesafe.services.BlockCallsSmsService");
+
+        if (block) {
+            //黑名单拦截已经开启
+            siv_block.setChecked(true);
+        } else {
+            //黑名单拦截已经关闭
+            siv_block.setChecked(false);
+        }
+        siv_block.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mainInterface.getPermissions(new String[]{
+                                Manifest.permission.RECEIVE_SMS,
+                                Manifest.permission.READ_CONTACTS,
+                                Manifest.permission.WRITE_CONTACTS},
+                        new MyPermissionsResultListener() {
+                            @Override
+                            public void onGranted() {
+                                CLog.d(TAG, "onGranted()");
+                                if (siv_block.isChecked()) {
+                                    siv_block.setChecked(false);
+                                    getActivity().stopService(blockService);
+                                } else {
+                                    siv_block.setChecked(true);
+                                    getActivity().startService(blockService);
+                                }
+                            }
+
+                            @Override
+                            public void onDenied() {
+                                CLog.d(TAG, "onDenied()");
+                                siv_show_address.setChecked(false);
+                                getActivity().stopService(addService);
+                            }
+                        });
             }
         });
 

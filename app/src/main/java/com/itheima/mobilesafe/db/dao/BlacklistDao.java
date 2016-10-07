@@ -23,6 +23,11 @@ public class BlacklistDao implements BaseDao {
     private final static String TAG = "BlacklistDao";
     private BlacklistDbOpenHelper dbOpenHelper;
     /**
+     * null
+     */
+    @SuppressWarnings("unused")
+    public static final int NOT_FOUND = -1;
+    /**
      * block calls and sms
      */
     @SuppressWarnings("unused")
@@ -64,7 +69,29 @@ public class BlacklistDao implements BaseDao {
      * Query the blacklist and check the number
      *
      * @param number phone number
-     * @return whether the phone number is in the blacklist
+     * @return whether the phone number is in the blacklist,
+     * returning -1 if it's not found, and returning mode of blocked-mode
+     */
+    public int findMode(String number) {
+        int mode = NOT_FOUND;
+        SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+        if (db.isOpen()) {
+            Cursor cursor = db.rawQuery("select * from " + TABLE + " where number=?", new String[]{number});
+            if (cursor.moveToNext()) {
+                index = cursor.getColumnIndex("mode");
+                mode = Integer.parseInt(cursor.getString(index));
+            }
+            cursor.close();
+            db.close();
+        }
+        return mode;
+    }
+
+    /**
+     * Query the blacklist and check the number
+     *
+     * @param number phone number
+     * @return whether the phone number is in the blacklist.
      */
     @Override
     public boolean find(String number) {
@@ -153,26 +180,27 @@ public class BlacklistDao implements BaseDao {
      * @param response return the result of modifying data
      */
     private void modifyById(String _id, BlockedCaller caller, @Nullable OnResponse response) {
-            SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
-            if (db.isOpen()) {
-                ContentValues values = new ContentValues();
-                values.put("number", caller.getNumber());
-                values.put("mode", caller.getMODE());
-                values.put("name", caller.getName());
-                db.update(TABLE, values, "_id=?", new String[]{_id});
-                db.close();
-                if (response != null)
-                    response.OnFinish();
-            } else {
-                if (response != null)
-                    response.onFail(DB_ERROR, "数据库错误");
-            }
+        SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+        if (db.isOpen()) {
+            ContentValues values = new ContentValues();
+            values.put("number", caller.getNumber());
+            values.put("mode", caller.getMODE());
+            values.put("name", caller.getName());
+            db.update(TABLE, values, "_id=?", new String[]{_id});
+            db.close();
+            if (response != null)
+                response.OnFinish();
+        } else {
+            if (response != null)
+                response.onFail(DB_ERROR, "数据库错误");
+        }
     }
 
 
-    int index;
-    String id1 = null;
-    String id2 = null;
+    private int index;
+    private String id1 = null;
+    private String id2 = null;
+
     /**
      * Swap data1 and data2 in the table
      *

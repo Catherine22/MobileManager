@@ -117,6 +117,12 @@ if(phone.matches("^1[3456]\\d{9}$")){
  }
 
 ```
+#### Design Pattern
+  - [Singleton]
+  - [Factory]
+  - [AbstractFactory]
+  - [Builder]
+####  [SQLite operation]
 
 ## Android6.0或以上权限设置
   - 需要在用到权限的地方，自定义是否检查权限，处理SYSTEM_ALERT_WINDOW和WRITE_SETTINGS例外
@@ -333,3 +339,8 @@ public interface MyPermissionsResultListener {
    [MyPermissionsResultListener]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/interfaces/MyPermissionsResultListener.java>
    [BlacklistFragment]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/BlacklistFragment.java>
    [BlacklistAdapter]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/adapter/BlacklistAdapter.java>
+   [Singleton]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/designpattern/singleton>
+   [Factory]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/designpattern/factory>
+   [AbstractFactory]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/designpattern/abstract_factory>
+   [Builder]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/designpattern/builder>
+   [SQLite operation]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/db/dao/BlacklistDao.java>

@@ -49,6 +49,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
                 String destinationAddress = sp.getString("safe_phone", null);
                 if (!TextUtils.isEmpty(destinationAddress))
                     smsManager.sendTextMessage(destinationAddress, null, "SIM卡换啦!", null, null);
+                //如果没有SIM卡?
                 else {
                     //偷偷发email
                 }

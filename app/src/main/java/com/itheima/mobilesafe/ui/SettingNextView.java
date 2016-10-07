@@ -1,6 +1,7 @@
 package com.itheima.mobilesafe.ui;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -81,7 +82,9 @@ public class SettingNextView extends RelativeLayout {
         desc_on = attrs.getAttributeValue("http://schemas.android.com/apk/com.itheima.mobilesafe", "desc_on");
         desc_off = attrs.getAttributeValue("http://schemas.android.com/apk/com.itheima.mobilesafe", "desc_off");
         tv_title.setText(title_);
-        tv_desc.setText(desc_off);
+        if (!TextUtils.isEmpty(desc_off))
+            tv_desc.setText(desc_off);
+        else tv_desc.setVisibility(GONE);
     }
 
 
@@ -102,9 +105,10 @@ public class SettingNextView extends RelativeLayout {
 
     /**
      * 设置控件的标题
+     *
      * @param title
      */
-    public void setTitle(String title){
+    public void setTitle(String title) {
         tv_title.setText(title);
     }
 

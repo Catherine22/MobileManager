@@ -47,8 +47,11 @@
             android:name="com.itheima.mobilesafe.HomeActivity"
             android:windowSoftInputMode="adjustPan">
             <intent-filter android:autoVerify="true">
-                <data android:scheme="https" android:host="zhz9.app.link"/>
+                <data
+                    android:host="zhz9.app.link"
+                    android:scheme="https" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
@@ -56,6 +59,7 @@
 
         <service android:name=".services.GPSService" />
         <service android:name=".services.AddressService" />
+        <service android:name=".services.BlockCallsSmsService" />
 
         <receiver android:name=".utils.BootCompletedReceiver">
             <intent-filter>
@@ -64,14 +68,15 @@
         </receiver>
 
         <receiver android:name=".utils.SMSReceiver">
-            <intent-filter android:priority="2147483647">
+            <intent-filter android:priority="2147483647"><!-- max integer -->
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".utils.MyDeviceAdminReceiver">
-            android:label="@string/sample_device_admin"
-            android:description="@string/sample_device_admin_description"
+        <receiver
+            android:name=".utils.MyDeviceAdminReceiver"
+            android:description="@string/admin_receiver_status"
+            android:label="@string/device_admin"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
                 android:name="android.app.device_admin"

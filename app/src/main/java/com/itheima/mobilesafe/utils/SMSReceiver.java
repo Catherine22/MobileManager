@@ -27,7 +27,6 @@ public class SMSReceiver extends BroadcastReceiver {
     public static String address;
     public static String content;
     private String safePhone;
-    private SmsManager manager;
 
     /**
      * ANR异常：
@@ -61,82 +60,85 @@ public class SMSReceiver extends BroadcastReceiver {
 */
 
         Object[] pdus = (Object[]) intent.getExtras().get("pdus");
-        for (Object pdu : pdus) {
-            SmsMessage message = SmsMessage.createFromPdu((byte[]) pdu);
-            manager = SmsManager.getDefault();
+        if (pdus != null) {
+            for (Object pdu : pdus) {
+                SmsMessage message = SmsMessage.createFromPdu((byte[]) pdu);
+                final SmsManager manager = SmsManager.getDefault();
 
-            //获取短信的正文内容
-            content = message.getMessageBody();
+                //获取短信的正文内容
+                content = message.getMessageBody();
 
-            //获取短信的发送者
-            address = message.getOriginatingAddress();
-
-
-            CLog.d(TAG, address + "\n" + content);
-            if (address.equals(safePhone)) {
-
-                MyAdminManager myAdminManager = new MyAdminManager(context);
+                //获取短信的发送者
+                address = message.getOriginatingAddress();
 
 
-                if (content.contains("#*location*#")) {
-                    CLog.d(TAG, "#*location*#");
-                    //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
-                    abortBroadcast();
+                CLog.d(TAG, address + "\n" + content);
+                if (address.equals(safePhone)) {
 
-                    //启动服务
-                    Intent i = new Intent(context, GPSService.class);
-                    context.startService(i);
-                    CustomReceiver cr = new CustomReceiver() {
-                        @Override
-                        public void onBroadcastReceive(Result result) {
-                            Bundle b = result.getBundle();
-                            String longitude = b.getString("longitude");
-                            String latitude = b.getString("latitude");
-                            String accutacy = b.getString("accutacy");
+                    MyAdminManager myAdminManager = new MyAdminManager(context);
 
-                            CLog.d(TAG, "Longitude:" + longitude + "\nLatitude:" + latitude + "\nAccutacy:" + accutacy);
 
-                            if (TextUtils.isEmpty(longitude))
-                                manager.sendTextMessage(safePhone, null, "Getting location...", null, null);
-                            else
-                                manager.sendTextMessage(safePhone, null, "Longitude:" + longitude + "\nLatitude:" + latitude + "\nAccutacy:" + accutacy, null, null);
-                        }
-                    };
-                    Client client = new Client(context, cr);
-                    client.gotMessages("LOCATION_INFO");
+                    if (content.contains("#*location*#")) {
+                        CLog.d(TAG, "#*location*#");
+                        //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
+                        abortBroadcast();
 
+                        //启动服务
+                        Intent i = new Intent(context, GPSService.class);
+                        context.startService(i);
+                        CustomReceiver cr = new CustomReceiver() {
+                            @Override
+                            public void onBroadcastReceive(Result result) {
+                                Bundle b = result.getBundle();
+                                String longitude = b.getString("longitude");
+                                String latitude = b.getString("latitude");
+                                String accutacy = b.getString("accutacy");
+
+                                CLog.d(TAG, "Longitude:" + longitude + "\nLatitude:" + latitude + "\nAccutacy:" + accutacy);
+
+                                if (TextUtils.isEmpty(longitude))
+                                    manager.sendTextMessage(safePhone, null, "Getting location...", null, null);
+                                else
+                                    manager.sendTextMessage(safePhone, null, "Longitude:" + longitude + "\nLatitude:" + latitude + "\nAccutacy:" + accutacy, null, null);
+                            }
+                        };
+                        Client client = new Client(context, cr);
+                        client.gotMessages("LOCATION_INFO");
+
+                    }
+                    if (content.contains("#*alarm*#")) {
+                        CLog.d(TAG, "#*alarm*#");
+                        //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
+                        abortBroadcast();
+
+                        MediaPlayer mp = MediaPlayer.create(context, R.raw.ylzs);
+                        mp.setLooping(true);
+                        mp.setVolume(1.0f, 1.0f);
+                        mp.start();
+                    }
+                    if (content.contains("#*wipedata*#")) {
+                        CLog.d(TAG, "#*wipedata*#");
+                        //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
+                        abortBroadcast();
+
+                        myAdminManager.wipeData();
+                    }
+                    if (content.contains("#*lockscreen*#")) {
+                        CLog.d(TAG, "#*lockscreen*#");
+                        //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
+                        abortBroadcast();
+
+                        myAdminManager.lockScreen();
+                    }
                 }
-                if (content.contains("#*alarm*#")) {
-                    CLog.d(TAG, "#*alarm*#");
-                    //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
-                    abortBroadcast();
 
-                    MediaPlayer mp = MediaPlayer.create(context, R.raw.ylzs);
-                    mp.setLooping(true);
-                    mp.setVolume(1.0f, 1.0f);
-                    mp.start();
-                }
-                if (content.contains("#*wipedata*#")) {
-                    CLog.d(TAG, "#*wipedata*#");
-                    //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
-                    abortBroadcast();
+                //回传讯息
+                //            SmsManager manager = SmsManager.getDefault();
+                //            manager.sendTextMessage(address, null, "Go to hel.", null, null);
 
-                    myAdminManager.wipeData();
-                }
-                if (content.contains("#*lockscreen*#")) {
-                    CLog.d(TAG, "#*lockscreen*#");
-                    //截获短信，根据AndroidManifest的优先级判断，其他优先级低的应用就不会收到推播
-                    abortBroadcast();
-
-                    myAdminManager.lockScreen();
-                }
             }
-
-            //回传讯息
-//            SmsManager manager = SmsManager.getDefault();
-//            manager.sendTextMessage(address, null, "Go to hel.", null, null);
-
-        }
+        } else
+            CLog.e(TAG, "null pdus");
     }
 
 
