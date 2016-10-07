@@ -19,7 +19,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -89,15 +88,19 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
                 @Override
                 public void onItemSwap(int fromPosition, int toPosition) {
                     CLog.d(TAG, "onItemSwap " + "swap " + fromPosition + " for " + toPosition);
-                    BlockedCaller newItemOnP1 = adapter.getList().get(toPosition);
-                    BlockedCaller newItemOnP2 = adapter.getList().get(fromPosition);
+                    BlockedCaller item1 = adapter.getList().get(toPosition);
+                    BlockedCaller item2 = adapter.getList().get(fromPosition);
+                    dao.swap(item1, item2, new BlacklistDao.OnResponse() {
+                        @Override
+                        public void OnFinish() {
+                            adapter.updateDataSet(dao.queryAll());
+                        }
 
-                    //交换以修改
-                    newItemOnP1.setNumber(newItemOnP2.getNumber());
-                    newItemOnP2.setNumber(newItemOnP1.getNumber());
-
-                    dao.modify(newItemOnP1, null);
-                    dao.modify(newItemOnP2, null);
+                        @Override
+                        public void onFail(int what, String errorMessage) {
+                            Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
@@ -204,6 +207,8 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
         super.onResume();
     }
 
+    private BlockedCaller item;
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -211,7 +216,7 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
                 showSetupDialog();
                 break;
             case R.id.bt_setup_ok:
-                BlockedCaller item = new BlockedCaller();
+                item = new BlockedCaller();
                 item.setName(et_name.getText().toString());
                 item.setNumber(et_phone.getText().toString());
                 item.setMODE(mode);
@@ -222,8 +227,19 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
                 else {
 
                     if (dialogType == SETUP) {
-                        dao.add(item, null);
-                        adapter.addItem(item);
+                        dao.add(item, new BlacklistDao.OnResponse() {
+                            @Override
+                            public void OnFinish() {
+                                adapter.addItem(item);
+                                alertDialog.dismiss();
+                            }
+
+                            @Override
+                            public void onFail(int what, String errorMessage) {
+                                Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                                alertDialog.dismiss();
+                            }
+                        });
                     } else {
                         dao.modify(item, new BlacklistDao.OnResponse() {
                             @Override
@@ -233,8 +249,8 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
                             }
 
                             @Override
-                            public void onFail() {
-                                Toast.makeText(getActivity(), "数据错误", Toast.LENGTH_SHORT).show();
+                            public void onFail(int what, String errorMessage) {
+                                Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
                                 alertDialog.dismiss();
                             }
                         });

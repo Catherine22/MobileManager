@@ -28,15 +28,14 @@ public class NumberAddressDao implements BaseDao {
      * 传一个手机号码进来,返回电话号码归属地
      *
      * @param number 手机号码
-     * @return
+     * @return address
      */
     public String queryNumber(String number) {
         String address = "";
         Cursor cursor = sqLiteDatabase.rawQuery("select location from data2 where id = (select outkey from data1 where id = ?)", new String[]{number.substring(0, 7)});
         try {
             while (cursor.moveToNext()) {
-                String location = cursor.getString(0);
-                address = location;
+                address = cursor.getString(0);
             }
         } finally {
             if (cursor != null && !cursor.isClosed())
@@ -50,7 +49,7 @@ public class NumberAddressDao implements BaseDao {
     /**
      * 检查号码是否存在列表中
      * @param number 手机号码
-     * @return
+     * @return boolean 是否存在列表中
      */
     @Override
     public boolean find(String number) {
@@ -58,8 +57,7 @@ public class NumberAddressDao implements BaseDao {
         Cursor cursor = sqLiteDatabase.rawQuery("select location from data2 where id = (select outkey from data1 where id = ?)", new String[]{number.substring(0, 7)});
         try {
             while (cursor.moveToNext()) {
-                String location = cursor.getString(0);
-                address = location;
+                address = cursor.getString(0);
             }
         } finally {
             if (cursor != null && !cursor.isClosed())
@@ -67,10 +65,7 @@ public class NumberAddressDao implements BaseDao {
             if (sqLiteDatabase.isOpen())
                 sqLiteDatabase.close();
         }
-        if (TextUtils.isEmpty(address))
-            return false;
-        else
-            return true;
+        return !TextUtils.isEmpty(address);
     }
 
     @Override

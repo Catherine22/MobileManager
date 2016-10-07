@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
 
 import com.itheima.mobilesafe.db.BlacklistDbOpenHelper;
+import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.objects.BlockedCaller;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.List;
  */
 
 public class BlacklistDao implements BaseDao {
+    private final static String TAG = "BlacklistDao";
     private BlacklistDbOpenHelper dbOpenHelper;
     /**
      * block calls and sms
@@ -43,12 +45,19 @@ public class BlacklistDao implements BaseDao {
     }
 
     /**
+     * block sms
+     */
+    @SuppressWarnings("unused")
+    public static final int DB_ERROR = 101;
+    public static final int DUPLICATE_DARA = 102;
+
+    /**
      * Callback
      */
     public interface OnResponse {
         void OnFinish();
 
-        void onFail();
+        void onFail(int what, String errorMessage);
     }
 
     /**
@@ -81,20 +90,26 @@ public class BlacklistDao implements BaseDao {
      * @param response return the result of inserting data
      */
     public void add(BlockedCaller caller, @Nullable OnResponse response) {
-        SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
-        if (db.isOpen()) {
-            ContentValues values = new ContentValues();
-            values.put("name", caller.getName());
-            values.put("number", caller.getNumber());
-            values.put("mode", caller.getMODE());
-            db.insert(TABLE, null, values);
-            db.close();
-            if (response != null)
-                response.OnFinish();
+        if (!find(caller.getNumber())) {
+            SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+            if (db.isOpen()) {
+                ContentValues values = new ContentValues();
+                values.put("name", caller.getName());
+                values.put("number", caller.getNumber());
+                values.put("mode", caller.getMODE());
+                db.insert(TABLE, null, values);
+                db.close();
+                if (response != null)
+                    response.OnFinish();
+            } else {
+                if (response != null)
+                    response.onFail(DB_ERROR, "数据库错误");
+            }
         } else {
             if (response != null)
-                response.onFail();
+                response.onFail(DUPLICATE_DARA, "重复添加");
         }
+
     }
 
     /**
@@ -118,12 +133,87 @@ public class BlacklistDao implements BaseDao {
                 db.close();
                 if (response != null)
                     response.OnFinish();
-            } else{
+            } else {
                 if (response != null)
-                    response.onFail();
+                    response.onFail(DB_ERROR, "数据库错误");
             }
-        }else {
+        } else {
             add(caller, response);
+        }
+    }
+
+
+    /**
+     * Modify number, mode and name of the blocked-caller
+     *
+     * @param caller   modify data by identifying _id, and this is used to do swap
+     *                 name:the name would be add into the blacklist
+     *                 number:the number would be add into the blacklist
+     *                 MODE:MODE_BOTH_BLOCKED, MODE_CALLS_BLOCKED or MODE_SMS_BLOCKED
+     * @param response return the result of modifying data
+     */
+    private void modifyById(String _id, BlockedCaller caller, @Nullable OnResponse response) {
+            SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+            if (db.isOpen()) {
+                ContentValues values = new ContentValues();
+                values.put("number", caller.getNumber());
+                values.put("mode", caller.getMODE());
+                values.put("name", caller.getName());
+                db.update(TABLE, values, "_id=?", new String[]{_id});
+                db.close();
+                if (response != null)
+                    response.OnFinish();
+            } else {
+                if (response != null)
+                    response.onFail(DB_ERROR, "数据库错误");
+            }
+    }
+
+
+    int index;
+    String id1 = null;
+    String id2 = null;
+    /**
+     * Swap data1 and data2 in the table
+     *
+     * @param caller1  data1
+     * @param caller2  data2
+     * @param response return the result of swapping data
+     */
+    public void swap(final BlockedCaller caller1, BlockedCaller caller2, @Nullable final OnResponse response) {
+        SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+        if (db.isOpen()) {
+            Cursor cursor1 = db.rawQuery("select * from " + TABLE + " where number=?", new String[]{caller1.getNumber()});
+
+            // cursor.moveToFirst()代表游标移动到第一笔数据
+            if (cursor1.moveToFirst()) {
+                // 得到_id在表中是第几列
+                index = cursor1.getColumnIndex("_id");
+                id1 = cursor1.getString(index);
+            }
+
+            Cursor cursor2 = db.rawQuery("select * from " + TABLE + " where number=?", new String[]{caller2.getNumber()});
+            if (cursor2.moveToFirst()) {
+                index = cursor2.getColumnIndex("_id");
+                id2 = cursor2.getString(index);
+            }
+            CLog.d(TAG, "id1=" + id1 + "/id2=" + id2);
+            modifyById(id1, caller2, new OnResponse() {
+                @Override
+                public void OnFinish() {
+                    modifyById(id2, caller1, response);
+                }
+
+                @Override
+                public void onFail(int what, String errorMessage) {
+                    if (response != null)
+                        response.onFail(DB_ERROR, "数据库错误");
+                }
+            });
+
+        } else {
+            if (response != null)
+                response.onFail(DB_ERROR, "数据库错误");
         }
     }
 

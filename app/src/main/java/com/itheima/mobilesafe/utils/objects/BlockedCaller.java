@@ -23,7 +23,7 @@ public class BlockedCaller implements BaseContact {
     @Override
     public String toString() {
         return "BlockedCaller{" +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", number='" + number + '\'' +
                 ", MODE=" + MODE +
                 '}';
