@@ -34,16 +34,15 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        MyViewHolder holder = new MyViewHolder(LayoutInflater.from(
+        return new MyViewHolder(LayoutInflater.from(
                 ctx).inflate(R.layout.list_item_blacklist, parent,
                 false));
-        return holder;
     }
 
     /**
      * 取得交换过、移除过的正确的列表
      *
-     * @return
+     * @return List<BlockedCaller> 当前列表
      */
     public List<BlockedCaller> getList() {
         return mDatas;
@@ -51,6 +50,16 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
 
     public void addItem(BlockedCaller item) {
         mDatas.add(item);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 数据改变后,呼叫此方法修改列表
+     *
+     * @param newList 新数据
+     */
+    public void updateDataSet(List<BlockedCaller> newList) {
+        mDatas = newList;
         notifyDataSetChanged();
     }
 
@@ -62,8 +71,8 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
     /**
      * 交换items(同时各自的position也会交换)
      *
-     * @param fromPosition
-     * @param toPosition
+     * @param fromPosition item1原本的位置
+     * @param toPosition   item1新的位置
      */
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
@@ -76,7 +85,7 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
     /**
      * 滑动事件(移除该item)
      *
-     * @param position
+     * @param position item的位置
      */
     @Override
     public void onItemDismiss(int position) {
@@ -133,7 +142,7 @@ public class BlacklistAdapter extends RecyclerView.Adapter<BlacklistAdapter.MyVi
 
         TextView tv_name, tv_phone;
 
-        public MyViewHolder(View view) {
+        private MyViewHolder(View view) {
             super(view);
             tv_name = (TextView) view.findViewById(R.id.tv_name);
             tv_phone = (TextView) view.findViewById(R.id.tv_phone);

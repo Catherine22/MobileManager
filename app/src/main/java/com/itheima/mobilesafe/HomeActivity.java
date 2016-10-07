@@ -29,7 +29,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
-import com.itheima.mobilesafe.db.dao.BlacklistDao;
 import com.itheima.mobilesafe.fragments.AToolsFragment;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
 import com.itheima.mobilesafe.fragments.BlacklistFragment;

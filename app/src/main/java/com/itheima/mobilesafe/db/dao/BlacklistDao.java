@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.Nullable;
 
 import com.itheima.mobilesafe.db.BlacklistDbOpenHelper;
 import com.itheima.mobilesafe.utils.objects.BlockedCaller;
@@ -17,10 +18,22 @@ import java.util.List;
  * catherine919@soft-world.com.tw
  */
 
-public class BlacklistDao {
+public class BlacklistDao implements BaseDao {
     private BlacklistDbOpenHelper dbOpenHelper;
+    /**
+     * block calls and sms
+     */
+    @SuppressWarnings("unused")
     public static final int MODE_BOTH_BLOCKED = 0;
+    /**
+     * block calls
+     */
+    @SuppressWarnings("unused")
     public static final int MODE_CALLS_BLOCKED = 1;
+    /**
+     * block sms
+     */
+    @SuppressWarnings("unused")
     public static final int MODE_SMS_BLOCKED = 2;
     public static final String MODES[] = {"全部拦截", "短信拦截", "电话拦截"};
     private final String TABLE = "blacklist";
@@ -30,16 +43,26 @@ public class BlacklistDao {
     }
 
     /**
+     * Callback
+     */
+    public interface OnResponse {
+        void OnFinish();
+
+        void onFail();
+    }
+
+    /**
      * Query the blacklist and check the number
      *
-     * @param number
+     * @param number phone number
      * @return whether the phone number is in the blacklist
      */
+    @Override
     public boolean find(String number) {
         boolean isExist = false;
         SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
         if (db.isOpen()) {
-            Cursor cursor = db.rawQuery("select * from " + TABLE + "where number=?", new String[]{number});
+            Cursor cursor = db.rawQuery("select * from " + TABLE + " where number=?", new String[]{number});
             if (cursor.moveToNext())
                 isExist = true;
             cursor.close();
@@ -51,46 +74,65 @@ public class BlacklistDao {
     /**
      * Add a blocked-number and set mode
      *
-     * @param name   the name would be add into the blacklist
-     * @param number the number would be add into the blacklist
-     * @param MODE   MODE_BOTH_BLOCKED, MODE_CALLS_BLOCKED or MODE_SMS_BLOCKED
+     * @param caller   number as an id
+     *                 name:the name would be add into the blacklist
+     *                 number:the number would be add into the blacklist
+     *                 MODE:MODE_BOTH_BLOCKED, MODE_CALLS_BLOCKED or MODE_SMS_BLOCKED
+     * @param response return the result of inserting data
      */
-    public void add(String name, String number, int MODE) {
+    public void add(BlockedCaller caller, @Nullable OnResponse response) {
         SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
         if (db.isOpen()) {
             ContentValues values = new ContentValues();
-            values.put("name", name);
-            values.put("number", number);
-            values.put("mode", MODE);
+            values.put("name", caller.getName());
+            values.put("number", caller.getNumber());
+            values.put("mode", caller.getMODE());
             db.insert(TABLE, null, values);
             db.close();
+            if (response != null)
+                response.OnFinish();
+        } else {
+            if (response != null)
+                response.onFail();
         }
     }
 
     /**
      * Modify mode and name of the blocked-caller
      *
-     * @param name
-     * @param number identify
-     * @param mode
+     * @param caller   modify data by identifying number
+     *                 name:the name would be add into the blacklist
+     *                 number:the number would be add into the blacklist
+     *                 MODE:MODE_BOTH_BLOCKED, MODE_CALLS_BLOCKED or MODE_SMS_BLOCKED
+     * @param response return the result of modifying data
      */
-    public void modify(String name, String number, int mode) {
-        SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
-        if (db.isOpen()) {
-            ContentValues values = new ContentValues();
-            values.put("number", number);
-            values.put("mode", mode);
-            values.put("name", name);
-            db.update(TABLE, values, "number=?", new String[]{number});
-            db.close();
+    public void modify(BlockedCaller caller, @Nullable OnResponse response) {
+        if (find(caller.getNumber())) {
+            SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+            if (db.isOpen()) {
+                ContentValues values = new ContentValues();
+                values.put("number", caller.getNumber());
+                values.put("mode", caller.getMODE());
+                values.put("name", caller.getName());
+                db.update(TABLE, values, "number=?", new String[]{caller.getNumber()});
+                db.close();
+                if (response != null)
+                    response.OnFinish();
+            } else{
+                if (response != null)
+                    response.onFail();
+            }
+        }else {
+            add(caller, response);
         }
     }
 
     /**
      * Remove the number from blacklist
      *
-     * @param number
+     * @param number modify data by identifying number
      */
+    @Override
     public void remove(String number) {
         SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
         if (db.isOpen()) {
@@ -102,8 +144,9 @@ public class BlacklistDao {
     /**
      * Get all blocked-callers
      *
-     * @return
+     * @return contents of blacklist the table
      */
+    @Override
     public List<BlockedCaller> queryAll() {
         SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
         List<BlockedCaller> myList = null;

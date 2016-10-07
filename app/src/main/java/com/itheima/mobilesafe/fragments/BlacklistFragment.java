@@ -19,12 +19,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.BlacklistAdapter;
 import com.itheima.mobilesafe.db.dao.BlacklistDao;
+import com.itheima.mobilesafe.factories.DaoFactory;
+import com.itheima.mobilesafe.factories.utils.DaoConstants;
 import com.itheima.mobilesafe.ui.recycler_view.DividerItemDecoration;
 import com.itheima.mobilesafe.ui.recycler_view.ItemTouchCallback;
 import com.itheima.mobilesafe.utils.CLog;
@@ -56,12 +59,15 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_blacklist, container, false);
+
+        DaoFactory daoF = new DaoFactory();
+        dao = (BlacklistDao) daoF.getDao(getActivity(), DaoConstants.BLACKLIST);
+        blockedCallers = dao.queryAll();
+
         tv_no_data = (TextView) view.findViewById(R.id.tv_no_data);
         tv_add = (TextView) view.findViewById(R.id.tv_add);
         tv_add.setOnClickListener(this);
         rv_blacklist = (RecyclerView) view.findViewById(R.id.rv_blacklist);
-        dao = new BlacklistDao(getActivity());
-        blockedCallers = dao.queryAll();
         if (blockedCallers != null) {
             tv_no_data.setVisibility(View.INVISIBLE);
 
@@ -72,6 +78,7 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
                 @Override
                 public void onItemClick(View view, int position) {
                     CLog.d(TAG, "onItemClick " + adapter.getList().get(position).toString());
+                    showModifyDialog(adapter.getList().get(position));
                 }
 
                 @Override
@@ -84,8 +91,13 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
                     CLog.d(TAG, "onItemSwap " + "swap " + fromPosition + " for " + toPosition);
                     BlockedCaller newItemOnP1 = adapter.getList().get(toPosition);
                     BlockedCaller newItemOnP2 = adapter.getList().get(fromPosition);
-                    dao.modify(newItemOnP1.getName(), newItemOnP2.getNumber(), newItemOnP1.getMODE());
-                    dao.modify(newItemOnP2.getName(), newItemOnP1.getNumber(), newItemOnP2.getMODE());
+
+                    //交换以修改
+                    newItemOnP1.setNumber(newItemOnP2.getNumber());
+                    newItemOnP2.setNumber(newItemOnP1.getNumber());
+
+                    dao.modify(newItemOnP1, null);
+                    dao.modify(newItemOnP2, null);
                 }
 
                 @Override
@@ -110,8 +122,12 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
     private Spinner s_mode;
     private Dialog alertDialog;
     private int mode;
+    private int dialogType;
+    private final static int SETUP = 0;
+    private final static int MODIFY = 1;
 
     private void showSetupDialog() {
+        dialogType = SETUP;
         alertDialog = new Dialog(getActivity());
         alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alertDialog.setContentView(R.layout.dialog_setup_blacklist);
@@ -134,6 +150,42 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
                 mode = BlacklistDao.MODE_BOTH_BLOCKED;
             }
         });
+        bt_ok = (Button) alertDialog.findViewById(R.id.bt_setup_ok);
+        bt_ok.setOnClickListener(this);
+        bt_cancel = (Button) alertDialog.findViewById(R.id.bt_setup_cancel);
+        bt_cancel.setOnClickListener(this);
+    }
+
+
+    private void showModifyDialog(final BlockedCaller caller) {
+        dialogType = MODIFY;
+        alertDialog = new Dialog(getActivity());
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertDialog.setContentView(R.layout.dialog_setup_blacklist);
+        //设置dialog背景透明
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
+
+        et_name = (EditText) alertDialog.findViewById(R.id.et_name);
+        et_name.setText(caller.getName());
+        et_phone = (EditText) alertDialog.findViewById(R.id.et_phone);
+        et_phone.setText(caller.getNumber());
+
+        s_mode = (Spinner) alertDialog.findViewById(R.id.s_mode);
+        s_mode.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, BlacklistDao.MODES));
+        s_mode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mode = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                mode = caller.getMODE();
+            }
+        });
+        //set spinner default
+        s_mode.setSelection(caller.getMODE());
         bt_ok = (Button) alertDialog.findViewById(R.id.bt_setup_ok);
         bt_ok.setOnClickListener(this);
         bt_cancel = (Button) alertDialog.findViewById(R.id.bt_setup_cancel);
@@ -168,9 +220,25 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
                 else if (TextUtils.isEmpty(item.getNumber()))
                     Toast.makeText(getActivity(), "号码不得为空", Toast.LENGTH_SHORT).show();
                 else {
-                    dao.add(item.getName(), item.getNumber(), item.getMODE());
-                    adapter.addItem(item);
-                    alertDialog.dismiss();
+
+                    if (dialogType == SETUP) {
+                        dao.add(item, null);
+                        adapter.addItem(item);
+                    } else {
+                        dao.modify(item, new BlacklistDao.OnResponse() {
+                            @Override
+                            public void OnFinish() {
+                                adapter.updateDataSet(dao.queryAll());
+                                alertDialog.dismiss();
+                            }
+
+                            @Override
+                            public void onFail() {
+                                Toast.makeText(getActivity(), "数据错误", Toast.LENGTH_SHORT).show();
+                                alertDialog.dismiss();
+                            }
+                        });
+                    }
                 }
                 break;
             case R.id.bt_setup_cancel:
