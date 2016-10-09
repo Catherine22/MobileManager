@@ -29,7 +29,8 @@
     }
 ```
   - [HomeActivity]
- #### 可滑动、上下交换的RecyclerView
+  
+#### 可滑动、上下交换的RecyclerView
   - [BlacklistFragment]
   - [BlacklistAdapter]
 
@@ -122,6 +123,7 @@ if(phone.matches("^1[3456]\\d{9}$")){
   - [Factory]
   - [AbstractFactory]
   - [Builder]
+
 ####  [SQLite operation]
 
 ## Android6.0或以上权限设置
