@@ -25,8 +25,8 @@ import android.widget.Toast;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.BlacklistAdapter;
 import com.itheima.mobilesafe.db.dao.BlacklistDao;
-import com.itheima.mobilesafe.factories.DaoFactory;
-import com.itheima.mobilesafe.factories.utils.DaoConstants;
+import com.itheima.mobilesafe.utils.DaoFactory;
+import com.itheima.mobilesafe.db.dao.DaoConstants;
 import com.itheima.mobilesafe.ui.recycler_view.DividerItemDecoration;
 import com.itheima.mobilesafe.ui.recycler_view.ItemTouchCallback;
 import com.itheima.mobilesafe.utils.CLog;
@@ -60,7 +60,7 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
         View view = inflater.inflate(R.layout.fragment_blacklist, container, false);
 
         DaoFactory daoF = new DaoFactory();
-        dao = (BlacklistDao) daoF.getDao(getActivity(), DaoConstants.BLACKLIST);
+        dao = (BlacklistDao) daoF.createDao(getActivity(), DaoConstants.BLACKLIST);
         blockedCallers = dao.queryAll();
 
         tv_no_data = (TextView) view.findViewById(R.id.tv_no_data);

@@ -1,4 +1,4 @@
-package com.itheima.mobilesafe.factories.utils;
+package com.itheima.mobilesafe.db.dao;
 
 /**
  * Created by Catherine on 2016/10/6.

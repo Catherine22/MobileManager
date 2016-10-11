@@ -1,9 +1,9 @@
-package com.itheima.mobilesafe.factories;
+package com.itheima.mobilesafe.utils;
 
 import android.content.Context;
 
 import com.itheima.mobilesafe.db.dao.BlacklistDao;
-import com.itheima.mobilesafe.factories.utils.DaoConstants;
+import com.itheima.mobilesafe.db.dao.DaoConstants;
 import com.itheima.mobilesafe.db.dao.BaseDao;
 
 /**
@@ -13,7 +13,7 @@ import com.itheima.mobilesafe.db.dao.BaseDao;
  */
 
 public class DaoFactory {
-    public BaseDao getDao(Context ctx, int type) {
+    public BaseDao createDao(Context ctx, int type) {
         BaseDao baseDao;
         switch (type) {
             case DaoConstants.BLACKLIST:

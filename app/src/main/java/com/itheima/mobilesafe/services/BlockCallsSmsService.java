@@ -17,8 +17,8 @@ import android.telephony.TelephonyManager;
 
 import com.android.internal.telephony.ITelephony;
 import com.itheima.mobilesafe.db.dao.BlacklistDao;
-import com.itheima.mobilesafe.factories.DaoFactory;
-import com.itheima.mobilesafe.factories.utils.DaoConstants;
+import com.itheima.mobilesafe.utils.DaoFactory;
+import com.itheima.mobilesafe.db.dao.DaoConstants;
 import com.itheima.mobilesafe.utils.CLog;
 
 import java.lang.reflect.InvocationTargetException;
@@ -59,7 +59,7 @@ public class BlockCallsSmsService extends Service {
     public void onCreate() {
         super.onCreate();
         daoF = new DaoFactory();
-        dao = (BlacklistDao) daoF.getDao(getApplicationContext(), DaoConstants.BLACKLIST);
+        dao = (BlacklistDao) daoF.createDao(getApplicationContext(), DaoConstants.BLACKLIST);
 
         receiver = new InnerSmsReceiver();
         registerReceiver(receiver, new IntentFilter("android.provider.Telephony.SMS_RECEIVED"));
@@ -130,7 +130,7 @@ public class BlockCallsSmsService extends Service {
                 case TelephonyManager.CALL_STATE_RINGING://铃响
                     CLog.d(TAG, "收到电话(" + incomingNumber + ")啦!");
 
-                    dao = (BlacklistDao) daoF.getDao(getApplicationContext(), DaoConstants.BLACKLIST);
+                    dao = (BlacklistDao) daoF.createDao(getApplicationContext(), DaoConstants.BLACKLIST);
                     int result = dao.findMode(incomingNumber);
                     switch (result) {
                         case BlacklistDao.NOT_FOUND:
