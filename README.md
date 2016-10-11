@@ -1,6 +1,17 @@
 # MobileManager
-## 自定义控件
 
+## 功能导航
+| 功能 | 代码 |
+| ------------ | ------------- |
+| 号码归属地查询 | [NumberAddressQueryFragment] |
+| 设置黑名单 | [BlacklistFragment] |
+| 进程管理、删除 | [TaskFragment] |
+| 监听来电，显示号码归属地悬浮窗 | [AddressService] |
+| 短信、通话拦截 | [BlockCallsSmsService] |
+| 取得GPS位置 | [GPSService] |
+| 拦截短信后，利用管理员权限卸载应用、设置锁屏、清除数据 | [SMSReceiver], [MyAdminManager] |
+
+## 自定义控件
 #### 自定义控件属性      
   - [fragment_settings]
   - [SettingItemView]
@@ -42,7 +53,12 @@
   - [build.gradle]之productFlavors{...}
   - [MyApplication]
   - [CLog]
-
+#### Http网络请求（含JSON解析）
+  - [NetUtils]
+  - [NetAsyncTask]
+#### 进程、服务管理
+  - [SystemInfoUtils]
+  - [ServiceUtils]
 #### 开机后自动启动、检查SIM卡       
   - 在[AndroidManifest]添加权限与注册receiver
 ```JAVA
@@ -383,3 +399,11 @@ public interface MyPermissionsResultListener {
    [SQLite operation]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/db/dao/BlacklistDao.java>
    [ITelephony]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/aidl/com/android/internal/telephony/ITelephony.aidl>
    [NeighboringCellInfo]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/aidl/android/telephony/NeighboringCellInfo.aidl>
+   [BlockCallsSmsService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/BlockCallsSmsService.java>
+   [NumberAddressQueryFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/NumberAddressQueryFragment.java>
+   [TaskFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/TaskFragment.java>
+   [AddressService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/AddressService.java>
+   [NetUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/NetUtils.java>
+   [NetAsyncTask]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/NetAsyncTask.java>
+   [SystemInfoUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/SystemInfoUtils.java>
+   [ServiceUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/ServiceUtils.java>
