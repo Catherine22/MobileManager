@@ -194,6 +194,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mainInterface.getPermissions(new String[]{
+                                Manifest.permission.CALL_PHONE,
                                 Manifest.permission.RECEIVE_SMS,
                                 Manifest.permission.READ_CONTACTS,
                                 Manifest.permission.WRITE_CONTACTS},
