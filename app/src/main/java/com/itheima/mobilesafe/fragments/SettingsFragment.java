@@ -194,6 +194,9 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mainInterface.getPermissions(new String[]{
+                                Manifest.permission.READ_CALL_LOG,
+                                Manifest.permission.WRITE_CALL_LOG,
+                                Manifest.permission.CALL_PHONE,
                                 Manifest.permission.RECEIVE_SMS,
                                 Manifest.permission.READ_CONTACTS,
                                 Manifest.permission.WRITE_CONTACTS},
@@ -222,6 +225,9 @@ public class SettingsFragment extends Fragment {
 
         //设置归属地限时框背景
         snv_set_background.setTitle("归属地提示框风格");
+        int skin = sp.getInt("address_bg", 0);
+        snv_set_background.setDesc(Constants.addressBgs[skin]);
+
         snv_set_background.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

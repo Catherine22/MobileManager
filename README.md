@@ -118,6 +118,41 @@ if(phone.matches("^1[3456]\\d{9}$")){
  }
 
 ```
+#### 使用Reflection实现挂断电话
+  - 添加权限android.permission.CALL_PHONE（Android 6.0预设没有，须额外获取）
+  - 添加远程调用（aidl）[ITelephony]与[NeighboringCellInfo]
+```
+/**
+ * 使用反射机制加载被隐藏的方法
+ */
+private void endCall() {
+    //api仍然存在，只是被隐藏而已，所以须使用反射找到方法
+    //ServiceManager被隐藏（/** @hide */）所以会报错：Cannot resolve symbol ServiceManager
+    //IBinder b =  ServiceManager.getService(Context.TELEPHONY_SERVICE);
+
+    //改用：
+    try {
+        //加载ServiceManager的字节码
+        Class clazz = BlockCallsSmsService.class.getClassLoader().loadClass("android.os.ServiceManager");
+        //呼叫的方法与带入的参数型别
+        Method method = clazz.getDeclaredMethod("getService", String.class);
+        //the object on which to call this method (or null for static methods)
+        IBinder b = (IBinder) method.invoke(null, Context.TELEPHONY_SERVICE); 
+        ITelephony.Stub.asInterface(b).endCall();
+    } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+    } catch (NoSuchMethodException e) {
+        e.printStackTrace();
+    } catch (InvocationTargetException e) {
+        e.printStackTrace();
+    } catch (IllegalAccessException e) {
+        e.printStackTrace();
+    } catch (RemoteException e) {
+        e.printStackTrace();
+    }
+}
+```
+
 #### Design Pattern
   - [Singleton]
   - [Factory]
@@ -346,3 +381,5 @@ public interface MyPermissionsResultListener {
    [AbstractFactory]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/designpattern/abstract_factory>
    [Builder]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/designpattern/builder>
    [SQLite operation]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/db/dao/BlacklistDao.java>
+   [ITelephony]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/aidl/com/android/internal/telephony/ITelephony.aidl>
+   [NeighboringCellInfo]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/aidl/android/telephony/NeighboringCellInfo.aidl>

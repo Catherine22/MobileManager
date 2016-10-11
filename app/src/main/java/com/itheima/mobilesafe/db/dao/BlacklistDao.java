@@ -42,7 +42,7 @@ public class BlacklistDao implements BaseDao {
      */
     @SuppressWarnings("unused")
     public static final int MODE_SMS_BLOCKED = 2;
-    public static final String MODES[] = {"全部拦截", "短信拦截", "电话拦截"};
+    public static final String MODES[] = {"全部拦截", "电话拦截", "短信拦截"};
     private final String TABLE = "blacklist";
 
     public BlacklistDao(Context ctx) {
