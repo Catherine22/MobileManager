@@ -199,7 +199,7 @@ public class BlockCallsSmsService extends Service {
         }
 
         /**
-         * 通话记录的内容观察者
+         * 通话记录的内容观察者，一旦数据发生变化则呼叫onChange
          */
         private class CallLogObserve extends ContentObserver {
             String incomingNumber;
@@ -217,7 +217,7 @@ public class BlockCallsSmsService extends Service {
             @Override
             public void onChange(boolean selfChange, Uri uri) {
                 super.onChange(selfChange, uri);
-                CLog.d(TAG, "onChange:" + selfChange + "/uri:" + uri);
+//                CLog.d(TAG, "onChange:" + selfChange + "/uri:" + uri);
             }
 
             @Override
@@ -228,7 +228,7 @@ public class BlockCallsSmsService extends Service {
             @Override
             public void onChange(boolean selfChange) {
                 super.onChange(selfChange);
-                CLog.d(TAG, "onChange:" + selfChange);
+//                CLog.d(TAG, "onChange:" + selfChange);
                 getContentResolver().unregisterContentObserver(this);
                 deleteCallLog(incomingNumber);
             }
