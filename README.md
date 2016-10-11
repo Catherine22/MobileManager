@@ -121,7 +121,7 @@ if(phone.matches("^1[3456]\\d{9}$")){
 #### 使用Reflection实现挂断电话
   - 添加权限android.permission.CALL_PHONE（Android 6.0预设没有，须额外获取）
   - 添加远程调用（aidl）[ITelephony]与[NeighboringCellInfo]
-```
+```JAVA
 /**
  * 使用反射机制加载被隐藏的方法
  */
@@ -159,7 +159,7 @@ private void endCall() {
   - [AbstractFactory]
   - [Builder]
 
-####  [SQLite operation]
+#### [SQLite operation]
 
 ## Android6.0或以上权限设置
   - 需要在用到权限的地方，自定义是否检查权限，处理SYSTEM_ALERT_WINDOW和WRITE_SETTINGS例外
