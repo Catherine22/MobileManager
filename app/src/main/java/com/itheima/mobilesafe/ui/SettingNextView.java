@@ -82,9 +82,7 @@ public class SettingNextView extends RelativeLayout {
         desc_on = attrs.getAttributeValue("http://schemas.android.com/apk/com.itheima.mobilesafe", "desc_on");
         desc_off = attrs.getAttributeValue("http://schemas.android.com/apk/com.itheima.mobilesafe", "desc_off");
         tv_title.setText(title_);
-        if (!TextUtils.isEmpty(desc_off))
-            tv_desc.setText(desc_off);
-        else tv_desc.setVisibility(GONE);
+        tv_desc.setText(desc_off);
     }
 
 
