@@ -1,7 +1,5 @@
 package com.itheima.mobilesafe.utils.xmlbuilder;
 
-import com.itheima.mobilesafe.utils.objects.XmlElement;
-
 /**
  * Created by Catherine on 2016/10/12.
  * Soft-World Inc.

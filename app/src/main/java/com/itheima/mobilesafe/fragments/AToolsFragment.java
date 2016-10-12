@@ -1,5 +1,6 @@
 package com.itheima.mobilesafe.fragments;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -7,9 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.MainInterface;
+import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.utils.BackupFactory;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.backup.BackupConstants;
@@ -52,12 +55,23 @@ public class AToolsFragment extends Fragment {
         tv_sms_backup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sb = (SmsBackup) backupFactory.createBackup(getActivity(), BackupConstants.SMS_BACKUP);
-                try {
-                    sb.backup();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                mainInterface.getPermissions(new String[]{Manifest.permission.READ_SMS}, new MyPermissionsResultListener() {
+                    @Override
+                    public void onGranted() {
+                        sb = (SmsBackup) backupFactory.createBackup(getActivity(), BackupConstants.SMS_BACKUP);
+                        try {
+                            sb.backup();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onDenied() {
+                        Toast.makeText(getActivity(), "权限不足", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
         });
         tv_sms_recovery = (TextView) view.findViewById(R.id.tv_sms_recovery);

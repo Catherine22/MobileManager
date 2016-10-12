@@ -5,7 +5,6 @@ import android.util.Xml;
 
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.MemoryUtils;
-import com.itheima.mobilesafe.utils.objects.XmlElement;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -66,23 +65,33 @@ public class XmlBuilder {
 
         if (xmlElement.getElement() != null && xmlElement.getElement().size() != 0) {
             boolean stop = false;
-            List<XmlElement> elements = xmlElement.getElement();
-            while (!stop) {
-                for (int i = 0; i < elements.size(); i++) {
-                    XmlElement item = xmlElement.getElement().get(i);
+            List<XmlElement> temps = xmlElement.getElement();
+            XmlElement item;
+            int fistLevelSize = xmlElement.getElement().size();//第一层
+            int progress = 0;//目前进度（于第一层）
+
+            while (progress != fistLevelSize) {
+                CLog.d(TAG, "progress:" + progress + "/" + fistLevelSize);
+                for (int i = 0; i < temps.size(); i++) {
+                    item = xmlElement.getElement().get(i);
                     serializer.startTag(item.getNamespace(), item.getName());
                     if (item.getAttribute() != null)
                         serializer.attribute(item.getAttribute().getNamespace(), item.getAttribute().getName(), item.getAttribute().getValue());
 
                     if (item.getElement() != null && item.getElement().size() != 0) {
-                        elements = item.getElement();
-                        stop = false;
+                        CLog.d(TAG, "第三层 " + item.toString());
+                        for (XmlElement e : item.getElement()) {
+                            serializer.startTag(e.getNamespace(), e.getName());
+                            serializer.text(e.getText());
+                            serializer.endTag(e.getNamespace(), e.getName());
+                        }
                     } else {
                         serializer.text(item.getText());
-                        stop = true;
                     }
                     serializer.endTag(item.getNamespace(), item.getName());
+                    progress++;
                 }
+
             }
 
         } else
