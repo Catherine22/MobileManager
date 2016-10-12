@@ -17,9 +17,9 @@ import android.telephony.TelephonyManager;
 
 import com.android.internal.telephony.ITelephony;
 import com.itheima.mobilesafe.db.dao.BlacklistDao;
-import com.itheima.mobilesafe.utils.DaoFactory;
 import com.itheima.mobilesafe.db.dao.DaoConstants;
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.DaoFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

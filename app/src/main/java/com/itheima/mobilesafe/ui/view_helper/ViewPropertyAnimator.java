@@ -1,11 +1,11 @@
 package com.itheima.mobilesafe.ui.view_helper;
 
-import java.util.WeakHashMap;
-
 import android.animation.Animator;
 import android.os.Build;
 import android.view.View;
 import android.view.animation.Interpolator;
+
+import java.util.WeakHashMap;
 
 
 /**

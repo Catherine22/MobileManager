@@ -22,8 +22,8 @@ public class MemoryUtils {
     private final static int FILE_NAME_ERROR = 2;
 
     public static class Result {
-        private final static int ERROR = 0;
-        private final static int SUCCESS = 1;
+        public final static int ERROR = 0;
+        public final static int SUCCESS = 1;
         private int what;
 
         public String getMessage() {

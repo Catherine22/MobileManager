@@ -3,6 +3,8 @@ package com.itheima.mobilesafe.utils.xmlbuilder;
 import android.os.Environment;
 import android.util.Xml;
 
+import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.MemoryUtils;
 import com.itheima.mobilesafe.utils.objects.XmlElement;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -19,30 +21,48 @@ import java.util.List;
  */
 
 public class XmlBuilder {
-    private XmlPlan entity;
-    private XmlSerializer serizlizer;
+    private final static String TAG = "XmlBuilder";
+    private XmlEntity entity;
+    private XmlSerializer serializer;
 
     public XmlBuilder() {
         //default value
-        entity = new XmlPlan();
+        entity = new XmlEntity();
         entity.setEncoding("utf-8");
         entity.setFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/");
         entity.setFileName("default.xml");
     }
 
     public void build() throws IOException {
+        MemoryUtils.Result checkPath = MemoryUtils.formatPath(entity.getFilePath());
+        if (checkPath.getWhat() == MemoryUtils.Result.ERROR) {
+            CLog.e(TAG, checkPath.getMessage());
+            return;
+        }
+
+        MemoryUtils.Result checkFileName = MemoryUtils.formatFileName(entity.getFileName());
+        if (checkFileName.getWhat() == MemoryUtils.Result.ERROR) {
+            if (checkFileName.getMessage().equals("请输入副档名")) {
+                String temp = entity.getFileName();
+                entity.setFileName(temp + ".xml");
+            } else {
+                CLog.e(TAG, checkFileName.getMessage());
+                return;
+            }
+        }
+
         File file = new File(entity.getFilePath() + entity.getFileName());
         FileOutputStream fos = new FileOutputStream(file);
 
         XmlElement xmlElement = entity.getElement();
 
         //序列化：把内存中的东西写进文件里
-        serizlizer = Xml.newSerializer();//xml的生成器（序列化器）
-        serizlizer.setOutput(fos, entity.getEncoding());
-        serizlizer.startDocument(entity.getEncoding(), true);//对应endDocument()
-        serizlizer.startTag(xmlElement.getNamespace(), xmlElement.getName());//endTag()
+        serializer = Xml.newSerializer();//xml的生成器（序列化器）
+        serializer.setOutput(fos, entity.getEncoding());
+        serializer.startDocument(entity.getEncoding(), true);//对应endDocument()
+        serializer.startTag(xmlElement.getNamespace(), xmlElement.getName());//endTag()
         if (xmlElement.getAttribute() != null)
-            serizlizer.attribute(xmlElement.getAttribute().getNamespace(), xmlElement.getAttribute().getName(), xmlElement.getAttribute().getValue());
+            serializer.attribute(xmlElement.getAttribute().getNamespace(), xmlElement.getAttribute().getName(), xmlElement.getAttribute().getValue());
 
         if (xmlElement.getElement() != null && xmlElement.getElement().size() != 0) {
             boolean stop = false;
@@ -50,26 +70,26 @@ public class XmlBuilder {
             while (!stop) {
                 for (int i = 0; i < elements.size(); i++) {
                     XmlElement item = xmlElement.getElement().get(i);
-                    serizlizer.startTag(item.getNamespace(), item.getName());
+                    serializer.startTag(item.getNamespace(), item.getName());
                     if (item.getAttribute() != null)
-                        serizlizer.attribute(item.getAttribute().getNamespace(), item.getAttribute().getName(), item.getAttribute().getValue());
+                        serializer.attribute(item.getAttribute().getNamespace(), item.getAttribute().getName(), item.getAttribute().getValue());
 
                     if (item.getElement() != null && item.getElement().size() != 0) {
                         elements = item.getElement();
                         stop = false;
                     } else {
-                        serizlizer.text(item.getText());
+                        serializer.text(item.getText());
                         stop = true;
                     }
-                    serizlizer.endTag(item.getNamespace(), item.getName());
+                    serializer.endTag(item.getNamespace(), item.getName());
                 }
             }
 
         } else
-            serizlizer.text(xmlElement.getText());
+            serializer.text(xmlElement.getText());
 
-        serizlizer.endTag(xmlElement.getNamespace(), xmlElement.getName());
-        serizlizer.endDocument();
+        serializer.endTag(xmlElement.getNamespace(), xmlElement.getName());
+        serializer.endDocument();
 
         fos.flush();
         fos.close();
@@ -90,13 +110,5 @@ public class XmlBuilder {
 
     public void setElement(XmlElement element) {
         entity.setElement(element);
-    }
-
-    public void setElementValue(List<XmlElement> elements) {
-        entity.getElement().setElement(elements);
-    }
-
-    public void setElementValue(String text) {
-        entity.getElement().setText(text);
     }
 }

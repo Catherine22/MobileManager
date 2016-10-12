@@ -8,7 +8,6 @@ package com.itheima.mobilesafe.utils.objects;
 
 import android.graphics.Bitmap;
 
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 

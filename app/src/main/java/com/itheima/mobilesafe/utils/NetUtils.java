@@ -4,15 +4,16 @@ package com.itheima.mobilesafe.utils;
  * Created by Yi-Jing on 2016/9/16.
  */
 
+import android.accounts.NetworkErrorException;
+import android.os.Handler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import android.accounts.NetworkErrorException;
-import android.os.Handler;
 
 public class NetUtils {
     private final static String TAG = "NetUtils";

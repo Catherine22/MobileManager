@@ -1,8 +1,6 @@
 package com.itheima.mobilesafe.adapter;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

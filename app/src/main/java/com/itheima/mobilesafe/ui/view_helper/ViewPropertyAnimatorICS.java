@@ -1,9 +1,10 @@
 package com.itheima.mobilesafe.ui.view_helper;
-import java.lang.ref.WeakReference;
 
 import android.animation.Animator;
 import android.view.View;
 import android.view.animation.Interpolator;
+
+import java.lang.ref.WeakReference;
 
 class ViewPropertyAnimatorICS extends ViewPropertyAnimator {
     /**

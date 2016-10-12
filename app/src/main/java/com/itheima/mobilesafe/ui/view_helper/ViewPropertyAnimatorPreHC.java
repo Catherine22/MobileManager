@@ -16,17 +16,17 @@
 
 package com.itheima.mobilesafe.ui.view_helper;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
-
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.view.View;
 import android.view.animation.Interpolator;
 
 import com.itheima.mobilesafe.ui.view_helper.animation.AnimatorProxy;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 class ViewPropertyAnimatorPreHC extends ViewPropertyAnimator {
     /**

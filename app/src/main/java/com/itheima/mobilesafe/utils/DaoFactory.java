@@ -2,9 +2,9 @@ package com.itheima.mobilesafe.utils;
 
 import android.content.Context;
 
+import com.itheima.mobilesafe.db.dao.BaseDao;
 import com.itheima.mobilesafe.db.dao.BlacklistDao;
 import com.itheima.mobilesafe.db.dao.DaoConstants;
-import com.itheima.mobilesafe.db.dao.BaseDao;
 
 /**
  * Created by Catherine on 2016/10/6.

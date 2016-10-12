@@ -2,16 +2,9 @@ package com.itheima.mobilesafe.utils.backup;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Xml;
 
-import com.itheima.mobilesafe.utils.CLog;
-import com.itheima.mobilesafe.utils.MemoryUtils;
-import com.itheima.mobilesafe.utils.objects.XmlAttribute;
 import com.itheima.mobilesafe.utils.objects.XmlElement;
 import com.itheima.mobilesafe.utils.xmlbuilder.XmlBuilder;
-import com.itheima.mobilesafe.utils.xmlbuilder.XmlPlan;
-
-import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 import java.util.ArrayList;

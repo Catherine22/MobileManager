@@ -25,11 +25,11 @@ import android.widget.Toast;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.BlacklistAdapter;
 import com.itheima.mobilesafe.db.dao.BlacklistDao;
-import com.itheima.mobilesafe.utils.DaoFactory;
 import com.itheima.mobilesafe.db.dao.DaoConstants;
 import com.itheima.mobilesafe.ui.recycler_view.DividerItemDecoration;
 import com.itheima.mobilesafe.ui.recycler_view.ItemTouchCallback;
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.DaoFactory;
 import com.itheima.mobilesafe.utils.objects.BlockedCaller;
 
 import java.util.List;

@@ -8,7 +8,7 @@ import com.itheima.mobilesafe.utils.objects.XmlElement;
  * catherine919@soft-world.com.tw
  */
 
-public class XmlPlan {
+public class XmlEntity {
     private String fileName;
     private String filePath;
     private String encoding;
