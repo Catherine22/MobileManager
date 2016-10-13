@@ -48,6 +48,7 @@ import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Encryption;
 import com.itheima.mobilesafe.utils.MyAdminManager;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.LinkedList;
@@ -94,13 +95,22 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             public void onInitFinished(JSONObject referringParams, BranchError error) {
                 if (error == null) {
                     CLog.d(TAG, referringParams.toString());
+                    try {
+                        String eventid = referringParams.optString("eventid");
+                        boolean matchGuaranteed = referringParams.getBoolean("+match_guaranteed");
+                        if (matchGuaranteed) {//避免呼叫两次
+                            if (eventid.equals("ASDF1100"))//在branch.io marketing里设置
+                                callFragment(Constants.BLACKLIST_FRAG);
 
-                    // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
-                    // params will be empty if no data found
-                    // ... insert custom logic here ...
-                } else {
+                            //其他处理...
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else
                     CLog.i(TAG, error.getMessage());
-                }
+
             }
         }, this.getIntent().getData(), this);
     }
