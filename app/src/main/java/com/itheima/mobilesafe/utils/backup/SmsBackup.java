@@ -5,15 +5,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Xml;
 
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.MemoryUtils;
-import com.itheima.mobilesafe.utils.xmlbuilder.XmlElement;
-import com.itheima.mobilesafe.utils.xmlbuilder.XmlBuilder;
+import com.itheima.mobilesafe.utils.Settings;
 
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Catherine on 2016/10/11.
@@ -24,6 +26,7 @@ import java.util.List;
 public class SmsBackup implements BaseBackup {
     private final static String TAG = "SmsBackup";
     private Context ctx;
+    private XmlSerializer serializer;
 
     public SmsBackup(Context ctx) {
         this.ctx = ctx;
@@ -32,76 +35,67 @@ public class SmsBackup implements BaseBackup {
     @Override
     public void backup() throws IOException {
 
-        List<XmlElement> data = new ArrayList<>();
+        File dir = new File(Settings.BACKUP_PATH);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
 
-        List<XmlElement> includes;
-        XmlElement address = new XmlElement();
-        XmlElement date = new XmlElement();
-        XmlElement type = new XmlElement();
-        XmlElement body = new XmlElement();
+        File file = new File(dir, "sms.xml");
+        if (!file.exists())
+            file.createNewFile();
 
+        file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "Backup/sms.xml");
+        FileOutputStream fos = new FileOutputStream(file);
+
+        //序列化：把内存中的东西写进文件里
+        serializer = Xml.newSerializer();//xml的生成器（序列化器）
+        serializer.setOutput(fos, "utf-8");
+        serializer.startDocument("utf-8", true);//对应endDocument()
+        serializer.startTag(null, "smss");//endTag()
+
+        //获取sms数据
         ContentResolver resolver = ctx.getContentResolver();
         Uri uri = Uri.parse("content://sms/");
         Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"}, null, null, null);
         while (cursor.moveToNext()) {
-            includes = new ArrayList<>();
+            serializer.startTag(null, "sms");
 
-            address.setName("address");
-            address.setText(cursor.getString(0));
-            includes.add(address);
+            serializer.startTag(null, "address");
+            serializer.text(cursor.getString(0));
+            serializer.endTag(null, "address");
 
-            date.setName("date");
-            date.setText(cursor.getString(1));
-            includes.add(date);
+            serializer.startTag(null, "date");
+            serializer.text(cursor.getString(1));
+            serializer.endTag(null, "date");
 
-            type.setName("type");
-            type.setText(cursor.getString(2));
-            includes.add(type);
+            serializer.startTag(null, "type");
+            serializer.text(cursor.getString(2));
+            serializer.endTag(null, "type");
 
-            body.setName("body");
-            body.setText(cursor.getString(3));
-            includes.add(body);
+            serializer.startTag(null, "body");
+            serializer.text(cursor.getString(3));
+            serializer.endTag(null, "body");
 
-            CLog.d(TAG, includes.toString());
-
-            XmlElement subElement = new XmlElement();
-            subElement.setName("sms");
-            subElement.setElement(includes);
-            data.add(subElement);
+            serializer.endTag(null, "sms");
         }
         cursor.close();
-//        XmlAttribute attr = new XmlAttribute();
-//        attr.setName("number");
-//        attr.setValue("13512345678");
+        fos.close();
 
-        CLog.d(TAG, "size:" + data.size());
+        serializer.endTag(null, "smss");
+        serializer.endDocument();
 
-        XmlElement element = new XmlElement();
-        element.setName("smss");
-        element.setElement(data);
-//        element.setText("text");
-//        element.setAttribute(attr);
+        MemoryUtils.saveStringToRom(ctx, "Backup", "sms.xml", "YO", new MemoryUtils.OnResponse() {
+            @Override
+            public void onSuccess() {
+                CLog.d(TAG, "onSuccess()");
+            }
 
-        XmlBuilder sb = new XmlBuilder();
-        sb.setFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/");
-        sb.setFileName("default.xml");
-        sb.setEncoding("utf-8");
-        sb.setElement(element);
-        sb.build();
+            @Override
+            public void onFail(int what, String errorMessage) {
+                CLog.d(TAG, "onFail()");
 
-
-//        MemoryUtils.saveStringToRom(ctx, "Backup", "sms.xml", "YO", new MemoryUtils.OnResponse() {
-//            @Override
-//            public void onSuccess() {
-//                CLog.d(TAG, "onSuccess()");
-//            }
-//
-//            @Override
-//            public void onFail(int what, String errorMessage) {
-//                CLog.d(TAG, "onFail()");
-//
-//            }
-//        });
+            }
+        });
     }
 
     @Override
