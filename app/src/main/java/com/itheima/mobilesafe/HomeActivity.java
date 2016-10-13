@@ -105,7 +105,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                             //其他处理...
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
                     }
 
                 } else

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Xml;
-import android.widget.Toast;
+
 import com.itheima.mobilesafe.utils.Settings;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -24,9 +24,16 @@ public class SmsBackup implements BaseBackup {
     private final static String TAG = "SmsBackup";
     private Context ctx;
     private XmlSerializer serializer;
+    private PrecessListener listener;
+    private int max;
+    private int process;
 
     public SmsBackup(Context ctx) {
         this.ctx = ctx;
+    }
+
+    public interface PrecessListener {
+        void currentProcess(int process);
     }
 
     @Override
@@ -53,7 +60,15 @@ public class SmsBackup implements BaseBackup {
         ContentResolver resolver = ctx.getContentResolver();
         Uri uri = Uri.parse("content://sms/");
         Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"}, null, null, null);
+        int curCursor = 0;
         while (cursor.moveToNext()) {
+            try {
+                Thread.sleep(500);//测试资料量大
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            curCursor++;
             serializer.startTag(null, "sms");
 
             serializer.startTag(null, "address");
@@ -73,6 +88,9 @@ public class SmsBackup implements BaseBackup {
             serializer.endTag(null, "body");
 
             serializer.endTag(null, "sms");
+
+            if (listener != null)
+                listener.currentProcess(curCursor);
         }
         cursor.close();
         serializer.endTag(null, "smss");
@@ -83,5 +101,17 @@ public class SmsBackup implements BaseBackup {
     @Override
     public void recovery() {
 
+    }
+
+    public int getMaxProgress() {
+        ContentResolver resolver = ctx.getContentResolver();
+        Uri uri = Uri.parse("content://sms/");
+        Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"}, null, null, null);
+        max = cursor.getCount();
+        return max;
+    }
+
+    public void setPrecessListener(PrecessListener listener) {
+        this.listener = listener;
     }
 }
