@@ -3,9 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="true"
     android:background="@color/backgroundPrimary"
+    android:clickable="true"
     android:orientation="vertical">
+
+    <ProgressBar
+        android:id="@+id/pb"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="10dp" />
 
     <TextView
         android:id="@+id/tv_number_query"
@@ -17,7 +23,7 @@
         android:drawableLeft="@android:drawable/ic_menu_camera"
         android:gravity="center_vertical"
         android:text="号码归属地查询"
-        android:textColor="#000000"/>
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/tv_sms_backup"
@@ -29,7 +35,7 @@
         android:drawableLeft="@android:drawable/ic_menu_save"
         android:gravity="center_vertical"
         android:text="短信备份"
-        android:textColor="#000000"/>
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/tv_sms_recovery"
@@ -41,5 +47,5 @@
         android:drawableLeft="@android:drawable/ic_menu_revert"
         android:gravity="center_vertical"
         android:text="短信还原"
-        android:textColor="#000000"/>
+        android:textColor="#000000" />
 </LinearLayout>

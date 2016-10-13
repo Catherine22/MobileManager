@@ -1,13 +1,13 @@
 package com.itheima.mobilesafe.fragments;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,7 +15,6 @@ import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.utils.BackupFactory;
-import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.backup.BackupConstants;
 import com.itheima.mobilesafe.utils.backup.SmsBackup;
@@ -33,7 +32,7 @@ public class AToolsFragment extends Fragment {
     private MainInterface mainInterface;
     private BackupFactory backupFactory;
     private SmsBackup sb;
-    private ProgressDialog pd;
+    private ProgressBar pb;
 
     public static AToolsFragment newInstance() {
         return new AToolsFragment();
@@ -46,8 +45,8 @@ public class AToolsFragment extends Fragment {
         mainInterface = (MainInterface) getActivity();
         backupFactory = new BackupFactory();
 
-        pd = new ProgressDialog(getActivity());
-        pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        pb = (ProgressBar) view.findViewById(R.id.pb);
+        pb.setVisibility(View.INVISIBLE);
 
         TextView tv_number_query = (TextView) view.findViewById(R.id.tv_number_query);
         tv_number_query.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +62,8 @@ public class AToolsFragment extends Fragment {
                 mainInterface.getPermissions(new String[]{Manifest.permission.READ_SMS}, new MyPermissionsResultListener() {
                     @Override
                     public void onGranted() {
-                        CLog.d(TAG, "start backup");
+
+
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -71,18 +71,22 @@ public class AToolsFragment extends Fragment {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        pd.setMessage("正在备份短信");
-                                        pd.setMax(sb.getMaxProgress());
-                                        pd.show();
-
+                                        pb.setProgress(0);
+                                        pb.setVisibility(View.VISIBLE);
                                         sb.setPrecessListener(new SmsBackup.PrecessListener() {
                                             @Override
                                             public void currentProcess(int process) {
-                                                pd.setProgress(process);
+                                                pb.setProgress(process);
+                                            }
+
+                                            @Override
+                                            public void maxProcess(int max) {
+                                                pb.setMax(max);
                                             }
                                         });
                                     }
                                 });
+
                                 try {
                                     sb.backup();
                                     getActivity().runOnUiThread(new Runnable() {
@@ -100,7 +104,12 @@ public class AToolsFragment extends Fragment {
                                         }
                                     });
                                 } finally {
-                                    pd.dismiss();
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            pb.setVisibility(View.INVISIBLE);
+                                        }
+                                    });
                                 }
                             }
                         }).start();

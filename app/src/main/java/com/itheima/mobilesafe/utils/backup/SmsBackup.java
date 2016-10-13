@@ -25,8 +25,6 @@ public class SmsBackup implements BaseBackup {
     private Context ctx;
     private XmlSerializer serializer;
     private PrecessListener listener;
-    private int max;
-    private int process;
 
     public SmsBackup(Context ctx) {
         this.ctx = ctx;
@@ -34,6 +32,8 @@ public class SmsBackup implements BaseBackup {
 
     public interface PrecessListener {
         void currentProcess(int process);
+
+        void maxProcess(int max);
     }
 
     @Override
@@ -60,13 +60,16 @@ public class SmsBackup implements BaseBackup {
         ContentResolver resolver = ctx.getContentResolver();
         Uri uri = Uri.parse("content://sms/");
         Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"}, null, null, null);
+
         int curCursor = 0;
+        if (listener != null)
+            listener.maxProcess(cursor.getCount());
         while (cursor.moveToNext()) {
-            try {
-                Thread.sleep(500);//测试资料量大
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                Thread.sleep(500);//模拟资料量大
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
 
             curCursor++;
             serializer.startTag(null, "sms");
@@ -101,14 +104,6 @@ public class SmsBackup implements BaseBackup {
     @Override
     public void recovery() {
 
-    }
-
-    public int getMaxProgress() {
-        ContentResolver resolver = ctx.getContentResolver();
-        Uri uri = Uri.parse("content://sms/");
-        Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"}, null, null, null);
-        max = cursor.getCount();
-        return max;
     }
 
     public void setPrecessListener(PrecessListener listener) {
