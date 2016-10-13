@@ -94,11 +94,10 @@ public class MemoryUtils {
         }
 
         File dir = new File(
-                Environment.getDataDirectory() + "/" + path + "/");
+                Environment.getDataDirectory() + "/data/" + context.getPackageName() + "/" + path + "/");
         if (!dir.exists()) {
             dir.mkdirs();
         }
-
         File file = new File(dir, fileName);
         if (!file.exists())
             file.createNewFile();
@@ -265,6 +264,10 @@ public class MemoryUtils {
             String lastChar = String.valueOf(path.charAt(path.length() - 1));
             if (lastChar.equals("/"))
                 path = path.substring(0, path.length());//拿掉最后一个"/"
+
+            String firstChar = String.valueOf(path.charAt(0));
+            if (lastChar.equals("/"))
+                path = path.substring(1, path.length() + 1);//拿掉第一个"/"
 
             result.setWhat(Result.SUCCESS);
             result.setMessage(path);

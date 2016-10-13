@@ -10,6 +10,7 @@
 | 短信、通话拦截 | [BlockCallsSmsService] |
 | 取得GPS位置 | [GPSService] |
 | 拦截短信后，利用管理员权限卸载应用、设置锁屏、清除数据 | [SMSReceiver], [MyAdminManager] |
+| 数据备份（短信） | [SmsBackup] |
 
 ## 自定义控件
 #### 自定义控件属性      
@@ -53,12 +54,15 @@
   - [build.gradle]之productFlavors{...}
   - [MyApplication]
   - [CLog]
+
 #### Http网络请求（含JSON解析）
   - [NetUtils]
   - [NetAsyncTask]
+
 #### 进程、服务管理
   - [SystemInfoUtils]
   - [ServiceUtils]
+
 #### 开机后自动启动、检查SIM卡       
   - 在[AndroidManifest]添加权限与注册receiver
 ```JAVA
@@ -84,7 +88,7 @@
   - [MyAdminManager]（锁屏、解锁屏幕、修改屏幕密码、恢复出厂设置、卸载应用）
   - 需注册Receiver [MyDeviceAdminReceiver]，并添加资源文件 [device_admin_sample]，详见[device-admin API 文档]
 
-#### XmlPullParser
+#### XmlPullParser & XmlGenerator
 ```XML
 <root>
 <ENV_CgiName>/cgi-bin/mobile/MobileQueryAttribution.cgi</ENV_CgiName>
@@ -104,7 +108,8 @@ Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like 
 <tid/>
 </root>
 ```
-   - [XMLPullParserHandler]
+   - Parser [XMLPullParserHandler]
+   - Generator [SmsBackup]
 
 #### 正则式
   - 对照[正则式语句列表]
@@ -134,6 +139,7 @@ if(phone.matches("^1[3456]\\d{9}$")){
  }
 
 ```
+
 #### 使用Reflection实现挂断电话
   - 添加权限android.permission.CALL_PHONE（Android 6.0预设没有，须额外获取）
   - 添加远程调用（aidl）[ITelephony]与[NeighboringCellInfo]
@@ -407,3 +413,4 @@ public interface MyPermissionsResultListener {
    [NetAsyncTask]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/NetAsyncTask.java>
    [SystemInfoUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/SystemInfoUtils.java>
    [ServiceUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/ServiceUtils.java>
+   [SmsBackup]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/backup/SmsBackup.java>

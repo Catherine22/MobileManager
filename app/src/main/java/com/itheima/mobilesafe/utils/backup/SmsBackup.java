@@ -4,11 +4,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Xml;
-
-import com.itheima.mobilesafe.utils.CLog;
-import com.itheima.mobilesafe.utils.MemoryUtils;
+import android.widget.Toast;
 import com.itheima.mobilesafe.utils.Settings;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -44,7 +41,6 @@ public class SmsBackup implements BaseBackup {
         if (!file.exists())
             file.createNewFile();
 
-        file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "Backup/sms.xml");
         FileOutputStream fos = new FileOutputStream(file);
 
         //序列化：把内存中的东西写进文件里
@@ -79,23 +75,9 @@ public class SmsBackup implements BaseBackup {
             serializer.endTag(null, "sms");
         }
         cursor.close();
-        fos.close();
-
         serializer.endTag(null, "smss");
         serializer.endDocument();
-
-        MemoryUtils.saveStringToRom(ctx, "Backup", "sms.xml", "YO", new MemoryUtils.OnResponse() {
-            @Override
-            public void onSuccess() {
-                CLog.d(TAG, "onSuccess()");
-            }
-
-            @Override
-            public void onFail(int what, String errorMessage) {
-                CLog.d(TAG, "onFail()");
-
-            }
-        });
+        fos.close();
     }
 
     @Override
