@@ -1,6 +1,7 @@
 package com.itheima.mobilesafe;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +12,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.provider.Telephony;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -149,6 +152,19 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 //        BlacklistDao dao = new BlacklistDao(this);
 //        for (int i = 0; i < 100; i++)
 //            dao.add("Lisi", "1351234567" + i, BlacklistDao.MODE_CALLS_BLOCKED);
+
+        //持久化到内存中，避免无法还原
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(this);
+            if (!defaultSmsApp.equals(getPackageName())) {
+                defaultSysSmsApp = defaultSmsApp;
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("default_sms_app", defaultSysSmsApp);
+                editor.apply();
+            } else
+                defaultSysSmsApp = sp.getString("default_sms_app", getPackageName());
+
+        }
     }
 
     /**
@@ -371,6 +387,33 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         return;
     }
 
+    private String defaultSysSmsApp;
+    private int count;//要2次权限
+
+    /**
+     * 设置预设的短信app，在android 4.4 以上必须设置才能执行部分短信相关操作
+     *
+     * @param isDefault
+     */
+    @Override
+    public void setDefaultSmsApp(boolean isDefault, @Nullable MyPermissionsResultListener listener) {
+        this.listener = listener;
+        String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(this);
+        CLog.d(TAG, "sys sms app: " + defaultSysSmsApp);
+        CLog.d(TAG, "defaultSmsApp: " + defaultSmsApp);
+        if (true) {
+            Intent intent = new Intent();
+            intent.setAction(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, getPackageName());
+            startActivityForResult(intent, Constants.CHANGEING_DEFAULT_SMS_APP);
+        } else {
+            Intent intent = new Intent();
+            intent.setAction(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, defaultSysSmsApp);
+            startActivityForResult(intent, Constants.CHANGEING_DEFAULT_SMS_APP);
+        }
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -437,6 +480,20 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                         // You've got SYSTEM_ALERT_WINDOW permission.
                         if (!grantedSAW && specCount == 1)//表示用戶不同意另一個特殊權限
                             listener.onDenied();
+                    }
+                }
+                break;
+            case Constants.CHANGEING_DEFAULT_SMS_APP:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(this);
+                    CLog.d(TAG, "defaultSmsApp " + defaultSmsApp);
+                    count++;
+                    if (listener != null && count == 2) {
+                        if (defaultSmsApp.equals(defaultSysSmsApp))
+                            listener.onGranted();
+                        else
+                            listener.onDenied();
+                        count = 0;
                     }
                 }
                 break;

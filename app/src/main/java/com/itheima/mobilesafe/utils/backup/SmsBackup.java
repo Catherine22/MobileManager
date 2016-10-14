@@ -1,16 +1,24 @@
 package com.itheima.mobilesafe.utils.backup;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.Telephony;
 import android.util.Xml;
 
+import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Settings;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -36,8 +44,13 @@ public class SmsBackup implements BaseBackup {
         void maxProcess(int max);
     }
 
+    /**
+     * 备份数据于本地BACKUP_PATH{@link Settings}
+     *
+     * @throws IOException
+     */
     @Override
-    public void backup() throws IOException {
+    public void backupToLocal() throws IOException {
 
         File dir = new File(Settings.BACKUP_PATH);
         if (!dir.exists()) {
@@ -64,6 +77,7 @@ public class SmsBackup implements BaseBackup {
         int curCursor = 0;
         if (listener != null)
             listener.maxProcess(cursor.getCount());
+        serializer.attribute(null, "length", cursor.getCount() + "");//存入数据长度, 方便解析时计算进度
         while (cursor.moveToNext()) {
 //            try {
 //                Thread.sleep(500);//模拟资料量大
@@ -101,9 +115,61 @@ public class SmsBackup implements BaseBackup {
         fos.close();
     }
 
+    /**
+     * 回复本地数据于本地BACKUP_PATH{@link Settings}
+     *
+     * @param delete 是否删除之前的短信
+     * @throws IOException
+     */
     @Override
-    public void recovery() {
+    public void restoreFromLocal(boolean delete) throws IOException, XmlPullParserException {
+//        File file = new File(Settings.BACKUP_PATH, "sms.xml");
+//        FileInputStream fis = new FileInputStream(file);
+//
+//        // 1.获取pull解析器的实例
+//        XmlPullParser parser = Xml.newPullParser();
+//        // 2.设置解析器的一些参数
+//        // 必须确定文件和eclipse中文件的properties都是同编码
+//        parser.setInput(fis, "utf-8");
+//        // 获取pull解析器的事件类型
+//        int type = parser.getEventType();
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+
+        }
+
+//
+//        if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+//            boolean canWriteSms = false;
+//            if (!SmsWriteOpUtil.isWriteEnabled(ctx.getApplicationContext())) {
+//                CLog.d(TAG, "disable");
+//                canWriteSms = SmsWriteOpUtil.setWriteEnabled(ctx.getApplicationContext(), true);
+//            }
+//            CLog.d(TAG, "canWriteSms " + canWriteSms);
+//        }
+
+        ContentResolver resolver = ctx.getContentResolver();
+        Uri uri = Uri.parse("content://sms/");
+        if (delete) {
+            resolver.delete(uri, null, null);
+        }
+
+
+        //写入sms数据
+
+        ContentValues cv = new ContentValues();
+        cv.put("address", "123");
+        cv.put("date", "1475486819908");
+        cv.put("type", "1");
+        cv.put("body", "还原成功");
+        resolver.insert(uri, cv);
+
+
+        Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"}, null, null, null);
+
+        CLog.d(TAG, "count:" + cursor.getCount());
+
+//        fis.close();
     }
 
     public void setPrecessListener(PrecessListener listener) {

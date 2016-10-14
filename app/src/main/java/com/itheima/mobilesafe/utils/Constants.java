@@ -26,6 +26,7 @@ public class Constants {
     public final static int REQUEST_CODE_ENABLE_ADMIN = 10001;
     public final static int OVERLAY_PERMISSION_REQ_CODE = 10002;
     public final static int PERMISSION_WRITE_SETTINGS = 10003;
+    public final static int CHANGEING_DEFAULT_SMS_APP = 10004;
 
     //response code
     public static final int FAILED_TO_SEND = 0;

@@ -21,6 +21,9 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.UPDATE_APP_OPS_STATS" /><!--for 4.4-->
+    <uses-permission android:name="android.permission.WRITE_SMS" /><!--for 4.4 and lower-->
+
 
     <!--GPS-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -36,10 +39,10 @@
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
 
     <application
+        android:name=".utils.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name=".utils.MyApplication"
         android:theme="@style/AppTheme">
 
         <activity
@@ -55,14 +58,32 @@
             android:name="com.itheima.mobilesafe.HomeActivity"
             android:windowSoftInputMode="adjustPan">
             <intent-filter android:autoVerify="true">
-                <data android:scheme="@string/branch_scheme"/>
+                <data android:scheme="@string/branch_scheme" />
                 <!-- Accepts URIs that begin with "http://itheima.com/mobilesafe" -->
-                <data android:scheme="http" android:host="itheima.com" android:pathPrefix="/mobilesafe" /><!--pathPrefix必须有／前缀-->
-                <data android:scheme="https" android:host="itheima.com" android:pathPrefix="/mobilesafe" />
+                <data
+                    android:host="itheima.com"
+                    android:pathPrefix="/mobilesafe"
+                    android:scheme="http" /><!--pathPrefix必须有／前缀-->
+                <data
+                    android:host="itheima.com"
+                    android:pathPrefix="/mobilesafe"
+                    android:scheme="https" />
 
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
             </intent-filter>
         </activity>
 
@@ -108,5 +129,38 @@
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
+
+        <!--SMS-->
+        <!-- BroadcastReceiver that listens for incoming SMS messages -->
+        <receiver android:name=".os.OsSmsReceiver"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_DELIVER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- BroadcastReceiver that listens for incoming MMS messages -->
+        <receiver android:name=".os.MmsReceiver"
+            android:permission="android.permission.BROADCAST_WAP_PUSH">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
+                <data android:mimeType="application/vnd.wap.mms-message" />
+            </intent-filter>
+        </receiver>
+        <!-- Service that delivers messages from the phone "quick response" -->
+        <service android:name=".os.HeadlessSmsSendService"
+            android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </service>
+
+
     </application>
 </manifest>
