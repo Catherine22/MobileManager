@@ -56,6 +56,10 @@
             android:windowSoftInputMode="adjustPan">
             <intent-filter android:autoVerify="true">
                 <data android:scheme="@string/branch_scheme"/>
+                <!-- Accepts URIs that begin with "http://itheima.com/mobilesafe" -->
+                <data android:scheme="http" android:host="itheima.com" android:pathPrefix="/mobilesafe" /><!--pathPrefix必须有／前缀-->
+                <data android:scheme="https" android:host="itheima.com" android:pathPrefix="/mobilesafe" />
+
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
