@@ -46,6 +46,10 @@ public class TaskInfoListAdapter extends RecyclerView.Adapter<TaskInfoListAdapte
         return taskInfos.size();
     }
 
+    public String getItemName(int position) {
+        return taskInfos.get(position).packageName;
+    }
+
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
         if (mOnItemMoveListener != null)

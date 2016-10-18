@@ -293,7 +293,17 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                         callFragment(Constants.BLACKLIST_FRAG);
                         break;
                     case 3://进程管理
-                        callFragment(Constants.TASK_FRAG);
+                        getPermissions(new String[]{Manifest.permission.KILL_BACKGROUND_PROCESSES}, new MyPermissionsResultListener() {
+                            @Override
+                            public void onGranted() {
+                                callFragment(Constants.TASK_FRAG);
+                            }
+
+                            @Override
+                            public void onDenied() {
+                                Toast.makeText(HomeActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         break;
                     case 7://高级工具
                         callFragment(Constants.A_TOOLS_FRAG);
@@ -521,7 +531,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     /**
      * 设置密码对话框
      */
-    private void showSetupPwdDialog(){
+    private void showSetupPwdDialog() {
         alertDialog = new Dialog(this);
         alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alertDialog.setContentView(R.layout.dialog_setup_password);
