@@ -35,7 +35,7 @@ import java.io.IOException;
  */
 public class AToolsFragment extends Fragment {
 
-    private static final String TAG = "AToolsFragment";
+//    private static final String TAG = "AToolsFragment";
     private MainInterface mainInterface;
     private BackupFactory backupFactory;
     private SmsBackup sb;
@@ -141,12 +141,9 @@ public class AToolsFragment extends Fragment {
                     public void onGranted() {
                         sb = (SmsBackup) backupFactory.createBackup(getActivity(), BackupConstants.SMS_BACKUP);
                         try {
-                            sb.restoreFromLocal(false);
+                            sb.restoreFromLocal(true);
                             Toast.makeText(getActivity(), "还原成功", Toast.LENGTH_SHORT).show();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getActivity(), "还原失败", Toast.LENGTH_SHORT).show();
-                        } catch (XmlPullParserException e) {
+                        } catch (IOException | XmlPullParserException e) {
                             e.printStackTrace();
                             Toast.makeText(getActivity(), "还原失败", Toast.LENGTH_SHORT).show();
                         }

@@ -50,7 +50,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        CLog.d(TAG, "onCreateView");
+        CLog.v(TAG, "onCreateView");
         sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
         addService = new Intent(getActivity(), AddressService.class);
         blockService = new Intent(getActivity(), BlockCallsSmsService.class);
@@ -187,6 +187,7 @@ public class SettingsFragment extends Fragment {
             //黑名单拦截已经关闭
             siv_block.setChecked(false);
         }
+
         siv_block.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -252,72 +253,72 @@ public class SettingsFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         client.release();
-        CLog.d(TAG, "onDestroy");
+        CLog.v(TAG, "onDestroy");
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        CLog.d(TAG, "onDestroyView");
+        CLog.v(TAG, "onDestroyView");
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CLog.d(TAG, "onCreate");
+        CLog.v(TAG, "onCreate");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        CLog.d(TAG, "onStop");
+        CLog.v(TAG, "onStop");
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        CLog.d(TAG, "onStart");
+        CLog.v(TAG, "onStart");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        CLog.d(TAG, "onResume");
+        CLog.v(TAG, "onResume");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        CLog.d(TAG, "onPause");
+        CLog.v(TAG, "onPause");
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        CLog.d(TAG, "onSaveInstanceState");
+        CLog.v(TAG, "onSaveInstanceState");
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        CLog.d(TAG, "onViewCreated");
+        CLog.v(TAG, "onViewCreated");
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        CLog.d(TAG, "onViewStateRestored");
+        CLog.v(TAG, "onViewStateRestored");
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        CLog.d(TAG, "onDetach");
+        CLog.v(TAG, "onDetach");
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        CLog.d(TAG, "onAttach");
+        CLog.v(TAG, "onAttach");
     }
 }

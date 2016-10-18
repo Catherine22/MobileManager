@@ -123,22 +123,58 @@ public class SmsBackup implements BaseBackup {
      */
     @Override
     public void restoreFromLocal(boolean delete) throws IOException, XmlPullParserException {
-//        File file = new File(Settings.BACKUP_PATH, "sms.xml");
-//        FileInputStream fis = new FileInputStream(file);
-//
-//        // 1.获取pull解析器的实例
-//        XmlPullParser parser = Xml.newPullParser();
-//        // 2.设置解析器的一些参数
-//        // 必须确定文件和eclipse中文件的properties都是同编码
-//        parser.setInput(fis, "utf-8");
-//        // 获取pull解析器的事件类型
-//        int type = parser.getEventType();
+        File file = new File(Settings.BACKUP_PATH, "sms.xml");
+        FileInputStream fis = new FileInputStream(file);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
 
+        ContentResolver resolver = ctx.getContentResolver();
+        Uri uri = Uri.parse("content://sms/");
+        if (delete) {
+            resolver.delete(uri, null, null);
         }
 
-//
+        ContentValues cv = new ContentValues();
+
+        try {
+            // 1.获取pull解析器的实例
+            XmlPullParser parser = Xml.newPullParser();
+            // 2.设置解析器的一些参数
+            // 必须确定文件和eclipse中文件的properties都是同编码
+            parser.setInput(fis, "utf-8");
+            // 获取pull解析器的事件类型
+            int event = parser.getEventType();
+            // XmlPullParser.END_DOCUMENT文档的结束
+            while (event != XmlPullParser.END_DOCUMENT) {
+                switch (event) {
+                    case XmlPullParser.START_DOCUMENT:
+                        CLog.d(TAG, "START_DOCUMENT ");
+                        break;
+                    case XmlPullParser.START_TAG:
+                        if ("sms".equals(parser.getName())) {
+
+                        } else if ("address".equals(parser.getName())) {
+                            cv.put("address", parser.nextText());
+                        } else if ("date".equals(parser.getName())) {
+                            cv.put("date", parser.nextText());
+                        } else if ("type".equals(parser.getName())) {
+                            cv.put("type", parser.nextText());
+                        } else if ("body".equals(parser.getName())) {
+                            cv.put("body", parser.nextText());
+                        }
+                        resolver.insert(uri, cv);
+                        break;
+                    case XmlPullParser.END_TAG:
+                        CLog.d(TAG, "END_TAG");
+                        break;
+                }
+                event = parser.next();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
 //        if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
 //            boolean canWriteSms = false;
 //            if (!SmsWriteOpUtil.isWriteEnabled(ctx.getApplicationContext())) {
@@ -148,29 +184,13 @@ public class SmsBackup implements BaseBackup {
 //            CLog.d(TAG, "canWriteSms " + canWriteSms);
 //        }
 
-        ContentResolver resolver = ctx.getContentResolver();
-        Uri uri = Uri.parse("content://sms/");
-        if (delete) {
-            resolver.delete(uri, null, null);
-        }
 
+    Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"}, null, null, null);
 
-        //写入sms数据
-
-        ContentValues cv = new ContentValues();
-        cv.put("address", "123");
-        cv.put("date", "1475486819908");
-        cv.put("type", "1");
-        cv.put("body", "还原成功");
-        resolver.insert(uri, cv);
-
-
-        Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"}, null, null, null);
-
-        CLog.d(TAG, "count:" + cursor.getCount());
+    CLog.d(TAG,"count:"+cursor.getCount());
 
 //        fis.close();
-    }
+}
 
     public void setPrecessListener(PrecessListener listener) {
         this.listener = listener;
