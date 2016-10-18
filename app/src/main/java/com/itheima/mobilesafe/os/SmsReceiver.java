@@ -1,4 +1,5 @@
 package com.itheima.mobilesafe.os;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +18,7 @@ import java.util.GregorianCalendar;
  */
 
 public class SmsReceiver extends BroadcastReceiver {
-    public static final String TAG = "OsSmsReceiver";
+    public static final String TAG = "os.SmsReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -39,8 +40,9 @@ public class SmsReceiver extends BroadcastReceiver {
                 Calendar buildDate = new GregorianCalendar(2011, 8, 18);    // 18 Sep 2011
                 Calendar nowDate = new GregorianCalendar();
                 long now = System.currentTimeMillis();
-                CLog.d(TAG, now+"");
+                CLog.d(TAG, now + "");
 
+                //应写入数据库
             }
         }
     }

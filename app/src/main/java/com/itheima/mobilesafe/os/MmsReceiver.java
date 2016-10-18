@@ -17,5 +17,7 @@ public class MmsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         CLog.d(TAG, "Mms received!");
+
+        //应写入数据库
     }
 }
