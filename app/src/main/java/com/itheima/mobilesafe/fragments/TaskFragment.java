@@ -105,7 +105,8 @@ public class TaskFragment extends Fragment {
                         sysInfo.add(info);
                 }
 
-                userAdapter = new TaskInfoListAdapter(getActivity(), userInfo, new TaskInfoListAdapter.OnItemClickLitener() {
+                userAdapter = new TaskInfoListAdapter(getActivity(), userInfo);
+                userAdapter.setOnItemClickLitener(new TaskInfoListAdapter.OnItemClickLitener() {
                     @Override
                     public void onItemClick(View view, int position) {
                         CLog.d(TAG, "onItemClick");
@@ -117,7 +118,19 @@ public class TaskFragment extends Fragment {
 
                     }
                 });
-                sysAdapter = new TaskInfoListAdapter(getActivity(), sysInfo, new TaskInfoListAdapter.OnItemClickLitener() {
+                userAdapter.setOnItemMoveLitener(new TaskInfoListAdapter.OnItemMoveListener() {
+                    @Override
+                    public void onItemSwap(int fromPosition, int toPosition) {
+                        CLog.d(TAG, "from " + fromPosition + " to " + toPosition);
+                    }
+
+                    @Override
+                    public void onItemSwipe(int position) {
+                        CLog.d(TAG, position+"");
+                    }
+                });
+                sysAdapter = new TaskInfoListAdapter(getActivity(), sysInfo);
+                sysAdapter.setOnItemClickLitener(new TaskInfoListAdapter.OnItemClickLitener() {
                     @Override
                     public void onItemClick(View view, int position) {
                         CLog.d(TAG, "onItemClick");
@@ -128,6 +141,17 @@ public class TaskFragment extends Fragment {
                     public void onItemLongClick(View view, int position) {
                         CLog.d(TAG, "onItemLongClick");
 
+                    }
+                });
+                sysAdapter.setOnItemMoveLitener(new TaskInfoListAdapter.OnItemMoveListener() {
+                    @Override
+                    public void onItemSwap(int fromPosition, int toPosition) {
+                        CLog.d(TAG, "from " + fromPosition + " to " + toPosition);
+                    }
+
+                    @Override
+                    public void onItemSwipe(int position) {
+                        CLog.d(TAG, position+"");
                     }
                 });
                 if (getActivity() != null) {
