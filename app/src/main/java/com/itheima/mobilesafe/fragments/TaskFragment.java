@@ -1,6 +1,5 @@
 package com.itheima.mobilesafe.fragments;
 
-import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,8 +16,6 @@ import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.TaskInfoListAdapter;
-import com.itheima.mobilesafe.interfaces.MainInterface;
-import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.ui.AutoResizeTextView;
 import com.itheima.mobilesafe.ui.recycler_view.DividerItemDecoration;
 import com.itheima.mobilesafe.ui.recycler_view.ItemTouchCallback;
