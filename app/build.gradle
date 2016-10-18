@@ -5,11 +5,6 @@ def releaseTime() {
     return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
 }
 
-//设置发布的显示的版本号
-def getVersionName() {
-    return "1.2.0"
-}
-
 
 android {
     signingConfigs {
@@ -33,13 +28,13 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField("boolean", "API_DEBUG", "true")
+            buildConfigField("boolean", "SHOW_LOG", "true")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
         }
         release {
-            buildConfigField("boolean", "API_DEBUG", "false")
+            buildConfigField("boolean", "SHOW_LOG", "false")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
@@ -67,10 +62,10 @@ android {
             def fileName
             if (outputFile != null && outputFile.name.endsWith('.apk')) {
                 if (variant.buildType.name.equals('release')) {
-                    variant.mergedFlavor.versionName = getVersionName() + "_" + releaseTime()
+                    variant.mergedFlavor.versionName = variant.mergedFlavor.versionName + "_" + releaseTime()
                     fileName = "${variant.mergedFlavor.applicationId}_${variant.mergedFlavor.versionName}_release.apk"
                 } else if (variant.buildType.name.equals('debug')) {
-                    variant.mergedFlavor.versionName = getVersionName() + "_" + releaseTime()
+                    variant.mergedFlavor.versionName = variant.mergedFlavor.versionName + "_" + releaseTime()
                     fileName = "${variant.mergedFlavor.applicationId}_${variant.mergedFlavor.versionName}_debug.apk"
                 }
                 output.outputFile = new File(outputFile.parent, fileName)
