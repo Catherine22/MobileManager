@@ -8,10 +8,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Telephony;
+import android.text.TextUtils;
 import android.util.Xml;
 
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Settings;
+import com.itheima.mobilesafe.utils.objects.Sms;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -21,6 +23,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Catherine on 2016/10/11.
@@ -73,7 +77,7 @@ public class SmsBackup implements BaseBackup {
         ContentResolver resolver = ctx.getContentResolver();
         Uri uri = Uri.parse("content://sms/");
         Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"}, null, null, null);
-
+        CLog.d(TAG, cursor.getCount() + "");
         int curCursor = 0;
         if (listener != null)
             listener.maxProcess(cursor.getCount());
@@ -88,21 +92,24 @@ public class SmsBackup implements BaseBackup {
             curCursor++;
             serializer.startTag(null, "sms");
 
-            serializer.startTag(null, "address");
-            serializer.text(cursor.getString(0));
-            serializer.endTag(null, "address");
+            if (!TextUtils.isEmpty(cursor.getString(0))) {
+                serializer.startTag(null, "address");
+                serializer.text(cursor.getString(0));
+                serializer.endTag(null, "address");
 
-            serializer.startTag(null, "date");
-            serializer.text(cursor.getString(1));
-            serializer.endTag(null, "date");
+                serializer.startTag(null, "date");
+                serializer.text(cursor.getString(1));
+                serializer.endTag(null, "date");
 
-            serializer.startTag(null, "type");
-            serializer.text(cursor.getString(2));
-            serializer.endTag(null, "type");
+                serializer.startTag(null, "type");
+                serializer.text(cursor.getString(2));
+                serializer.endTag(null, "type");
 
-            serializer.startTag(null, "body");
-            serializer.text(cursor.getString(3));
-            serializer.endTag(null, "body");
+                serializer.startTag(null, "body");
+                serializer.text(cursor.getString(3));
+                serializer.endTag(null, "body");
+            }
+
 
             serializer.endTag(null, "sms");
 
@@ -115,6 +122,9 @@ public class SmsBackup implements BaseBackup {
         fos.close();
     }
 
+    private List<Sms> values;
+    private Sms sms;
+
     /**
      * 回复本地数据于本地BACKUP_PATH{@link Settings}
      *
@@ -125,15 +135,13 @@ public class SmsBackup implements BaseBackup {
     public void restoreFromLocal(boolean delete) throws IOException, XmlPullParserException {
         File file = new File(Settings.BACKUP_PATH, "sms.xml");
         FileInputStream fis = new FileInputStream(file);
-
+        values = new ArrayList<>();
 
         ContentResolver resolver = ctx.getContentResolver();
         Uri uri = Uri.parse("content://sms/");
         if (delete) {
             resolver.delete(uri, null, null);
         }
-
-        ContentValues cv = new ContentValues();
 
         try {
             // 1.获取pull解析器的实例
@@ -151,28 +159,42 @@ public class SmsBackup implements BaseBackup {
                         break;
                     case XmlPullParser.START_TAG:
                         if ("sms".equals(parser.getName())) {
-
+                            sms = new Sms();
                         } else if ("address".equals(parser.getName())) {
-                            cv.put("address", parser.nextText());
+                            sms.setAddress(parser.nextText());
                         } else if ("date".equals(parser.getName())) {
-                            cv.put("date", parser.nextText());
+                            sms.setDate(parser.nextText());
                         } else if ("type".equals(parser.getName())) {
-                            cv.put("type", parser.nextText());
+                            sms.setType(parser.nextText());
                         } else if ("body".equals(parser.getName())) {
-                            cv.put("body", parser.nextText());
+                            sms.setBody(parser.nextText());
                         }
-                        resolver.insert(uri, cv);
                         break;
                     case XmlPullParser.END_TAG:
                         CLog.d(TAG, "END_TAG");
+                        if ("sms".equals(parser.getName())) {
+                            values.add(sms);
+                            sms = null;
+                        }
                         break;
                 }
                 event = parser.next();
             }
+            for (Sms sms : values) {
+                try {
+                    ContentValues cv = new ContentValues();
+                    cv.put("address", sms.getAddress());
+                    cv.put("date", sms.getDate());
+                    cv.put("type", sms.getType());
+                    cv.put("body", sms.getBody());
+                    resolver.insert(uri, cv);
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
 
 //        if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
@@ -185,12 +207,12 @@ public class SmsBackup implements BaseBackup {
 //        }
 
 
-    Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"}, null, null, null);
+        Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"}, null, null, null);
 
-    CLog.d(TAG,"count:"+cursor.getCount());
+        CLog.d(TAG, "count:" + cursor.getCount());
 
 //        fis.close();
-}
+    }
 
     public void setPrecessListener(PrecessListener listener) {
         this.listener = listener;
