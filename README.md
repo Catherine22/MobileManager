@@ -43,8 +43,12 @@
   - [HomeActivity]
   
 #### 可滑动、上下交换的RecyclerView
-  - 法1 [BlacklistFragment] [BlacklistAdapter]
-  - 法2 [TaskFragment] [TaskInfoListAdapter]
+  - 法1 
+  - [BlacklistFragment]  
+  - [BlacklistAdapter]
+  - 法2 
+  - [TaskFragment]  
+  - [TaskInfoListAdapter]
   
 ## 其他应用
 #### MD5加密
