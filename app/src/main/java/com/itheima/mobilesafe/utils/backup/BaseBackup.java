@@ -1,5 +1,7 @@
 package com.itheima.mobilesafe.utils.backup;
 
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 
 /**
@@ -9,7 +11,7 @@ import java.io.IOException;
  */
 
 public interface BaseBackup {
-    void backup() throws IOException;
+    void backupToLocal() throws IOException;
 
-    void recovery();
+    void restoreFromLocal(boolean delete) throws IOException, XmlPullParserException;
 }

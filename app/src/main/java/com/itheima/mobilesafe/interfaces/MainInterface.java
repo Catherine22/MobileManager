@@ -12,5 +12,7 @@ public interface MainInterface {
 
     void backToPreviousPage();
 
-    void getPermissions(String[] permissions,MyPermissionsResultListener listener);
+    void getPermissions(String[] permissions, MyPermissionsResultListener listener);
+
+    void setDefaultSmsApp(boolean isDefault, MyPermissionsResultListener listener);
 }

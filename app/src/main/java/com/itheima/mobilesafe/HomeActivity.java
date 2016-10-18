@@ -1,6 +1,7 @@
 package com.itheima.mobilesafe;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +12,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.provider.Telephony;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -70,7 +73,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private MyPermissionsResultListener listener;
     private MyAdminManager myAdminManager;
     private Server sv;
-    private TelephonyManager tm;
     private final int ACCESS_PERMISSION = 1001;
     private final static String[] names = {
             "手机防盗", "通讯卫士", "软件管理",
@@ -137,7 +139,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         initComponent();
 
         //取得sim卡信息
-        tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         try {
             com.itheima.mobilesafe.utils.Settings.simSerialNumber = tm.getSimSerialNumber();
         } catch (SecurityException e) {
@@ -149,6 +151,19 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 //        BlacklistDao dao = new BlacklistDao(this);
 //        for (int i = 0; i < 100; i++)
 //            dao.add("Lisi", "1351234567" + i, BlacklistDao.MODE_CALLS_BLOCKED);
+
+        //持久化到内存中，避免无法还原
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(this);
+            if (!defaultSmsApp.equals(getPackageName())) {
+                defaultSysSmsApp = defaultSmsApp;
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("default_sms_app", defaultSysSmsApp);
+                editor.apply();
+            } else
+                defaultSysSmsApp = sp.getString("default_sms_app", getPackageName());
+
+        }
     }
 
     /**
@@ -368,7 +383,42 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             if (grantedSAW && grantedWS)
                 listener.onGranted();
         }
-        return;
+    }
+
+    private String defaultSysSmsApp;
+
+    /**
+     * 设置预设的短信app，在android 4.4 以上必须设置才能执行部分短信相关操作
+     * 没有实际处理短信处理的逻辑, 所以必须在使用完后要求用户改回来
+     * {@link com.itheima.mobilesafe.os.HeadlessSmsSendService}
+     * {@link com.itheima.mobilesafe.os.MmsReceiver}
+     * {@link com.itheima.mobilesafe.os.SmsReceiver}
+     *
+     * @param setThisAsDefault 是否让此应用成为预设短信app，false则改回原先预设app
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @Override
+    public void setDefaultSmsApp(boolean setThisAsDefault, @Nullable MyPermissionsResultListener listener) {
+        this.listener = listener;
+        String currDefault = Telephony.Sms.getDefaultSmsPackage(this);
+        CLog.d(TAG, "sys sms app: " + defaultSysSmsApp);
+        CLog.d(TAG, "current default app: " + currDefault);
+        if (setThisAsDefault) {
+            if (currDefault.equals(defaultSysSmsApp)) {
+                Intent intent = new Intent();
+                intent.setAction(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, getPackageName());
+                startActivityForResult(intent, Constants.CHANGEING_DEFAULT_SMS_APP);
+            } else {
+                if (listener != null)
+                    listener.onGranted();
+            }
+        } else {
+            Intent intent = new Intent();
+            intent.setAction(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, defaultSysSmsApp);
+            startActivityForResult(intent, Constants.CHANGEING_DEFAULT_SMS_APP);
+        }
     }
 
 
@@ -381,14 +431,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private void doNext(int requestCode, int[] grantResults) {
         int count = 0;
         if (requestCode == ACCESS_PERMISSION) {
-            for (int i = 0; i < grantResults.length; i++) {
-                if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
+            for (int grantResult : grantResults) {
+                if (grantResult == PackageManager.PERMISSION_GRANTED)
                     count++;
             }
-            if (count == grantResults.length)
-                grantedAll = true;
-            else
-                grantedAll = false;
+            grantedAll = count == grantResults.length;
 
             if (grantedAll && grantedSAW && grantedWS)//全部同意
                 listener.onGranted();// Permission Granted
@@ -440,6 +487,18 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     }
                 }
                 break;
+            case Constants.CHANGEING_DEFAULT_SMS_APP:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(this);
+                    CLog.d(TAG, "defaultSmsApp " + defaultSmsApp);
+                    if (listener != null && resultCode == RESULT_OK) {
+                        if (defaultSmsApp.equals(defaultSysSmsApp))
+                            listener.onDenied();
+                        else
+                            listener.onGranted();
+                    }
+                }
+                break;
         }
         CLog.d(TAG, "onActivityResult " + requestCode + " " + resultCode);
     }
@@ -462,7 +521,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     /**
      * 设置密码对话框
      */
-    private void showSetupPwdDialog() {
+    private void showSetupPwdDialog(){
         alertDialog = new Dialog(this);
         alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alertDialog.setContentView(R.layout.dialog_setup_password);

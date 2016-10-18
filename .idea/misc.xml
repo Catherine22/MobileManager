@@ -34,12 +34,13 @@
           <State>
             <id />
           </State>
-        </expanded-state>
-        <selected-state>
           <State>
-            <id>Android</id>
+            <id>Android &gt; Lint &gt; Correctness</id>
           </State>
-        </selected-state>
+          <State>
+            <id>Android &gt; Lint &gt; Usability</id>
+          </State>
+        </expanded-state>
       </profile-state>
     </entry>
   </component>

@@ -183,6 +183,22 @@ private void endCall() {
 
 #### [SQLite operation]
 
+## App links几个要点
+  - android M 及其新版支援以http/https为scheme的Url开启app（之前的版本导向浏览器）
+  - 如果希望google搜寻结果出现打开app的链接，须注册[App Indexing on Google Search]
+  - 如果预设导向该app而非浏览器等其他app（弹出选项），有一个auto-verify机制，intent-filter中须定义、domain中也得定义app信息于assetlinks.json
+```xml
+<intent-filter android:autoVerify="true">
+    <!-- Accepts URIs that begin with "http://itheima.com/mobilesafe" -->
+    <data android:scheme="http" android:host="itheima.com" android:pathPrefix="/mobilesafe" /><!--pathPrefix必须有／前缀-->
+    <data android:scheme="https" android:host="itheima.com" android:pathPrefix="/mobilesafe" />
+
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />    </intent-filter>
+```
+
+
 ## Android6.0或以上权限设置
   - 需要在用到权限的地方，自定义是否检查权限，处理SYSTEM_ALERT_WINDOW和WRITE_SETTINGS例外
   - 参考[Android 6.0 运行时权限处理]、[权限无法获取问题]，改成以注册listener的方式支援批次处理，在Activity接收用户事件，需要权限的fragment或activity则注册listener监听结果，主要代码如下：
@@ -414,3 +430,4 @@ public interface MyPermissionsResultListener {
    [SystemInfoUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/SystemInfoUtils.java>
    [ServiceUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/ServiceUtils.java>
    [SmsBackup]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/backup/SmsBackup.java>
+   [App Indexing on Google Search]:<https://support.google.com/googleplay/android-developer/answer/6041489>
