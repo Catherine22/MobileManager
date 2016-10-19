@@ -56,6 +56,7 @@ public class SettingsFragment extends Fragment {
     private Intent addService, blockService;
     private Client client;
     private AccountKitUtils accountKitUtils;
+    private int chosenType;
 
     @Nullable
     @Override
@@ -255,7 +256,7 @@ public class SettingsFragment extends Fragment {
                         dialog.dismiss();
                     }
                 });
-                dialog.setNegativeButton("cancel", null);
+                dialog.setNegativeButton("取消", null);
                 dialog.show();
             }
         });
@@ -269,48 +270,83 @@ public class SettingsFragment extends Fragment {
                 //弹出对话框
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
                 dialog.setTitle("选择登入方式");
+                chosenType = accountType;
                 dialog.setSingleChoiceItems(Constants.loginAccounts, accountType, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case Constants.ACCOUNTKIT://Account kit
-                                if (accountKitUtils.isLogin()) {
-                                    AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
-                                        @Override
-                                        public void onSuccess(final Account account) {
-                                            CLog.d(TAG, UserInfo.id);
-                                            UserInfo.id = account.getId();
-                                            final PhoneNumber number = account.getPhoneNumber();
-                                            UserInfo.phoneNumber = number == null ? null : number.toString();
-                                            UserInfo.email = account.getEmail();
-                                            setLoginView(Constants.ACCOUNTKIT);
-                                        }
-
-                                        @Override
-                                        public void onError(final AccountKitError error) {
-                                            CLog.e(TAG, "error:" + error.toString());
-                                        }
-                                    });
-                                } else//Handle new or logged out user
-                                    accountKitUtils.login(getActivity(), LoginType.PHONE);
-
-                        }
+                        chosenType = which;
                     }
                 });
-                dialog.setNegativeButton("cancel", null);
+                if (accountType == Constants.NONE) {
+                    dialog.setPositiveButton("登入", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (chosenType) {
+                                case Constants.ACCOUNTKIT://Account kit
+                                    if (accountKitUtils.isLogin()) {
+                                        AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                                            @Override
+                                            public void onSuccess(final Account account) {
+                                                UserInfo.id = account.getId();
+                                                final PhoneNumber number = account.getPhoneNumber();
+                                                UserInfo.phoneNumber = number == null ? null : number.toString();
+                                                UserInfo.email = account.getEmail();
+                                                setLoginView(Constants.ACCOUNTKIT);
+                                            }
+
+                                            @Override
+                                            public void onError(final AccountKitError error) {
+                                                CLog.e(TAG, "error:" + error.toString());
+                                            }
+                                        });
+                                    } else//Handle new or logged out user
+                                        accountKitUtils.login(getActivity(), LoginType.PHONE);
+
+                                    dialog.dismiss();
+                                    break;
+
+                            }
+                        }
+                    });
+                } else {
+                    dialog.setPositiveButton("登出", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (chosenType) {
+                                case Constants.ACCOUNTKIT://Account kit
+                                    accountKitUtils.logout();
+                                    mainInterface.getLoginType(new LoginTypeListener() {
+                                        @Override
+                                        public void onResponse(final int type) {
+                                            accountType = type;
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    setLoginView(type);
+                                                }
+                                            });
+                                        }
+                                    });
+                                    dialog.dismiss();
+                                    break;
+                            }
+                        }
+                    });
+                }
+
+                dialog.setNegativeButton("取消", null);
                 dialog.show();
             }
         });
     }
 
     private void setLoginView(int type) {
-        CLog.d(TAG, "setLoginView"+type);
         if (type == Constants.ACCOUNTKIT) {
             snv_login.setTitle("Account kit登入中");
-            if (TextUtils.isEmpty(UserInfo.phoneNumber))
-                snv_login.setDesc(UserInfo.email);
-            else
+            if (TextUtils.isEmpty(UserInfo.email))
                 snv_login.setDesc(UserInfo.phoneNumber);
+            else
+                snv_login.setDesc(UserInfo.email);
         } else {
             snv_login.setTitle("账号登入");
             snv_login.setDesc("尚未登入");

@@ -25,6 +25,8 @@ public class AccountKitUtils implements BaseLogin {
                 new AccountKitConfiguration.AccountKitConfigurationBuilder(
                         (LoginType) TYPE,
                         AccountKitActivity.ResponseType.TOKEN); // or .ResponseType.TOKEN
+        configurationBuilder.setDefaultCountryCode("TW");
+        configurationBuilder.setFacebookNotificationsEnabled(true);
         final AccountKitConfiguration configuration = configurationBuilder.build();
         intent.putExtra(
                 AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION,

@@ -445,24 +445,29 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
         int savedLoginType = sp.getInt("LoginType", Constants.NONE);
         if (savedLoginType == Constants.ACCOUNTKIT) {
-            AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
-                @Override
-                public void onSuccess(final Account account) {
-                    CLog.d(TAG, UserInfo.id);
-                    setLoginType(Constants.ACCOUNTKIT);
-                    listener.onResponse(Constants.ACCOUNTKIT);
-                    UserInfo.id = account.getId();
-                    final PhoneNumber number = account.getPhoneNumber();
-                    UserInfo.phoneNumber = number == null ? null : number.toString();
-                    UserInfo.email = account.getEmail();
-                }
+            if (AccountKit.getCurrentAccessToken() != null) {
+                AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                    @Override
+                    public void onSuccess(final Account account) {
+                        setLoginType(Constants.ACCOUNTKIT);
+                        listener.onResponse(Constants.ACCOUNTKIT);
+                        UserInfo.id = account.getId();
+                        final PhoneNumber number = account.getPhoneNumber();
+                        UserInfo.phoneNumber = number == null ? null : number.toString();
+                        UserInfo.email = account.getEmail();
+                    }
 
-                @Override
-                public void onError(final AccountKitError error) {
-                    CLog.e(TAG, "error:" + error.toString());
-                }
-            });
-        }else{
+                    @Override
+                    public void onError(final AccountKitError error) {
+                        CLog.e(TAG, "error:" + error.toString());
+                    }
+                });
+            } else {
+                setLoginType(Constants.NONE);
+                listener.onResponse(Constants.NONE);
+            }
+
+        } else {
             setLoginType(Constants.NONE);
             listener.onResponse(Constants.NONE);
         }
