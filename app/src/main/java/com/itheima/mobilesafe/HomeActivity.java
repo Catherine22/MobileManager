@@ -31,6 +31,12 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.accountkit.Account;
+import com.facebook.accountkit.AccountKit;
+import com.facebook.accountkit.AccountKitCallback;
+import com.facebook.accountkit.AccountKitError;
+import com.facebook.accountkit.AccountKitLoginResult;
+import com.facebook.accountkit.PhoneNumber;
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
 import com.itheima.mobilesafe.fragments.AToolsFragment;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
@@ -508,6 +514,34 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                             listener.onGranted();
                     }
                 }
+                break;
+            case Constants.ACCOUNT_KIT:
+                AccountKitLoginResult loginResult = data.getParcelableExtra(AccountKitLoginResult.RESULT_KEY);
+                String toastMessage;
+                if (loginResult.getError() != null) {
+                    toastMessage = loginResult.getError().getErrorType().getMessage();
+//                    showErrorActivity(loginResult.getError());
+                } else if (loginResult.wasCancelled()) {
+                    toastMessage = "Login Cancelled";
+                } else {
+                    if (loginResult.getAccessToken() != null) {
+                        toastMessage = "Success:" + loginResult.getAccessToken().getAccountId();
+                    } else {
+                        toastMessage = String.format(
+                                "Success:%s...",
+                                loginResult.getAuthorizationCode().substring(0, 10));
+                    }
+
+                    // If you have an authorization code, retrieve it from
+                    // loginResult.getAuthorizationCode()
+                    // and pass it to your server and exchange it for an access token.
+
+                    // Success! Start your next activity...
+                    CLog.d(TAG, "登入成功");
+                }
+
+                // Surface the result to your user in an appropriate way.
+                CLog.d(TAG, "toastMessage:"+toastMessage);
                 break;
         }
         CLog.d(TAG, "onActivityResult " + requestCode + " " + resultCode);

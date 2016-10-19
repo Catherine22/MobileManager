@@ -15,6 +15,12 @@ android {
             storePassword 'ggcompany123!'
         }
     }
+
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "4g"
+    }
+
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
     defaultConfig {
@@ -23,21 +29,19 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         signingConfig signingConfigs.config
-
     }
     buildTypes {
         debug {
             buildConfigField("boolean", "SHOW_LOG", "true")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config//拿掉則用android原生
         }
         release {
             buildConfigField("boolean", "SHOW_LOG", "false")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
         }
     }
     productFlavors {
@@ -79,5 +83,6 @@ dependencies {
     compile 'catherine.mobile:messagescenter:+'
     compile 'com.android.support:recyclerview-v7:23.4.0'
     compile 'io.branch.sdk.android:library:2.+'
+    compile 'com.facebook.android:account-kit-sdk:4.+'
     compile files('libs/gson-2.7.jar')
 }
