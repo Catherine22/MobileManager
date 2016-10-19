@@ -31,6 +31,13 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.accountkit.AccessToken;
+import com.facebook.accountkit.Account;
+import com.facebook.accountkit.AccountKit;
+import com.facebook.accountkit.AccountKitCallback;
+import com.facebook.accountkit.AccountKitError;
+import com.facebook.accountkit.AccountKitLoginResult;
+import com.facebook.accountkit.PhoneNumber;
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
 import com.itheima.mobilesafe.fragments.AToolsFragment;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
@@ -44,12 +51,14 @@ import com.itheima.mobilesafe.fragments.setup.Setup2Fragment;
 import com.itheima.mobilesafe.fragments.setup.Setup3Fragment;
 import com.itheima.mobilesafe.fragments.setup.Setup4Fragment;
 import com.itheima.mobilesafe.fragments.setup.SetupFragment;
+import com.itheima.mobilesafe.interfaces.LoginTypeListener;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Encryption;
 import com.itheima.mobilesafe.utils.MyAdminManager;
+import com.itheima.mobilesafe.utils.objects.UserInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -162,7 +171,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 editor.apply();
             } else
                 defaultSysSmsApp = sp.getString("default_sms_app", getPackageName());
-
         }
     }
 
@@ -433,6 +441,48 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
 
     @Override
+    public void getLoginType(final LoginTypeListener listener) {
+        SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
+        int savedLoginType = sp.getInt("LoginType", Constants.NONE);
+        if (savedLoginType == Constants.ACCOUNTKIT) {
+            if (AccountKit.getCurrentAccessToken() != null) {
+                AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                    @Override
+                    public void onSuccess(final Account account) {
+                        setLoginType(Constants.ACCOUNTKIT);
+                        listener.onResponse(Constants.ACCOUNTKIT);
+                        UserInfo.id = account.getId();
+                        final PhoneNumber number = account.getPhoneNumber();
+                        UserInfo.phoneNumber = number == null ? null : number.toString();
+                        UserInfo.email = account.getEmail();
+                    }
+
+                    @Override
+                    public void onError(final AccountKitError error) {
+                        CLog.e(TAG, "error:" + error.toString());
+                    }
+                });
+            } else {
+                setLoginType(Constants.NONE);
+                listener.onResponse(Constants.NONE);
+            }
+
+        } else {
+            setLoginType(Constants.NONE);
+            listener.onResponse(Constants.NONE);
+        }
+    }
+
+    @Override
+    public void setLoginType(int type) {
+        SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt("LoginType", type);
+        editor.apply();
+    }
+
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         doNext(requestCode, grantResults);
@@ -508,6 +558,45 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                             listener.onGranted();
                     }
                 }
+                break;
+            case Constants.ACCOUNT_KIT_REQ_CODE:
+                AccountKitLoginResult loginResult = AccountKit.loginResultWithIntent(data);
+                String toastMessage;
+                if (loginResult == null || loginResult.wasCancelled()) {
+                    toastMessage = "Login Cancelled";
+                } else if (loginResult.getError() != null) {
+                    toastMessage = loginResult.getError().getErrorType().getMessage();
+                } else {
+                    final AccessToken accessToken = loginResult.getAccessToken();
+                    final long tokenRefreshIntervalInSeconds =
+                            loginResult.getTokenRefreshIntervalInSeconds();
+                    if (accessToken != null) {
+                        toastMessage = "Success:" + accessToken.getAccountId()
+                                + tokenRefreshIntervalInSeconds;
+
+                        setLoginType(Constants.ACCOUNTKIT);
+
+                        AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                            @Override
+                            public void onSuccess(final Account account) {
+                                UserInfo.id = account.getId();
+                                final PhoneNumber number = account.getPhoneNumber();
+                                UserInfo.phoneNumber = number == null ? null : number.toString();
+                                UserInfo.email = account.getEmail();
+                            }
+
+                            @Override
+                            public void onError(final AccountKitError error) {
+                                CLog.e(TAG, "error:" + error.toString());
+                            }
+                        });
+                    } else {
+                        toastMessage = "Unknown response type";
+                    }
+                }
+
+                // Surface the result to your user in an appropriate way.
+                CLog.d(TAG, "toastMessage:" + toastMessage);
                 break;
         }
         CLog.d(TAG, "onActivityResult " + requestCode + " " + resultCode);

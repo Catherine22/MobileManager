@@ -15,4 +15,7 @@ public interface MainInterface {
     void getPermissions(String[] permissions, MyPermissionsResultListener listener);
 
     void setDefaultSmsApp(boolean isDefault, MyPermissionsResultListener listener);
+
+    void getLoginType(LoginTypeListener listener);
+    void setLoginType(int type);
 }

@@ -9,12 +9,20 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.facebook.accountkit.Account;
+import com.facebook.accountkit.AccountKit;
+import com.facebook.accountkit.AccountKitCallback;
+import com.facebook.accountkit.AccountKitError;
+import com.facebook.accountkit.PhoneNumber;
+import com.facebook.accountkit.ui.LoginType;
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.interfaces.LoginTypeListener;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.services.AddressService;
@@ -25,6 +33,8 @@ import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.MyAdminManager;
 import com.itheima.mobilesafe.utils.ServiceUtils;
+import com.itheima.mobilesafe.utils.login.AccountKitUtils;
+import com.itheima.mobilesafe.utils.objects.UserInfo;
 
 import tw.com.softworld.messagescenter.Client;
 import tw.com.softworld.messagescenter.CustomReceiver;
@@ -38,13 +48,15 @@ import tw.com.softworld.messagescenter.Result;
 public class SettingsFragment extends Fragment {
     private final static String TAG = "SettingsFragment";
     private SettingItemView siv_update, siv_admin, siv_show_address, siv_block;
-    private SettingNextView snv_set_background;
+    private SettingNextView snv_set_background, snv_login;
     private TextView tv_uninstall;
     private SharedPreferences sp;
     private MainInterface mainInterface;
     private MyAdminManager myAdminManager;
     private Intent addService, blockService;
     private Client client;
+    private AccountKitUtils accountKitUtils;
+    private int chosenType;
 
     @Nullable
     @Override
@@ -56,9 +68,9 @@ public class SettingsFragment extends Fragment {
         blockService = new Intent(getActivity(), BlockCallsSmsService.class);
         mainInterface = (MainInterface) getActivity();
         myAdminManager = new MyAdminManager(getActivity());
-
-
         initView(view);
+        accountKitUtils = new AccountKitUtils();
+
         return view;
     }
 
@@ -67,6 +79,7 @@ public class SettingsFragment extends Fragment {
         siv_admin = (SettingItemView) view.findViewById(R.id.siv_admin);
         siv_show_address = (SettingItemView) view.findViewById(R.id.siv_show_address);
         snv_set_background = (SettingNextView) view.findViewById(R.id.snv_set_background);
+        snv_login = (SettingNextView) view.findViewById(R.id.snv_login);
         siv_block = (SettingItemView) view.findViewById(R.id.siv_block);
         tv_uninstall = (TextView) view.findViewById(R.id.tv_uninstall);
         tv_uninstall.setOnClickListener(new View.OnClickListener() {
@@ -243,10 +256,101 @@ public class SettingsFragment extends Fragment {
                         dialog.dismiss();
                     }
                 });
-                dialog.setNegativeButton("cancel", null);
+                dialog.setNegativeButton("取消", null);
                 dialog.show();
             }
         });
+
+        //第三方登入
+        snv_login.setTitle("账号登入");
+        snv_login.setDesc("尚未登入");
+        snv_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //弹出对话框
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+                dialog.setTitle("选择登入方式");
+                chosenType = accountType;
+                dialog.setSingleChoiceItems(Constants.loginAccounts, accountType, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        chosenType = which;
+                    }
+                });
+                if (accountType == Constants.NONE) {
+                    dialog.setPositiveButton("登入", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (chosenType) {
+                                case Constants.ACCOUNTKIT://Account kit
+                                    if (accountKitUtils.isLogin()) {
+                                        AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                                            @Override
+                                            public void onSuccess(final Account account) {
+                                                UserInfo.id = account.getId();
+                                                final PhoneNumber number = account.getPhoneNumber();
+                                                UserInfo.phoneNumber = number == null ? null : number.toString();
+                                                UserInfo.email = account.getEmail();
+                                                setLoginView(Constants.ACCOUNTKIT);
+                                            }
+
+                                            @Override
+                                            public void onError(final AccountKitError error) {
+                                                CLog.e(TAG, "error:" + error.toString());
+                                            }
+                                        });
+                                    } else//Handle new or logged out user
+                                        accountKitUtils.login(getActivity(), LoginType.PHONE);
+
+                                    dialog.dismiss();
+                                    break;
+
+                            }
+                        }
+                    });
+                } else {
+                    dialog.setPositiveButton("登出", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (chosenType) {
+                                case Constants.ACCOUNTKIT://Account kit
+                                    accountKitUtils.logout();
+                                    mainInterface.getLoginType(new LoginTypeListener() {
+                                        @Override
+                                        public void onResponse(final int type) {
+                                            accountType = type;
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    setLoginView(type);
+                                                }
+                                            });
+                                        }
+                                    });
+                                    dialog.dismiss();
+                                    break;
+                            }
+                        }
+                    });
+                }
+
+                dialog.setNegativeButton("取消", null);
+                dialog.show();
+            }
+        });
+    }
+
+    private void setLoginView(int type) {
+        if (type == Constants.ACCOUNTKIT) {
+            snv_login.setTitle("Account kit登入中");
+            if (TextUtils.isEmpty(UserInfo.email))
+                snv_login.setDesc(UserInfo.phoneNumber);
+            else
+                snv_login.setDesc(UserInfo.email);
+        } else {
+            snv_login.setTitle("账号登入");
+            snv_login.setDesc("尚未登入");
+        }
     }
 
     @Override
@@ -280,10 +384,24 @@ public class SettingsFragment extends Fragment {
         CLog.v(TAG, "onStart");
     }
 
+    private int accountType = 0;
+
     @Override
     public void onResume() {
         super.onResume();
         CLog.v(TAG, "onResume");
+        mainInterface.getLoginType(new LoginTypeListener() {
+            @Override
+            public void onResponse(final int type) {
+                accountType = type;
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setLoginView(type);
+                    }
+                });
+            }
+        });
     }
 
     @Override
