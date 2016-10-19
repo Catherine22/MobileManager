@@ -27,7 +27,7 @@ public class Constants {
     public final static int OVERLAY_PERMISSION_REQ_CODE = 10002;
     public final static int PERMISSION_WRITE_SETTINGS = 10003;
     public final static int CHANGEING_DEFAULT_SMS_APP = 10004;
-    public final static int ACCOUNT_KIT = 10005;
+    public final static int ACCOUNT_KIT_REQ_CODE = 10005;
 
     //response code
     public static final int FAILED_TO_SEND = 0;
@@ -42,6 +42,14 @@ public class Constants {
     public static String[] addressBgs = new String[]{"半透明", "活力橙", "卫士蓝", "金属灰", "苹果绿"};
     public static int[] addressBgRes = new int[]{R.drawable.call_locate_white, R.drawable.call_locate_orange, R.drawable.call_locate_blue, R.drawable.call_locate_gray, R.drawable.call_locate_green};
 
-    public static String[] loginAccounts = new String[]{"Facebook", "Google", "Sina", "QQ", "Weibo", "WeChat"};
-
+    //Login
+    public final static int NONE = 0;
+    public final static int ACCOUNTKIT = 1;
+    public final static int FB = 2;
+    public final static int GOOGLE = 3;
+    public final static int SINA = 4;
+    public final static int QQ = 5;
+    public final static int WEIBO = 6;
+    public final static int WECHAT = 7;
+    public static String[] loginAccounts = new String[]{"NONE", "AccountKit", "Facebook", "Google", "Sina", "QQ", "Weibo", "WeChat"};
 }

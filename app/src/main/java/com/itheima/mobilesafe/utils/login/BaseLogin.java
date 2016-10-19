@@ -1,7 +1,6 @@
 package com.itheima.mobilesafe.utils.login;
 
 import android.app.Activity;
-import android.content.Context;
 
 /**
  * Created by Catherine on 2016/10/19.

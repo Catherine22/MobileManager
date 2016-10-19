@@ -9,23 +9,20 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.facebook.accountkit.AccessToken;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitCallback;
 import com.facebook.accountkit.AccountKitError;
 import com.facebook.accountkit.PhoneNumber;
-import com.facebook.accountkit.ui.AccountKitActivity;
-import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.TokenActivity;
+import com.itheima.mobilesafe.interfaces.LoginTypeListener;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.services.AddressService;
@@ -35,8 +32,9 @@ import com.itheima.mobilesafe.ui.SettingNextView;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.MyAdminManager;
-import com.itheima.mobilesafe.utils.NetUtils;
 import com.itheima.mobilesafe.utils.ServiceUtils;
+import com.itheima.mobilesafe.utils.login.AccountKitUtils;
+import com.itheima.mobilesafe.utils.objects.UserInfo;
 
 import tw.com.softworld.messagescenter.Client;
 import tw.com.softworld.messagescenter.CustomReceiver;
@@ -57,6 +55,7 @@ public class SettingsFragment extends Fragment {
     private MyAdminManager myAdminManager;
     private Intent addService, blockService;
     private Client client;
+    private AccountKitUtils accountKitUtils;
 
     @Nullable
     @Override
@@ -69,7 +68,7 @@ public class SettingsFragment extends Fragment {
         mainInterface = (MainInterface) getActivity();
         myAdminManager = new MyAdminManager(getActivity());
         initView(view);
-
+        accountKitUtils = new AccountKitUtils();
 
         return view;
     }
@@ -263,41 +262,38 @@ public class SettingsFragment extends Fragment {
 
         //第三方登入
         snv_login.setTitle("账号登入");
-        int type = sp.getInt("account", -1);
-        //检查登入状态（根据登入账号）
-        if (type == -1)
-            snv_login.setDesc("尚未登入");
-        else
-            snv_login.setDesc(Constants.loginAccounts[type]);
+        snv_login.setDesc("尚未登入");
         snv_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //弹出对话框
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
                 dialog.setTitle("选择登入方式");
-                dialog.setSingleChoiceItems(Constants.loginAccounts, sp.getInt("account", 0), new DialogInterface.OnClickListener() {
+                dialog.setSingleChoiceItems(Constants.loginAccounts, accountType, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        snv_login.setDesc(Constants.loginAccounts[which]);
-                        SharedPreferences.Editor editor = sp.edit();
-                        editor.putInt("account", which);
-                        editor.apply();
-                        dialog.dismiss();
-
                         switch (which) {
-                            case 0://Account kit
-                                AccessToken accessToken = AccountKit.getCurrentAccessToken();
+                            case Constants.ACCOUNTKIT://Account kit
+                                if (accountKitUtils.isLogin()) {
+                                    AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                                        @Override
+                                        public void onSuccess(final Account account) {
+                                            CLog.d(TAG, UserInfo.id);
+                                            UserInfo.id = account.getId();
+                                            final PhoneNumber number = account.getPhoneNumber();
+                                            UserInfo.phoneNumber = number == null ? null : number.toString();
+                                            UserInfo.email = account.getEmail();
+                                            setLoginView(Constants.ACCOUNTKIT);
+                                        }
 
-                                if (accessToken != null) {
-                                    //Handle Returning User
-                                    Toast.makeText(getActivity(), "Token存在(已登入，Token在时效内)", Toast.LENGTH_SHORT).show();
-                                    CLog.d(TAG, accessToken.getToken());
-                                    CLog.d(TAG, accessToken.toString());
-                                    startActivity(new Intent(getActivity(), TokenActivity.class));
-                                } else {
-                                    //Handle new or logged out user
-                                    onLoginPhone();
-                                }
+                                        @Override
+                                        public void onError(final AccountKitError error) {
+                                            CLog.e(TAG, "error:" + error.toString());
+                                        }
+                                    });
+                                } else//Handle new or logged out user
+                                    accountKitUtils.login(getActivity(), LoginType.PHONE);
+
                         }
                     }
                 });
@@ -307,17 +303,18 @@ public class SettingsFragment extends Fragment {
         });
     }
 
-    public void onLoginPhone() {
-        final Intent intent = new Intent(getActivity(), AccountKitActivity.class);
-        AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder =
-                new AccountKitConfiguration.AccountKitConfigurationBuilder(
-                        LoginType.PHONE,
-                        AccountKitActivity.ResponseType.TOKEN); // or .ResponseType.TOKEN
-        final AccountKitConfiguration configuration = configurationBuilder.build();
-        intent.putExtra(
-                AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION,
-                configuration);
-        startActivityForResult(intent, Constants.ACCOUNT_KIT);
+    private void setLoginView(int type) {
+        CLog.d(TAG, "setLoginView"+type);
+        if (type == Constants.ACCOUNTKIT) {
+            snv_login.setTitle("Account kit登入中");
+            if (TextUtils.isEmpty(UserInfo.phoneNumber))
+                snv_login.setDesc(UserInfo.email);
+            else
+                snv_login.setDesc(UserInfo.phoneNumber);
+        } else {
+            snv_login.setTitle("账号登入");
+            snv_login.setDesc("尚未登入");
+        }
     }
 
     @Override
@@ -351,10 +348,24 @@ public class SettingsFragment extends Fragment {
         CLog.v(TAG, "onStart");
     }
 
+    private int accountType = 0;
+
     @Override
     public void onResume() {
         super.onResume();
         CLog.v(TAG, "onResume");
+        mainInterface.getLoginType(new LoginTypeListener() {
+            @Override
+            public void onResponse(final int type) {
+                accountType = type;
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setLoginView(type);
+                    }
+                });
+            }
+        });
     }
 
     @Override

@@ -7,4 +7,7 @@ package com.itheima.mobilesafe.utils.objects;
  */
 
 public class UserInfo {
+    public static String phoneNumber;
+    public static String email;
+    public static String id;
 }
