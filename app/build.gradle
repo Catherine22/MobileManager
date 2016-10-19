@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 //定义时间
 def releaseTime() {
-    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
+    return new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("CTT"))
 }
 
 

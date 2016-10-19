@@ -25,6 +25,7 @@ import com.facebook.accountkit.ui.AccountKitActivity;
 import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.TokenActivity;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.services.AddressService;
@@ -34,6 +35,7 @@ import com.itheima.mobilesafe.ui.SettingNextView;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.MyAdminManager;
+import com.itheima.mobilesafe.utils.NetUtils;
 import com.itheima.mobilesafe.utils.ServiceUtils;
 
 import tw.com.softworld.messagescenter.Client;
@@ -67,8 +69,6 @@ public class SettingsFragment extends Fragment {
         mainInterface = (MainInterface) getActivity();
         myAdminManager = new MyAdminManager(getActivity());
         initView(view);
-
-        AccountKit.initialize(getActivity().getApplicationContext());
 
 
         return view;
@@ -291,30 +291,9 @@ public class SettingsFragment extends Fragment {
                                 if (accessToken != null) {
                                     //Handle Returning User
                                     Toast.makeText(getActivity(), "Token存在(已登入，Token在时效内)", Toast.LENGTH_SHORT).show();
-
-                                    AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
-                                        @Override
-                                        public void onSuccess(final Account account) {
-                                            // Get Account Kit ID
-                                            String accountKitId = account.getId();
-                                            CLog.d(TAG, "accountKitId:" + accountKitId);
-
-                                            // Get phone number
-                                            PhoneNumber phoneNumber = account.getPhoneNumber();
-                                            String phoneNumberString = phoneNumber.toString();
-                                            CLog.d(TAG, "phone:" + phoneNumberString);
-
-                                            // Get email
-                                            String email = account.getEmail();
-                                            CLog.d(TAG, "email:" + email);
-                                        }
-
-                                        @Override
-                                        public void onError(final AccountKitError error) {
-                                            // Handle Error
-                                            CLog.d(TAG, "error:" + error.toString());
-                                        }
-                                    });
+                                    CLog.d(TAG, accessToken.getToken());
+                                    CLog.d(TAG, accessToken.toString());
+                                    startActivity(new Intent(getActivity(), TokenActivity.class));
                                 } else {
                                     //Handle new or logged out user
                                     onLoginPhone();
@@ -334,10 +313,10 @@ public class SettingsFragment extends Fragment {
                 new AccountKitConfiguration.AccountKitConfigurationBuilder(
                         LoginType.PHONE,
                         AccountKitActivity.ResponseType.TOKEN); // or .ResponseType.TOKEN
-        // ... perform additional configuration ...
+        final AccountKitConfiguration configuration = configurationBuilder.build();
         intent.putExtra(
                 AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION,
-                configurationBuilder.build());
+                configuration);
         startActivityForResult(intent, Constants.ACCOUNT_KIT);
     }
 
