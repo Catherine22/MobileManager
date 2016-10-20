@@ -167,6 +167,14 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".ui.MyAppWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/my_appwidget_info" />
+        </receiver>
+
         <!--SMS-->
         <!-- BroadcastReceiver that listens for incoming SMS messages -->
         <receiver
