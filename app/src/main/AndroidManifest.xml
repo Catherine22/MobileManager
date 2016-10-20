@@ -127,21 +127,34 @@
         <service android:name=".services.GPSService" />
         <service android:name=".services.AddressService" />
         <service android:name=".services.BlockCallsSmsService" />
+        <service android:name=".services.AutoCleanService" />
 
-        <receiver android:name=".utils.BootCompletedReceiver">
+        <receiver android:name=".receivers.BootCompletedReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".utils.SMSReceiver">
+        <receiver android:name=".receivers.WidgetReceiver">
+            <intent-filter>
+                <action android:name="com.itheima.mobliesafe.KILLALL" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receivers.OpenAppReceiver">
+            <intent-filter>
+                <action android:name="com.itheima.mobliesafe.OPEN_APP" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receivers.SMSReceiver">
             <intent-filter android:priority="2147483647"><!-- max integer -->
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 
         <receiver
-            android:name=".utils.MyDeviceAdminReceiver"
+            android:name=".receivers.MyDeviceAdminReceiver"
             android:description="@string/admin_receiver_status"
             android:label="@string/device_admin"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
@@ -167,11 +180,17 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".ui.MyAppWidgetProvider" >
+        <receiver
+            android:name=".ui.MyAppWidgetProvider"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/my_appwidget_info" />
         </receiver>
 

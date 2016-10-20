@@ -1,4 +1,4 @@
-package com.itheima.mobilesafe.utils;
+package com.itheima.mobilesafe.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +12,8 @@ import android.text.TextUtils;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.services.GPSService;
+import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.MyAdminManager;
 
 import tw.com.softworld.messagescenter.Client;
 import tw.com.softworld.messagescenter.CustomReceiver;

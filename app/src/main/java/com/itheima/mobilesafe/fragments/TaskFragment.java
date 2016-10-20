@@ -114,12 +114,13 @@ public class TaskFragment extends Fragment {
         rv_sys_tasks.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
 
         int progressCount = SystemInfoUtils.getRunningProcessCount(getActivity());
-        tv_progress_count.setText("运行中进程：" + progressCount + "个");
+        String count = String.format(getResources().getString(R.string.running_process), progressCount);
+        tv_progress_count.setText(count);
 
         long availMen = SystemInfoUtils.getAvailableMemory(getActivity());
         long totalMen = SystemInfoUtils.getTotalMemory(getActivity());
-        tv_memory_info.setText("剩余/总内存：" + SystemInfoUtils.formatFileSize(availMen) + "/" + SystemInfoUtils.formatFileSize(totalMen));
-
+        String text = String.format(getResources().getString(R.string.widget_memory), SystemInfoUtils.formatFileSize(availMen), SystemInfoUtils.formatFileSize(totalMen));
+        tv_memory_info.setText(text);
         fillInData();
         return view;
     }
@@ -204,8 +205,11 @@ public class TaskFragment extends Fragment {
                             tv_release_all.setEnabled(true);
                             tv_release_all.setClickable(true);
 
-                            tv_user_tasks_count.setText("用户进程（" + userAdapter.getItemCount() + "）");
-                            tv_sys_tasks_count.setText("系统进程（" + sysAdapter.getItemCount() + "）");
+                            String userPCount = String.format(getResources().getString(R.string.user_running_process), userAdapter.getItemCount());
+                            String sysPCount = String.format(getResources().getString(R.string.sys_running_process), sysAdapter.getItemCount());
+                            tv_user_tasks_count.setText(userPCount);
+                            tv_sys_tasks_count.setText(sysPCount);
+
                             if (userAdapter.getItemCount() == 0)
                                 tv_user_tasks_count.setVisibility(View.GONE);
                             else
@@ -239,27 +243,34 @@ public class TaskFragment extends Fragment {
 
     private void refresh(boolean refreshList) {
         int progressCount = SystemInfoUtils.getRunningProcessCount(getActivity());
-        tv_progress_count.setText("运行中进程：" + progressCount + "个");
+        String count = String.format(getResources().getString(R.string.running_process), progressCount);
+        tv_progress_count.setText(count);
 
         long availMen = SystemInfoUtils.getAvailableMemory(getActivity());
         long totalMen = SystemInfoUtils.getTotalMemory(getActivity());
-        tv_memory_info.setText("剩余/总内存：" + SystemInfoUtils.formatFileSize(availMen) + "/" + SystemInfoUtils.formatFileSize(totalMen));
+        String text = String.format(getResources().getString(R.string.widget_memory), SystemInfoUtils.formatFileSize(availMen), SystemInfoUtils.formatFileSize(totalMen));
+        tv_memory_info.setText(text);
 
-
-        tv_user_tasks_count.setText("用户进程（" + userAdapter.getItemCount() + "）");
-        tv_sys_tasks_count.setText("系统进程（" + sysAdapter.getItemCount() + "）");
+        String userPCount = String.format(getResources().getString(R.string.user_running_process), userAdapter.getItemCount());
+        String sysPCount = String.format(getResources().getString(R.string.sys_running_process), sysAdapter.getItemCount());
+        tv_user_tasks_count.setText(userPCount);
+        tv_sys_tasks_count.setText(sysPCount);
 
         if (refreshList)
             fillInData();
     }
 
     public void setFalseDate() {
-        tv_progress_count.setText("运行中进程：" + "1" + "个");
+        String count = String.format(getResources().getString(R.string.running_process), 1);
+        tv_progress_count.setText(count);
         long availMen = SystemInfoUtils.getAvailableMemory(getActivity());
         long totalMen = SystemInfoUtils.getTotalMemory(getActivity());
-        tv_memory_info.setText("剩余/总内存：" + SystemInfoUtils.formatFileSize(availMen) + "/" + SystemInfoUtils.formatFileSize(totalMen));
-        tv_user_tasks_count.setText("用户进程（" + "1" + "）");
-        tv_sys_tasks_count.setText("系统进程（" + "0" + "）");
+        String text = String.format(getResources().getString(R.string.widget_memory), SystemInfoUtils.formatFileSize(availMen), SystemInfoUtils.formatFileSize(totalMen));
+        tv_memory_info.setText(text);
+        String userPCount = String.format(getResources().getString(R.string.user_running_process), 1);
+        String sysPCount = String.format(getResources().getString(R.string.sys_running_process), 0);
+        tv_user_tasks_count.setText(userPCount);
+        tv_sys_tasks_count.setText(sysPCount);
 
         ll_loading.setVisibility(View.VISIBLE);
 
@@ -335,8 +346,8 @@ public class TaskFragment extends Fragment {
                             ll_loading.setVisibility(View.GONE);
                             tv_release_all.setEnabled(true);
                             tv_release_all.setClickable(true);
-
-                            tv_user_tasks_count.setText("用户进程（" + "1" + "）");
+                            String userPCount = String.format(getResources().getString(R.string.user_running_process), 1);
+                            tv_user_tasks_count.setText(userPCount);
                             tv_sys_tasks_count.setVisibility(View.GONE);
 
                             rv_user_tasks.setAdapter(userAdapter);
