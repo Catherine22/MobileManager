@@ -1,4 +1,4 @@
-package com.itheima.mobilesafe.utils;
+package com.itheima.mobilesafe.receivers;
 
 import android.app.admin.DeviceAdminReceiver;
 import android.content.Context;

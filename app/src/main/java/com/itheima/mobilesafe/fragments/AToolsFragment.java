@@ -1,10 +1,7 @@
 package com.itheima.mobilesafe.fragments;
 
 import android.Manifest;
-import android.database.ContentObserver;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -17,9 +14,7 @@ import android.widget.Toast;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
-import com.itheima.mobilesafe.services.BlockCallsSmsService;
 import com.itheima.mobilesafe.utils.BackupFactory;
-import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.backup.BackupConstants;
 import com.itheima.mobilesafe.utils.backup.SmsBackup;

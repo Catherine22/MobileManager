@@ -2,6 +2,8 @@ package com.itheima.mobilesafe.utils;
 
 import android.app.Application;
 
+import com.facebook.accountkit.AccountKit;
+
 import io.branch.referral.Branch;
 
 /**
@@ -20,6 +22,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         INSTANCE = this;
         Branch.getAutoInstance(this);
+        AccountKit.initialize(this);
         super.onCreate();
     }
 

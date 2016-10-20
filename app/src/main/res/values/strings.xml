@@ -7,4 +7,8 @@
     <string name="admin_receiver_status">设置管理员权限</string>
     <string name="device_admin">Device Admin</string>
 
+    <string name="widget_memory">剩余:%1$s/已用内存:%2$s</string>
+    <string name="running_process">运行中进程：%d个</string>
+    <string name="user_running_process">用户进程（%d）</string>
+    <string name="sys_running_process">系统进程（%d）</string>
 </resources>

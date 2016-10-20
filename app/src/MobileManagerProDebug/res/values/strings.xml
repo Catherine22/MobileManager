@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">手机卫士进阶版测试版</string>
+    <string name="device_admin">手机卫士进阶版 管理员权限</string>
+    <string name="branch_key">key_live_ciumru4IWKbRuY5ONz4llmpbwyhmhDmw</string>
+    <string name="branch_scheme">itheima.mobilesafe.pro</string>
+    <string name="fb_app_id">211583309254212</string>
+    <string name="ACCOUNT_KIT_CLIENT_TOKEN">bae69756d895a26dd9501b1f7fd953e6</string>
+    <string name="ak_login_protocol_scheme">ak211583309254212</string>
+</resources>

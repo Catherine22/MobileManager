@@ -168,4 +168,30 @@ public class SystemInfoUtils {
         }
         return returns;
     }
+
+    public static void killProcess(Context ctx, String packageName) {
+        ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+        am.killBackgroundProcesses(packageName);
+
+    }
+
+    public static void killAllProcess(Context ctx, List<String> packagenames) {
+        ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+        for (String packageName : packagenames)
+            am.killBackgroundProcesses(packageName);
+    }
+
+    public static void killAllProcess(Context ctx) {
+        ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+        PackageManager pm = ctx.getPackageManager();
+        List<ActivityManager.RunningAppProcessInfo> infos = am.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo processInfo : infos) {
+            try {
+                String packageName = processInfo.processName;
+                am.killBackgroundProcesses(packageName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

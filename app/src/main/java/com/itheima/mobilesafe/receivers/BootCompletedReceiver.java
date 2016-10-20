@@ -1,4 +1,4 @@
-package com.itheima.mobilesafe.utils;
+package com.itheima.mobilesafe.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.widget.Toast;
+
+import com.itheima.mobilesafe.utils.CLog;
 
 /**
  * Created by Catherine on 2016/8/17.

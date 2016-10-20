@@ -20,11 +20,6 @@ public class NetUtils {
     public static final String DOMAIN = "http://xxx/xxx/api/";
     private static final int READ_TIMEOUT = 5000;
     private static final int CONNECT_TIMEOUT = 10000;
-    enum TYPE{
-        GET,
-        POST,
-        POST_JSON
-    }
 
     public interface Callback {
         void onResponse(String response);
@@ -50,7 +45,7 @@ public class NetUtils {
 
     // Using AsyncTask
     public static void get(final String url, final String[] name, final String[] data, final Callback callback) {
-        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE.GET));
+        new NetAsyncTask(url, name, data, callback).execute("GET");
     }
 
     // Using handle
@@ -73,7 +68,7 @@ public class NetUtils {
 
     // Using AsyncTask
     public static void post(final String url, final String[] name, final String[] data, final Callback callback) {
-        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE.POST));
+        new NetAsyncTask(url, name, data, callback).execute("POST");
     }
 
     // Using handle
@@ -96,7 +91,7 @@ public class NetUtils {
 
     // Using AsyncTask
     public static void postJSON(final String url, final String[] name, final String[] data, final Callback callback) {
-        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE.POST_JSON));
+        new NetAsyncTask(url, name, data, callback).execute("POST_JSON");
     }
 
     protected static String sendDataByGet(final String path, final String[] name, final String[] data) {

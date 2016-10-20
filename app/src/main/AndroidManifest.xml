@@ -13,6 +13,9 @@
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+
     <!--使用WakeLock使Android应用程序保持后台唤醒-->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!--获取联系人-->
@@ -39,16 +42,36 @@
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
 
 
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
-    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
-    <uses-feature android:name="android.hardware.location" android:required="false"/>
-    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
-    <uses-feature android:name="android.hardware.location.network" android:required="false"/>
-    <uses-feature android:name="android.hardware.microphone" android:required="false"/>
-    <uses-feature android:name="android.hardware.telephony" android:required="false"/>
-    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
-    <uses-feature android:name="android.hardware.wifi" android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false" />
 
     <application
         android:name=".utils.MyApplication"
@@ -90,8 +113,10 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SENDTO" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="sms" />
                 <data android:scheme="smsto" />
                 <data android:scheme="mms" />
@@ -102,21 +127,34 @@
         <service android:name=".services.GPSService" />
         <service android:name=".services.AddressService" />
         <service android:name=".services.BlockCallsSmsService" />
+        <service android:name=".services.AutoCleanService" />
 
-        <receiver android:name=".utils.BootCompletedReceiver">
+        <receiver android:name=".receivers.BootCompletedReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".utils.SMSReceiver">
+        <receiver android:name=".receivers.WidgetReceiver">
+            <intent-filter>
+                <action android:name="com.itheima.mobliesafe.KILLALL" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receivers.OpenAppReceiver">
+            <intent-filter>
+                <action android:name="com.itheima.mobliesafe.OPEN_APP" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receivers.SMSReceiver">
             <intent-filter android:priority="2147483647"><!-- max integer -->
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 
         <receiver
-            android:name=".utils.MyDeviceAdminReceiver"
+            android:name=".receivers.MyDeviceAdminReceiver"
             android:description="@string/admin_receiver_status"
             android:label="@string/device_admin"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
@@ -142,9 +180,24 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".ui.MyAppWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/my_appwidget_info" />
+        </receiver>
+
         <!--SMS-->
         <!-- BroadcastReceiver that listens for incoming SMS messages -->
-        <receiver android:name=".os.SmsReceiver"
+        <receiver
+            android:name=".os.SmsReceiver"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_DELIVER" />
@@ -152,7 +205,8 @@
         </receiver>
 
         <!-- BroadcastReceiver that listens for incoming MMS messages -->
-        <receiver android:name=".os.MmsReceiver"
+        <receiver
+            android:name=".os.MmsReceiver"
             android:permission="android.permission.BROADCAST_WAP_PUSH">
             <intent-filter>
                 <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
@@ -160,12 +214,14 @@
             </intent-filter>
         </receiver>
         <!-- Service that delivers messages from the phone "quick response" -->
-        <service android:name=".os.HeadlessSmsSendService"
-            android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE"
-            android:exported="true" >
+        <service
+            android:name=".os.HeadlessSmsSendService"
+            android:exported="true"
+            android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE">
             <intent-filter>
                 <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="sms" />
                 <data android:scheme="smsto" />
                 <data android:scheme="mms" />
@@ -173,6 +229,30 @@
             </intent-filter>
         </service>
 
+        <!-- Facebook Account kit-->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/fb_app_id" />
+        <meta-data
+            android:name="com.facebook.accountkit.ClientToken"
+            android:value="@string/ACCOUNT_KIT_CLIENT_TOKEN" />
+        <meta-data
+            android:name="com.facebook.accountkit.ApplicationName"
+            android:value="@string/app_name" />
+        <meta-data
+            android:name="com.facebook.accountkit.FacebookAppEventsEnabled"
+            android:value="true" />
 
+        <activity android:name="com.facebook.accountkit.ui.AccountKitActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/ak_login_protocol_scheme" />
+            </intent-filter>
+
+        </activity>
     </application>
 </manifest>
