@@ -11,7 +11,7 @@
 | 取得GPS位置 | [GPSService] |
 | 拦截短信后，利用管理员权限卸载应用、设置锁屏、清除数据 | [SMSReceiver], [MyAdminManager] |
 | 数据备份、还原（短信） | [SmsBackup] |
-| Facebook Account kit 登入 | [SettingsFragment] (search ACCOUNTKIT), [AccountKitUtils] |
+| Facebook Account kit 登入 |[SettingsFragment], [AccountKitUtils]|
 
 ## 自定义控件
 #### 自定义控件属性      
