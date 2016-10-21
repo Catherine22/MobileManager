@@ -11,6 +11,7 @@
 | 取得GPS位置 | [GPSService] |
 | 拦截短信后，利用管理员权限卸载应用、设置锁屏、清除数据 | [SMSReceiver], [MyAdminManager] |
 | 数据备份、还原（短信） | [SmsBackup] |
+| Facebook Account kit 登入 | [SettingsFragment] (search ACCOUNTKIT), [AccountKitUtils] |
 
 ## 自定义控件
 #### 自定义控件属性      
@@ -19,6 +20,38 @@
   - [attrs]     
 
 #### [自定义Toast]
+
+#### Widgets
+  - 定义一个类[MyAppWidgetProvider]继承AppWidgetProvider
+  - 定义此widget显示xml文档[my_appwidget_info]于res/xml/目录下
+  - 注册service [AutoCleanService] 监听widget点击事件（service注册的时间点应为widget启用时，详见[MyAppWidgetProvider]
+  - 使情况可自定义广播，注册接收者响应widget点击事件
+  - Manifest配置
+```xml
+<application>
+<receiver
+            android:name=".ui.MyAppWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/my_appwidget_info" />
+        </receiver>
+
+<service android:name=".services.AutoCleanService" />
+
+<receiver android:name=".receivers.WidgetReceiver">
+            <intent-filter>
+                <action android:name="com.itheima.mobliesafe.KILLALL" />
+            </intent-filter>
+        </receiver>
+</application>
+```
 
 #### 自定义对话框
 ```JAVA
@@ -43,13 +76,11 @@
   - [HomeActivity]
   
 #### 可滑动、上下交换的RecyclerView
-  - 法1 
-  - [BlacklistFragment]  
-  - [BlacklistAdapter]
-  - 法2 
-  - [TaskFragment]  
+  - [BlacklistFragment]
+  - [BlacklistAdapter]      
+
+  - [TaskFragment]
   - [TaskInfoListAdapter]
-  
 ## 其他应用
 #### MD5加密
   - [Encryption]
@@ -75,7 +106,7 @@
 <uses-permission android:name="android.permission.WAKE_LOCK" />
 
 <application
-    <receiver android:name=".utils.BootCompletedReceiver">
+    <receiver android:name=".receivers.BootCompletedReceiver">
         <intent-filter>
             <action android:name="android.intent.action.BOOT_COMPLETED" />
         </intent-filter>
@@ -392,32 +423,32 @@ public interface MyPermissionsResultListener {
 
 
 
-   [SettingItemView]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/SettingItemView.java>
-   [fragment_settings]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/layout/fragment_settings.xml>
-   [attrs]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/values/attrs.xml>
-   [HomeActivity]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/HomeActivity.java>
-   [Encryption]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/Encryption.java>
-   [build.gradle]: <https://github.com/Catherine22/MobileManager/blob/master/app/build.gradle>
-   [AndroidManifest]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/AndroidManifest.xml>
-   [MyApplication]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/MyApplication.java>
-   [CLog]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/CLog.java>
-   [BootCompletedReceiver]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/BootCompletedReceiver.java>
-   [SMSReceiver]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/SMSReceiver.java>
-   [GPSService]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/GPSService.java>
-   [火星坐标偏移算法]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/services/gcj02>
-   [Android 6.0 运行时权限处理]: <https://www.aswifter.com/2015/11/04/android-6-permission/>
-   [Setup2Fragment]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/setup/Setup2Fragment.java>
-   [MyAdminManager]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/utils/MyAdminManager.java>
-   [MyDeviceAdminReceiver]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/utils/MyDeviceAdminReceiver.java>
-   [device_admin_sample]: <https://github.com/Catherine22/MobileManager/tree/master/app/src/main/res/xml/device_admin_sample.xml>
-   [device-admin API 文档]: <https://developer.android.com/guide/topics/admin/device-admin.html>
-   [正则式语句列表]: <https://msdn.microsoft.com/zh-cn/library/ae5bf541(v=vs.100).aspx>
-   [XMLPullParserHandler]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/XMLPullParserHandler.java>
-   [权限无法获取问题]: <http://www.jianshu.com/p/2746a627c6d2>
-   [自定义Toast]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/MyToast.java>
-   [MyPermissionsResultListener]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/interfaces/MyPermissionsResultListener.java>
-   [BlacklistFragment]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/BlacklistFragment.java>
-   [BlacklistAdapter]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/adapter/BlacklistAdapter.java>
+   [SettingItemView]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/SettingItemView.java>
+   [fragment_settings]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/layout/fragment_settings.xml>
+   [attrs]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/values/attrs.xml>
+   [HomeActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/HomeActivity.java>
+   [Encryption]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/Encryption.java>
+   [build.gradle]:<https://github.com/Catherine22/MobileManager/blob/master/app/build.gradle>
+   [AndroidManifest]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/AndroidManifest.xml>
+   [MyApplication]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/MyApplication.java>
+   [CLog]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/CLog.java>
+   [BootCompletedReceiver]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/receivers/BootCompletedReceiver.java>
+   [SMSReceiver]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/receivers/SMSReceiver.java>
+   [GPSService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/GPSService.java>
+   [火星坐标偏移算法]:<https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/services/gcj02>
+   [Android 6.0 运行时权限处理]:<https://www.aswifter.com/2015/11/04/android-6-permission/>
+   [Setup2Fragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/setup/Setup2Fragment.java>
+   [MyAdminManager]:<https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/utils/MyAdminManager.java>
+   [MyDeviceAdminReceiver]:<https://github.com/Catherine22/MobileManager/tree/master/app/src/main/java/com/itheima/mobilesafe/receivers/MyDeviceAdminReceiver.java>
+   [device_admin_sample]:<https://github.com/Catherine22/MobileManager/tree/master/app/src/main/res/xml/device_admin_sample.xml>
+   [device-admin API 文档]:<https://developer.android.com/guide/topics/admin/device-admin.html>
+   [正则式语句列表]:<https://msdn.microsoft.com/zh-cn/library/ae5bf541(v=vs.100).aspx>
+   [XMLPullParserHandler]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/XMLPullParserHandler.java>
+   [权限无法获取问题]:<http://www.jianshu.com/p/2746a627c6d2>
+   [自定义Toast]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/MyToast.java>
+   [MyPermissionsResultListener]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/interfaces/MyPermissionsResultListener.java>
+   [BlacklistFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/BlacklistFragment.java>
+   [BlacklistAdapter]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/adapter/BlacklistAdapter.java>
    [Singleton]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/designpattern/singleton>
    [Factory]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/designpattern/factory>
    [AbstractFactory]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/designpattern/abstract_factory>
@@ -435,5 +466,11 @@ public interface MyPermissionsResultListener {
    [ServiceUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/ServiceUtils.java>
    [SmsBackup]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/backup/SmsBackup.java>
    [App Indexing on Google Search]:<https://support.google.com/googleplay/android-developer/answer/6041489>
-   [TaskFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/TaskFragment.java>
-   [TaskInfoListAdapter]: <https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/adapter/TaskInfoListAdapter.java>
+   [TaskFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/TaskFragment.java
+   [TaskInfoListAdapter]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/adapter/TaskInfoListAdapter.java
+   [MyAppWidgetProvider]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/MyAppWidgetProvider.java>
+   [my_appwidget_info]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/xml/my_appwidget_info.xml>
+   [AutoCleanService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/AutoCleanService.java>
+   [AccountKitUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/login/AccountKitUtils.java>
+   [SettingsFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/SettingsFragment.java>
+   

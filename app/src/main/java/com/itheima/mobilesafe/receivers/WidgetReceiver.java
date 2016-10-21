@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.itheima.mobilesafe.utils.CLog;
-import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.SystemInfoUtils;
 
 /**

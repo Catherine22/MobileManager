@@ -1,10 +1,6 @@
-package com.itheima.mobilesafe.utils;
+package com.itheima.mobilesafe.utils.backup;
 
 import android.content.Context;
-
-import com.itheima.mobilesafe.utils.backup.BackupConstants;
-import com.itheima.mobilesafe.utils.backup.BaseBackup;
-import com.itheima.mobilesafe.utils.backup.SmsBackup;
 
 /**
  * Created by Catherine on 2016/10/11.

@@ -3,7 +3,6 @@ package com.itheima.mobilesafe.services;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.IBinder;
@@ -13,7 +12,6 @@ import android.widget.RemoteViews;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.MyAppWidgetProvider;
 import com.itheima.mobilesafe.utils.CLog;
-import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.SystemInfoUtils;
 
 import java.util.Timer;
