@@ -34,11 +34,6 @@ public class Constants {
     public static final int SENT_SUCCESSFULLY = 1;
     public static final int TIMEOUT = 2;
 
-    //other
-    public static final int ON = 0;
-    public static final int OFF = 1;
-
-
     //path
     public static String PACKAGE_NAME;
     public static String DB_NAME;

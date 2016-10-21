@@ -19,6 +19,7 @@ import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Settings;
+import com.itheima.mobilesafe.utils.SpNames;
 
 import tw.com.softworld.messagescenter.AsyncResponse;
 import tw.com.softworld.messagescenter.Server;
@@ -56,7 +57,7 @@ public class Setup2Fragment extends Fragment {
                     siv_sim.setChecked(false);
                     sv.pushInt(BroadcastActions.DISABLE_SWIPING, 2);
                     editor = sp.edit();
-                    editor.putString("sim_serial", null);
+                    editor.putString(SpNames.sim_serial, null);
                     editor.apply();
                 } else {
                     mainInterface.getPermissions(new String[]{
@@ -76,7 +77,7 @@ public class Setup2Fragment extends Fragment {
                                     siv_sim.setChecked(true);
                                     sv.pushInt(BroadcastActions.DISABLE_SWIPING, -1);
                                     editor = sp.edit();
-                                    editor.putString("sim_serial", Settings.simSerialNumber);
+                                    editor.putString(SpNames.sim_serial, Settings.simSerialNumber);
                                     editor.apply();
                                 }
 
@@ -95,7 +96,7 @@ public class Setup2Fragment extends Fragment {
 
     private void initData() {
         mainInterface = (MainInterface) getActivity();
-        sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+        sp = getActivity().getSharedPreferences(SpNames.FILE_CONFIG, Context.MODE_PRIVATE);
         AsyncResponse ar = new AsyncResponse() {
             @Override
             public void onFailure(int errorCode) {
@@ -111,7 +112,7 @@ public class Setup2Fragment extends Fragment {
 
     @Override
     public void onResume() {
-        if (TextUtils.isEmpty(sp.getString("sim_serial", null))) {
+        if (TextUtils.isEmpty(sp.getString(SpNames.sim_serial, null))) {
             siv_sim.setChecked(false);
             sv.pushInt(BroadcastActions.DISABLE_SWIPING, 2);
         } else {

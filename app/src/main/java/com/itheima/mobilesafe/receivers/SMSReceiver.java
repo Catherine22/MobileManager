@@ -15,6 +15,7 @@ import com.itheima.mobilesafe.services.GPSService;
 import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.MyAdminManager;
+import com.itheima.mobilesafe.utils.SpNames;
 
 import tw.com.softworld.messagescenter.Client;
 import tw.com.softworld.messagescenter.CustomReceiver;
@@ -51,8 +52,8 @@ public class SMSReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         CLog.d(TAG, "SMS received!");
-        SharedPreferences sp = context.getSharedPreferences("config", Context.MODE_PRIVATE);
-        safePhone = sp.getString("safe_phone", "");
+        SharedPreferences sp = context.getSharedPreferences(SpNames.FILE_CONFIG, Context.MODE_PRIVATE);
+        safePhone = sp.getString(SpNames.safe_phone, "");
 /*
         //测试ANR，阻塞主线程
         try {
@@ -93,9 +94,9 @@ public class SMSReceiver extends BroadcastReceiver {
                             @Override
                             public void onBroadcastReceive(Result result) {
                                 Bundle b = result.getBundle();
-                                String longitude = b.getString("longitude");
-                                String latitude = b.getString("latitude");
-                                String accutacy = b.getString("accutacy");
+                                String longitude = b.getString(SpNames.longitude);
+                                String latitude = b.getString(SpNames.latitude);
+                                String accutacy = b.getString(SpNames.accutacy);
 
                                 CLog.d(TAG, "Longitude:" + longitude + "\nLatitude:" + latitude + "\nAccutacy:" + accutacy);
 

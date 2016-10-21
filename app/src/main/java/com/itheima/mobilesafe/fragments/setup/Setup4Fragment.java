@@ -15,6 +15,7 @@ import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Settings;
+import com.itheima.mobilesafe.utils.SpNames;
 
 /**
  * Created by Catherine on 2016/8/12.
@@ -52,10 +53,10 @@ public class Setup4Fragment extends Fragment {
         bt_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+                SharedPreferences sp = getActivity().getSharedPreferences(SpNames.FILE_CONFIG, Context.MODE_PRIVATE);
                 editor = sp.edit();
-                editor.putString("safe_phone", Settings.safePhone);
-                editor.putBoolean("configed", true);
+                editor.putString(SpNames.safe_phone, Settings.safePhone);
+                editor.putBoolean(SpNames.configed, true);
                 editor.apply();
 
                 mainInterface.clearAllFragments();

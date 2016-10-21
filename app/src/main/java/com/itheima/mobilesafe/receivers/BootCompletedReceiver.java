@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.SpNames;
 
 /**
  * Created by Catherine on 2016/8/17.
@@ -26,8 +27,8 @@ public class BootCompletedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            SharedPreferences sp = context.getSharedPreferences("config", Context.MODE_PRIVATE);
-            String savedSIM = sp.getString("sim_serial", null);
+            SharedPreferences sp = context.getSharedPreferences(SpNames.FILE_CONFIG, Context.MODE_PRIVATE);
+            String savedSIM = sp.getString(SpNames.sim_serial, null);
 
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             String currentSIM = "";
@@ -48,7 +49,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
                 //sim卡变更了，需要偷偷发短信
                 CLog.e(TAG, "sim卡变更了，需要偷偷发短信");
                 SmsManager smsManager = SmsManager.getDefault();
-                String destinationAddress = sp.getString("safe_phone", null);
+                String destinationAddress = sp.getString(SpNames.safe_phone, null);
                 if (!TextUtils.isEmpty(destinationAddress))
                     smsManager.sendTextMessage(destinationAddress, null, "SIM卡换啦!", null, null);
                 //如果没有SIM卡?

@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.widget.RemoteViews;
@@ -111,15 +110,6 @@ public class AutoCleanService extends Service {
         }
     }
 
-    /**
-     * 检查widget是否正在运行
-     *
-     * @return 是否正在运行
-     */
-    public boolean isWidgetActive() {
-        SharedPreferences sp = AutoCleanService.this.getSharedPreferences("config", MODE_PRIVATE);
-        return sp.getBoolean("WIDGET_ACTIVE", false);
-    }
 
     /**
      * 解除widget的点击事件与view定期更新

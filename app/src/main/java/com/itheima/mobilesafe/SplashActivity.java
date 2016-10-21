@@ -33,6 +33,7 @@ import com.itheima.mobilesafe.designpattern.singleton.SafeLazyInitializingSingle
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Settings;
+import com.itheima.mobilesafe.utils.SpNames;
 import com.itheima.mobilesafe.utils.StreamUtils;
 
 import org.json.JSONException;
@@ -65,7 +66,7 @@ public class SplashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
         initComponents();
         initSettings();
 
@@ -75,7 +76,7 @@ public class SplashActivity extends Activity {
         testBuilder();
 
 
-        boolean update = sp.getBoolean("update", false);
+        boolean update = sp.getBoolean(SpNames.update, false);
         if (update) {
             // 检查升级
             checkUpdate();
@@ -443,8 +444,8 @@ public class SplashActivity extends Activity {
         Settings.DISPLAY_HEIGHT_PX = metrics.heightPixels;
 
         //取得安全碼信息
-        SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
-        Settings.safePhone = sp.getString("safe_phone", "");
+        SharedPreferences sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
+        Settings.safePhone = sp.getString(SpNames.safe_phone, "");
 
         //取得包名, 设置常量
         Constants.DB_NAME = "address.db";
