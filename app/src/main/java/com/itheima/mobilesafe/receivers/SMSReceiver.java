@@ -12,6 +12,7 @@ import android.text.TextUtils;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.services.GPSService;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.MyAdminManager;
 
@@ -105,7 +106,7 @@ public class SMSReceiver extends BroadcastReceiver {
                             }
                         };
                         Client client = new Client(context, cr);
-                        client.gotMessages("LOCATION_INFO");
+                        client.gotMessages(BroadcastActions.LOCATION_INFO);
 
                     }
                     if (content.contains("#*alarm*#")) {

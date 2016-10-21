@@ -16,6 +16,7 @@ import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.ui.SettingItemView;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Settings;
 
@@ -53,7 +54,7 @@ public class Setup2Fragment extends Fragment {
                 //判断是否有选中
                 if (siv_sim.isChecked()) {
                     siv_sim.setChecked(false);
-                    sv.pushInt("DISABLE_SWIPING", 2);
+                    sv.pushInt(BroadcastActions.DISABLE_SWIPING, 2);
                     editor = sp.edit();
                     editor.putString("sim_serial", null);
                     editor.apply();
@@ -73,7 +74,7 @@ public class Setup2Fragment extends Fragment {
                                 public void onGranted() {
                                     CLog.d(TAG, "onGranted");
                                     siv_sim.setChecked(true);
-                                    sv.pushInt("DISABLE_SWIPING", -1);
+                                    sv.pushInt(BroadcastActions.DISABLE_SWIPING, -1);
                                     editor = sp.edit();
                                     editor.putString("sim_serial", Settings.simSerialNumber);
                                     editor.apply();
@@ -112,10 +113,10 @@ public class Setup2Fragment extends Fragment {
     public void onResume() {
         if (TextUtils.isEmpty(sp.getString("sim_serial", null))) {
             siv_sim.setChecked(false);
-            sv.pushInt("DISABLE_SWIPING", 2);
+            sv.pushInt(BroadcastActions.DISABLE_SWIPING, 2);
         } else {
             siv_sim.setChecked(true);
-            sv.pushInt("DISABLE_SWIPING", -1);
+            sv.pushInt(BroadcastActions.DISABLE_SWIPING, -1);
         }
         super.onResume();
     }

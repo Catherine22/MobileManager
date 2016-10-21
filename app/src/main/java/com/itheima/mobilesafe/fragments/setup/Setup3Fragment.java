@@ -14,6 +14,7 @@ import android.widget.EditText;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.MainInterface;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Settings;
@@ -65,9 +66,9 @@ public class Setup3Fragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 if (TextUtils.isEmpty(et_phone_number.getText()))
-                    sv.pushInt("DISABLE_SWIPING", 3);
+                    sv.pushInt(BroadcastActions.DISABLE_SWIPING, 3);
                 else
-                    sv.pushInt("DISABLE_SWIPING", -1);
+                    sv.pushInt(BroadcastActions.DISABLE_SWIPING, -1);
                 Settings.safePhone = et_phone_number.getText().toString();
             }
         });
@@ -98,21 +99,21 @@ public class Setup3Fragment extends Fragment {
                 CLog.d(TAG, "You got " + result.getString());
                 et_phone_number.setText(Settings.safePhone);
                 if (TextUtils.isEmpty(et_phone_number.getText()))
-                    sv.pushInt("DISABLE_SWIPING", 3);
+                    sv.pushInt(BroadcastActions.DISABLE_SWIPING, 3);
                 else
-                    sv.pushInt("DISABLE_SWIPING", -1);
+                    sv.pushInt(BroadcastActions.DISABLE_SWIPING, -1);
             }
         };
         client = new Client(getActivity(), cr);
-        client.gotMessages("SAFE_PHONE");
+        client.gotMessages(BroadcastActions.SAFE_PHONE);
     }
 
     @Override
     public void onResume() {
         if (TextUtils.isEmpty(et_phone_number.getText()))
-            sv.pushInt("DISABLE_SWIPING", 3);
+            sv.pushInt(BroadcastActions.DISABLE_SWIPING, 3);
         else
-            sv.pushInt("DISABLE_SWIPING", -1);
+            sv.pushInt(BroadcastActions.DISABLE_SWIPING, -1);
 
         if (!TextUtils.isEmpty(Settings.safePhone))
             et_phone_number.setText(Settings.safePhone);

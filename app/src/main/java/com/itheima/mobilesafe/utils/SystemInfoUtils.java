@@ -35,8 +35,8 @@ public class SystemInfoUtils {
     /**
      * 获取运行中的进程数
      *
-     * @param ctx
-     * @return
+     * @param ctx 上下文
+     * @return 运行中的进程数
      */
     public static int getRunningProcessCount(Context ctx) {
         ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
@@ -47,8 +47,8 @@ public class SystemInfoUtils {
     /**
      * 获取手机可用的剩余内存
      *
-     * @param ctx
-     * @return byte
+     * @param ctx 上下文
+     * @return bytes
      */
     public static long getAvailableMemory(Context ctx) {
         ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
@@ -60,8 +60,8 @@ public class SystemInfoUtils {
     /**
      * 获取手机可用的总内存
      *
-     * @param ctx
-     * @return byte
+     * @param ctx 上下文
+     * @return bytes
      */
     public static long getTotalMemory(Context ctx) {
         long result = -1;
@@ -94,8 +94,8 @@ public class SystemInfoUtils {
     /**
      * 自动转换单位
      *
-     * @param size
-     * @return
+     * @param size 字节Bytes
+     * @return Bytes，KB，MB,GB,TB
      */
     public static String formatFileSize(long size) {
         String hrSize = null;
@@ -126,8 +126,8 @@ public class SystemInfoUtils {
     /**
      * 获取所有的进程信息
      *
-     * @param ctx
-     * @return
+     * @param ctx 上下文
+     * @return 目前运行中的进程信息
      */
     public static List<TaskInfo> getTaskInfos(Context ctx) {
         List<TaskInfo> returns = new ArrayList<>();
@@ -147,13 +147,9 @@ public class SystemInfoUtils {
                 Debug.MemoryInfo[] mInfos = am.getProcessMemoryInfo(new int[]{processInfo.pid});
                 tInfo.memSize = mInfos[0].getTotalPrivateDirty();
 
-                if ((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                    //用户进程
-                    tInfo.userTask = true;
-                } else {
-                    //系统进程
-                    tInfo.userTask = false;
-                }
+                //用户进程
+//系统进程
+                tInfo.userTask = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0;
                 returns.add(tInfo);
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
@@ -169,21 +165,34 @@ public class SystemInfoUtils {
         return returns;
     }
 
+    /**
+     * 关闭进程
+     * @param ctx 上下文
+     * @param packageName 希望关闭的进程
+     */
     public static void killProcess(Context ctx, String packageName) {
         ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
         am.killBackgroundProcesses(packageName);
 
     }
 
+    /**
+     * 关闭列表里全部进程
+     * @param ctx 上下文
+     * @param packagenames 关闭列表
+     */
     public static void killAllProcess(Context ctx, List<String> packagenames) {
         ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
         for (String packageName : packagenames)
             am.killBackgroundProcesses(packageName);
     }
 
+    /**
+     * 关闭全部进程
+     * @param ctx 上下文
+     */
     public static void killAllProcess(Context ctx) {
         ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
-        PackageManager pm = ctx.getPackageManager();
         List<ActivityManager.RunningAppProcessInfo> infos = am.getRunningAppProcesses();
         for (ActivityManager.RunningAppProcessInfo processInfo : infos) {
             try {

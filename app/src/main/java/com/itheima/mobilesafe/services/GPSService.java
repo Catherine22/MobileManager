@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 
 import com.itheima.mobilesafe.services.gcj02.ModifyOffset;
 import com.itheima.mobilesafe.services.gcj02.PointDouble;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 
 import java.io.IOException;
@@ -121,7 +122,7 @@ public class GPSService extends Service {
             bundle.putString("longitude", longitude + "");
             bundle.putString("latitude", latitude + "");
             bundle.putString("accutacy", accutacy + "");
-            sv.pushBundle("LOCATION_INFO", bundle);
+            sv.pushBundle(BroadcastActions.LOCATION_INFO, bundle);
         }
 
         @Override

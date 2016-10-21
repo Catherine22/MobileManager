@@ -54,6 +54,7 @@ import com.itheima.mobilesafe.fragments.setup.SetupFragment;
 import com.itheima.mobilesafe.interfaces.LoginTypeListener;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Encryption;
@@ -508,10 +509,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         switch (requestCode) {
             case Constants.REQUEST_CODE_ENABLE_ADMIN:
                 if (resultCode == RESULT_OK) {
-                    sv.pushBoolean("ADMIN_PERMISSION", true);
+                    sv.pushBoolean(BroadcastActions.ADMIN_PERMISSION, true);
                 } else {
-                    sv.pushBoolean("ADMIN_PERMISSION", false);
+                    sv.pushBoolean(BroadcastActions.ADMIN_PERMISSION, false);
                 }
+
                 break;
             case Constants.OVERLAY_PERMISSION_REQ_CODE:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

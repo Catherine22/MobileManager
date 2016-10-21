@@ -29,6 +29,7 @@ import com.itheima.mobilesafe.services.AddressService;
 import com.itheima.mobilesafe.services.BlockCallsSmsService;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.ui.SettingNextView;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.MyAdminManager;
@@ -99,7 +100,7 @@ public class SettingsFragment extends Fragment {
             }
         };
         client = new Client(getActivity(), cr);
-        client.gotMessages("ADMIN_PERMISSION");
+        client.gotMessages(BroadcastActions.ADMIN_PERMISSION);
 
         if (myAdminManager.isAdmin()) {
             //装置管理员已经开启
