@@ -142,10 +142,10 @@
         </receiver>
 
         <receiver android:name=".receivers.OpenAppReceiver">
-            <intent-filter>
-                <action android:name="com.itheima.mobliesafe.OPEN_APP" />
-            </intent-filter>
-        </receiver>
+        <intent-filter>
+            <action android:name="com.itheima.mobliesafe.OPEN_APP" />
+        </intent-filter>
+    </receiver>
 
         <receiver android:name=".receivers.SMSReceiver">
             <intent-filter android:priority="2147483647"><!-- max integer -->

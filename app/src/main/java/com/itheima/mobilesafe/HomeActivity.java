@@ -54,10 +54,12 @@ import com.itheima.mobilesafe.fragments.setup.SetupFragment;
 import com.itheima.mobilesafe.interfaces.LoginTypeListener;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Encryption;
 import com.itheima.mobilesafe.utils.MyAdminManager;
+import com.itheima.mobilesafe.utils.SpNames;
 import com.itheima.mobilesafe.utils.objects.UserInfo;
 
 import org.json.JSONException;
@@ -167,10 +169,10 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             if (!defaultSmsApp.equals(getPackageName())) {
                 defaultSysSmsApp = defaultSmsApp;
                 SharedPreferences.Editor editor = sp.edit();
-                editor.putString("default_sms_app", defaultSysSmsApp);
+                editor.putString(SpNames.default_sms_app, defaultSysSmsApp);
                 editor.apply();
             } else
-                defaultSysSmsApp = sp.getString("default_sms_app", getPackageName());
+                defaultSysSmsApp = sp.getString(SpNames.default_sms_app, getPackageName());
         }
     }
 
@@ -442,8 +444,8 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void getLoginType(final LoginTypeListener listener) {
-        SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
-        int savedLoginType = sp.getInt("LoginType", Constants.NONE);
+        SharedPreferences sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
+        int savedLoginType = sp.getInt(SpNames.loginType, Constants.NONE);
         if (savedLoginType == Constants.ACCOUNTKIT) {
             if (AccountKit.getCurrentAccessToken() != null) {
                 AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
@@ -475,9 +477,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void setLoginType(int type) {
-        SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
-        editor.putInt("LoginType", type);
+        editor.putInt(SpNames.loginType, type);
         editor.apply();
     }
 
@@ -508,10 +510,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         switch (requestCode) {
             case Constants.REQUEST_CODE_ENABLE_ADMIN:
                 if (resultCode == RESULT_OK) {
-                    sv.pushBoolean("ADMIN_PERMISSION", true);
+                    sv.pushBoolean(BroadcastActions.ADMIN_PERMISSION, true);
                 } else {
-                    sv.pushBoolean("ADMIN_PERMISSION", false);
+                    sv.pushBoolean(BroadcastActions.ADMIN_PERMISSION, false);
                 }
+
                 break;
             case Constants.OVERLAY_PERMISSION_REQ_CODE:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -660,7 +663,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
      * @return Is password empty or not
      */
     private boolean isSetupPwd() {
-        String pwd = sp.getString("password", null);
+        String pwd = sp.getString(SpNames.password, null);
         return !TextUtils.isEmpty(pwd);
     }
 
@@ -696,12 +699,12 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
                 if (password.equals(confirmingPassword)) {
                     SharedPreferences.Editor editor = sp.edit();
-                    editor.putString("password", Encryption.doMd5(password));
+                    editor.putString(SpNames.password, Encryption.doMd5(password));
                     editor.apply();
                     alertDialog.dismiss();
 
-                    sp = getSharedPreferences("config", MODE_PRIVATE);
-                    if (!sp.getBoolean("configed", false))
+                    sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
+                    if (!sp.getBoolean(SpNames.configed, false))
                         callFragment(Constants.SETUP_FRAG);
                     else
                         callFragment(Constants.ANTI_THEFT_FRAG);
@@ -715,7 +718,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case R.id.bt_type_ok:
                 String input = et_type_pwd.getText().toString().trim();
-                String savedPassword = sp.getString("password", "");
+                String savedPassword = sp.getString(SpNames.password, "");
                 if (TextUtils.isEmpty(input)) {
                     Toast.makeText(this, "密码不得为空", Toast.LENGTH_LONG).show();
                     return;
@@ -723,8 +726,8 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
                 if (Encryption.doMd5(input).equals(savedPassword)) {
                     alertDialog.dismiss();
-                    sp = getSharedPreferences("config", MODE_PRIVATE);
-                    if (!sp.getBoolean("configed", false))
+                    sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
+                    if (!sp.getBoolean(SpNames.configed, false))
                         callFragment(Constants.SETUP_FRAG);
                     else
                         callFragment(Constants.ANTI_THEFT_FRAG);

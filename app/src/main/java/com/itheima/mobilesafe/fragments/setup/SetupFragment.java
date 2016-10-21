@@ -11,6 +11,7 @@ import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.MyFragmentStatePagerAdapter;
 import com.itheima.mobilesafe.ui.my_viewpager.CustomBanner;
 import com.itheima.mobilesafe.ui.my_viewpager.TransitionEffect;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class SetupFragment extends Fragment {
             }
         };
         client = new Client(getActivity(), cr);
-        client.gotMessages("DISABLE_SWIPING");
+        client.gotMessages(BroadcastActions.DISABLE_SWIPING);
     }
 
     @Override

@@ -26,6 +26,7 @@ import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.ContactsListAdapter;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.ui.AdjustView;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.utils.objects.Contact;
@@ -69,7 +70,7 @@ public class ContactsFragment extends Fragment {
                     showPhoneDialog(phones);
                 } else {
                     Settings.safePhone = contacts.get(position).phone.get(0);
-                    sv.pushString("SAFE_PHONE", Settings.safePhone);
+                    sv.pushString(BroadcastActions.SAFE_PHONE, Settings.safePhone);
                     CLog.e(TAG, contacts.get(position).phone.get(0));
                     mainInterface.backToPreviousPage();
                 }
@@ -113,7 +114,7 @@ public class ContactsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Settings.safePhone = myPhones[position];
-                sv.pushString("SAFE_PHONE", Settings.safePhone);
+                sv.pushString(BroadcastActions.SAFE_PHONE, Settings.safePhone);
                 CLog.e(TAG, myPhones[position]);
                 alertDialog.dismiss();
                 mainInterface.backToPreviousPage();

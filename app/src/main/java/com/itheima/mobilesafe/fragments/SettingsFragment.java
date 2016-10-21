@@ -29,10 +29,12 @@ import com.itheima.mobilesafe.services.AddressService;
 import com.itheima.mobilesafe.services.BlockCallsSmsService;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.ui.SettingNextView;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.MyAdminManager;
 import com.itheima.mobilesafe.utils.ServiceUtils;
+import com.itheima.mobilesafe.utils.SpNames;
 import com.itheima.mobilesafe.utils.login.AccountKitUtils;
 import com.itheima.mobilesafe.utils.objects.UserInfo;
 
@@ -63,7 +65,7 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         CLog.v(TAG, "onCreateView");
-        sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+        sp = getActivity().getSharedPreferences(SpNames.FILE_CONFIG, Context.MODE_PRIVATE);
         addService = new Intent(getActivity(), AddressService.class);
         blockService = new Intent(getActivity(), BlockCallsSmsService.class);
         mainInterface = (MainInterface) getActivity();
@@ -99,7 +101,7 @@ public class SettingsFragment extends Fragment {
             }
         };
         client = new Client(getActivity(), cr);
-        client.gotMessages("ADMIN_PERMISSION");
+        client.gotMessages(BroadcastActions.ADMIN_PERMISSION);
 
         if (myAdminManager.isAdmin()) {
             //装置管理员已经开启
@@ -163,7 +165,7 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        boolean update = sp.getBoolean("update", true);
+        boolean update = sp.getBoolean(SpNames.update, true);
 
         if (update) {
             //自动升级已经开启
@@ -181,11 +183,11 @@ public class SettingsFragment extends Fragment {
                 //已经打开自动升级了
                 if (siv_update.isChecked()) {
                     siv_update.setChecked(false);
-                    editor.putBoolean("update", false);
+                    editor.putBoolean(SpNames.update, false);
                 } else {
                     //没有打开自动升级
                     siv_update.setChecked(true);
-                    editor.putBoolean("update", true);
+                    editor.putBoolean(SpNames.update, true);
                 }
                 editor.apply();
             }
@@ -237,7 +239,7 @@ public class SettingsFragment extends Fragment {
 
         //设置归属地限时框背景
         snv_set_background.setTitle("归属地提示框风格");
-        int skin = sp.getInt("address_bg", 0);
+        int skin = sp.getInt(SpNames.address_bg, 0);
         snv_set_background.setDesc(Constants.addressBgs[skin]);
 
         snv_set_background.setOnClickListener(new View.OnClickListener() {
@@ -246,12 +248,12 @@ public class SettingsFragment extends Fragment {
                 //弹出对话框
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
                 dialog.setTitle("归属地提示框风格");
-                dialog.setSingleChoiceItems(Constants.addressBgs, sp.getInt("address_bg", 0), new DialogInterface.OnClickListener() {
+                dialog.setSingleChoiceItems(Constants.addressBgs, sp.getInt(SpNames.address_bg, 0), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         snv_set_background.setDesc(Constants.addressBgs[which]);
                         SharedPreferences.Editor editor = sp.edit();
-                        editor.putInt("address_bg", which);
+                        editor.putInt(SpNames.address_bg, which);
                         editor.apply();
                         dialog.dismiss();
                     }

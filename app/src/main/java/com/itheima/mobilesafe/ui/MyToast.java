@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.utils.Constants;
+import com.itheima.mobilesafe.utils.SpNames;
 
 /**
  * Created by Catherine on 2016/9/6.
@@ -30,7 +31,7 @@ public class MyToast {
 
     public MyToast(Context ctx) {
         this.ctx = ctx;
-        sp = ctx.getSharedPreferences("config", Context.MODE_PRIVATE);
+        sp = ctx.getSharedPreferences(SpNames.FILE_CONFIG, Context.MODE_PRIVATE);
         wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
     }
 
@@ -73,7 +74,7 @@ public class MyToast {
      * 再回到sdk目录下找到toast_frame图片
      */
     public void showMyToast(String text) {
-        int index = sp.getInt("address_bg", 0);
+        int index = sp.getInt(SpNames.address_bg, 0);
         if (mytoast != null) {
             mytoast = View.inflate(ctx, R.layout.toast_show_address, null);
             mytoast.setBackgroundResource(Constants.addressBgRes[index]);
@@ -125,8 +126,8 @@ public class MyToast {
                             break;
                         case MotionEvent.ACTION_UP://手指离开屏幕
                             SharedPreferences.Editor editor = sp.edit();
-                            editor.putInt("address_x", params.x);
-                            editor.putInt("address_y", params.y);
+                            editor.putInt(SpNames.address_x, params.x);
+                            editor.putInt(SpNames.address_y, params.y);
                             editor.apply();
                             break;
                     }
@@ -145,8 +146,8 @@ public class MyToast {
             params.format = PixelFormat.TRANSLUCENT;//半透明
             params.gravity = Gravity.TOP + Gravity.LEFT;//设置窗体位置
 
-            params.x = sp.getInt("address_x", 100);//窗体距离屏幕左边(px)
-            params.y = sp.getInt("address_y", 100);//窗体距离屏幕上方(px)
+            params.x = sp.getInt(SpNames.address_x, 100);//窗体距离屏幕左边(px)
+            params.y = sp.getInt(SpNames.address_y, 100);//窗体距离屏幕上方(px)
             params.windowAnimations = Resources.getSystem().getIdentifier("Animation_Toast", "style", "android");//com.android.internal.R.style.Animation_Toast;//吐司的动画
 //            params.type = WindowManager.LayoutParams.TYPE_TOAST;//吐司优先级,不可触摸,所以无法取得点击事件
             params.type = WindowManager.LayoutParams.TYPE_PRIORITY_PHONE;//电话优先级,非常高级,可以显示在任何view上面,并且可以触摸,需添加权限
