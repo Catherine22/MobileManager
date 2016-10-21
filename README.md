@@ -12,6 +12,7 @@
 | 拦截短信后，利用管理员权限卸载应用、设置锁屏、清除数据 | [SMSReceiver], [MyAdminManager] |
 | 数据备份、还原（短信） | [SmsBackup] |
 | Facebook Account kit 登入 |[SettingsFragment], [AccountKitUtils]|
+| Deep linking（以branch.io实现） |[HomeActivity]|
 
 ## 自定义控件
 #### 自定义控件属性      
@@ -25,7 +26,7 @@
   - 定义一个类[MyAppWidgetProvider]继承AppWidgetProvider
   - 定义此widget显示xml文档[my_appwidget_info]于res/xml/目录下
   - 注册service [AutoCleanService] 监听widget点击事件（service注册的时间点应为widget启用时，详见[MyAppWidgetProvider]
-  - 使情况可自定义广播，注册接收者响应widget点击事件
+  - 视情况可自定义广播，注册接收者响应widget点击事件
   - Manifest配置
 ```xml
 <application>
@@ -219,9 +220,9 @@ private void endCall() {
 #### [SQLite operation]
 
 ## App links几个要点
-  - android M 及其新版支援以http/https为scheme的Url开启app（之前的版本导向浏览器）
-  - 如果希望google搜寻结果出现打开app的链接，须注册[App Indexing on Google Search]
-  - 如果预设导向该app而非浏览器等其他app（弹出选项），有一个auto-verify机制，intent-filter中须定义、domain中也得定义app信息于assetlinks.json
+ - android M 及其新版支援以http/https为scheme的Url开启app（之前的版本导向浏览器）
+ - 如果希望google搜寻结果出现打开app的链接，须注册[App Indexing on Google Search]
+ - 如果预设导向该app而非浏览器等其他app（弹出选项），有一个auto-verify机制，intent-filter中须定义、domain中也得定义app信息于assetlinks.json
 ```xml
 <intent-filter android:autoVerify="true">
     <!-- Accepts URIs that begin with "http://itheima.com/mobilesafe" -->
@@ -232,7 +233,21 @@ private void endCall() {
     <category android:name="android.intent.category.DEFAULT" />
     <category android:name="android.intent.category.BROWSABLE" />    </intent-filter>
 ```
-
+#### branch.io 实作
+ - 特别注意条码扫描器app会呼叫链接两次，造成第二次开启app时不用扫QR code也能导入链接，所以在onInitFinished中加上+match_guaranteed必须为true的判断，详见[HomeActivity]
+ - Activity在Manifest的scheme配置应避免http或https，会导致系统开启链接时出现浏览器的选项（应直接导向该app而非交由浏览器拦截）
+```xml
+<activity android:name="com.itheima.mobilesafe.HomeActivity"
+android:windowSoftInputMode="adjustPan">
+	<intent-filter android:autoVerify="true">
+		<data android:scheme="itheima.mobilesafe" />
+		
+		<action android:name="android.intent.action.VIEW" />
+		<category android:name="android.intent.category.DEFAULT" />
+		<category android:name="android.intent.category.BROWSABLE" />
+	</intent-filter>
+</activity>
+```
 
 ## Android6.0或以上权限设置
   - 需要在用到权限的地方，自定义是否检查权限，处理SYSTEM_ALERT_WINDOW和WRITE_SETTINGS例外

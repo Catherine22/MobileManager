@@ -31,17 +31,6 @@ public class AutoCleanService extends Service {
     private TimerTask timerTask;
     private AppWidgetManager awm;
     private ComponentName cm;
-//    private AutoCleanService() {
-//    }
-//
-//    //内部类，在装载该内部类时才会去创建单利对象
-//    private static class SingletonHolder {
-//        private static AutoCleanService instance = new AutoCleanService();
-//    }
-//
-//    public static AutoCleanService getInstance() {
-//        return SingletonHolder.instance;
-//    }
 
     @Nullable
     @Override
