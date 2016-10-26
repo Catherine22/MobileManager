@@ -8,7 +8,9 @@
     <string name="device_admin">Device Admin</string>
 
     <string name="widget_memory">剩余:%1$s/已用内存:%2$s</string>
+    <string name="memory">SD卡可用:%1$s/内存可用:%2$s</string>
     <string name="running_process">运行中进程：%d个</string>
+    <string name="installed_apps">目前已安装%d个应用</string>
     <string name="user_running_process">用户进程（%d）</string>
     <string name="sys_running_process">系统进程（%d）</string>
 </resources>

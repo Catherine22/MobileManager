@@ -41,6 +41,7 @@ import com.facebook.accountkit.PhoneNumber;
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
 import com.itheima.mobilesafe.fragments.AToolsFragment;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
+import com.itheima.mobilesafe.fragments.AppsManagerFragment;
 import com.itheima.mobilesafe.fragments.BlacklistFragment;
 import com.itheima.mobilesafe.fragments.ContactsFragment;
 import com.itheima.mobilesafe.fragments.NumberAddressQueryFragment;
@@ -193,6 +194,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 fragment = new TaskFragment();
                 tag = "TASK";
                 break;
+            case Constants.APPS_MAG_FRAG:
+                title = "软件管理";
+                fragment = new AppsManagerFragment();
+                tag = "APPS_MAG";
+                break;
             case Constants.A_TOOLS_FRAG:
                 title = "高级工具";
                 fragment = new AToolsFragment();
@@ -301,6 +307,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                         break;
                     case 1://黑名单拦截
                         callFragment(Constants.BLACKLIST_FRAG);
+                        break;
+                    case 2://软件管理
+                        callFragment(Constants.APPS_MAG_FRAG);
                         break;
                     case 3://进程管理
                         getPermissions(new String[]{Manifest.permission.KILL_BACKGROUND_PROCESSES}, new MyPermissionsResultListener() {

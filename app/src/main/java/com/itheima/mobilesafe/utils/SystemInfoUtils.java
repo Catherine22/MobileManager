@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Debug;
+import android.os.StatFs;
 import android.support.v4.content.ContextCompat;
 
 import com.itheima.mobilesafe.R;
@@ -202,5 +203,10 @@ public class SystemInfoUtils {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    public static long getAvailableSize(){
+
     }
 }

@@ -10,6 +10,7 @@ import com.itheima.mobilesafe.R;
 public class Constants {
     //Tags of the fragments
     public final static int ANTI_THEFT_FRAG = 0;
+    public final static int APPS_MAG_FRAG = 2;
     public final static int TASK_FRAG = 3;
     public final static int A_TOOLS_FRAG = 7;
     public final static int SETTINGS_FRAG = 8;
