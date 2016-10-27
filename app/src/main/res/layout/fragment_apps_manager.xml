@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:itheima="http://schemas.android.com/apk/com.itheima.mobilesafe"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundPrimary"
@@ -10,14 +9,24 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="45dp"
         android:orientation="vertical">
 
         <com.itheima.mobilesafe.ui.AutoResizeTextView
-            android:id="@+id/tv_memory_info"
+            android:id="@+id/tv_sd_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
-            android:text="@string/memory"
+            android:text="@string/sd_size"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <com.itheima.mobilesafe.ui.AutoResizeTextView
+            android:id="@+id/tv_rom_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="@string/rom_size"
             android:textColor="#000000"
             android:textSize="20sp" />
 
@@ -59,6 +68,23 @@
             itheima:swipe_mode="none">
         </android.support.v7.widget.RecyclerView>
 
+
+        <TextView
+            android:id="@+id/tv_sys_apps_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ff33b5e5"
+            android:text="@string/installed_sys_apps"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_sys_apps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:listSelector="@android:color/transparent"
+            itheima:swipe_mode="none">
+        </android.support.v7.widget.RecyclerView>
 
     </LinearLayout>
 
