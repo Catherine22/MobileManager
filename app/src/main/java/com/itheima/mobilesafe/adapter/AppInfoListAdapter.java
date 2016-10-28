@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
@@ -26,10 +27,22 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
     private List<AppInfo> appInfos;
     private OnItemClickLitener mOnItemClickLitener;
     private OnItemMoveListener mOnItemMoveListener;
+    private int sysAppsCount, userAppsCount;
 
     public AppInfoListAdapter(Context ctx, List<AppInfo> appInfos) {
         this.ctx = ctx;
         this.appInfos = appInfos;
+
+        calculateApps(appInfos);
+    }
+
+    private void calculateApps(List<AppInfo> appInfos) {
+        for (AppInfo appInfo : appInfos) {
+            if (appInfo.isUserApp())
+                userAppsCount++;
+            else
+                sysAppsCount++;
+        }
     }
 
     @Override
@@ -55,11 +68,11 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
 
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
-        if (mOnItemMoveListener != null)
-            mOnItemMoveListener.onItemSwap(fromPosition, toPosition);
-        Collections.swap(appInfos, fromPosition, toPosition);
-        //非常重要，调用后Adapter才能知道发生了改变。
-        notifyItemMoved(fromPosition, toPosition);
+//        if (mOnItemMoveListener != null)
+//            mOnItemMoveListener.onItemSwap(fromPosition, toPosition);
+//        Collections.swap(appInfos, fromPosition, toPosition);
+//        //非常重要，调用后Adapter才能知道发生了改变。
+//        notifyItemMoved(fromPosition, toPosition);
     }
 
     @Override
@@ -78,7 +91,7 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
     }
 
     public interface OnItemMoveListener {
-        void onItemSwap(int fromPosition, int toPosition);
+//        void onItemSwap(int fromPosition, int toPosition);
 
         void onItemSwipe(int position);
 
@@ -104,6 +117,19 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
+        //另一块view，另外处理
+        if (position == 0) {
+            String userPCount = String.format(ctx.getResources().getString(R.string.user_running_process), userAppsCount);
+            holder.tv_apps_count.setVisibility(View.VISIBLE);
+            holder.tv_apps_count.setText(userPCount);
+        } else if (position == userAppsCount) {
+            String sysPCount = String.format(ctx.getResources().getString(R.string.sys_running_process), sysAppsCount);
+            holder.tv_apps_count.setVisibility(View.VISIBLE);
+            holder.tv_apps_count.setText(sysPCount);
+        } else
+            holder.tv_apps_count.setVisibility(View.GONE);
+
+
         holder.iv_icon.setImageDrawable(appInfos.get(position).getIcon());
         holder.tv_name.setText(appInfos.get(position).getName());
         if (appInfos.get(position).isInRom())
@@ -114,19 +140,19 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
 
         // 如果设置了回调，则设置点击事件
         if (mOnItemClickLitener != null) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
+            holder.ll_touch_area.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int pos = holder.getLayoutPosition();
-                    mOnItemClickLitener.onItemClick(holder.itemView, pos);
+                    mOnItemClickLitener.onItemClick(holder.ll_touch_area, pos);
                 }
             });
 
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            holder.ll_touch_area.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     int pos = holder.getLayoutPosition();
-                    mOnItemClickLitener.onItemLongClick(holder.itemView, pos);
+                    mOnItemClickLitener.onItemLongClick(holder.ll_touch_area, pos);
                     return false;
                 }
             });
@@ -135,15 +161,19 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
 
     class MyViewHolder extends RecyclerView.ViewHolder {
 
+        LinearLayout ll_touch_area;
         ImageView iv_icon;
         TextView tv_name;
         TextView tv_installed;
+        TextView tv_apps_count;
 
         MyViewHolder(View view) {
             super(view);
+            ll_touch_area = (LinearLayout) view.findViewById(R.id.ll_touch_area);
             iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
             tv_name = (TextView) view.findViewById(R.id.tv_name);
             tv_installed = (TextView) view.findViewById(R.id.tv_installed);
+            tv_apps_count = (TextView) view.findViewById(R.id.tv_apps_count);
         }
     }
 

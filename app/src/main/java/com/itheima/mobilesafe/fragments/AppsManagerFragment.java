@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.AppInfoListAdapter;
-import com.itheima.mobilesafe.adapter.TaskInfoListAdapter;
 import com.itheima.mobilesafe.ui.AutoResizeTextView;
 import com.itheima.mobilesafe.ui.recycler_view.DividerItemDecoration;
 import com.itheima.mobilesafe.ui.recycler_view.ItemTouchCallback;
@@ -46,12 +45,11 @@ public class AppsManagerFragment extends Fragment {
 
 
     private AutoResizeTextView tv_sd_info, tv_rom_info;
-    private TextView tv_user_apps_count, tv_sys_apps_count;
-    private RecyclerView rv_user_apps, rv_sys_apps;
-    private AppInfoListAdapter userAdapter, sysAdapter;
+    private RecyclerView rv_user_apps;
+    private AppInfoListAdapter userAdapter;
     private LinearLayout ll_loading;
-    private List<AppInfo> userInfo, sysInfo;
-    private ItemTouchHelper userItemTouchHelper, sysItemTouchHelper;
+    private List<AppInfo> userInfo;
+    private ItemTouchHelper userItemTouchHelper;
 
     public static AppsManagerFragment newInstance() {
         return new AppsManagerFragment();
@@ -64,38 +62,14 @@ public class AppsManagerFragment extends Fragment {
 
         tv_sd_info = (AutoResizeTextView) view.findViewById(R.id.tv_sd_info);
         tv_rom_info = (AutoResizeTextView) view.findViewById(R.id.tv_rom_info);
-        tv_user_apps_count = (TextView) view.findViewById(R.id.tv_user_apps_count);
-        tv_user_apps_count.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (rv_user_apps.getVisibility() == View.VISIBLE)
-                    rv_user_apps.setVisibility(View.GONE);
-                else
-                    rv_user_apps.setVisibility(View.VISIBLE);
-            }
-        });
-        tv_sys_apps_count = (TextView) view.findViewById(R.id.tv_sys_apps_count);
-        tv_sys_apps_count.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (rv_sys_apps.getVisibility() == View.VISIBLE)
-                    rv_sys_apps.setVisibility(View.GONE);
-                else
-                    rv_sys_apps.setVisibility(View.VISIBLE);
-            }
-        });
         rv_user_apps = (RecyclerView) view.findViewById(R.id.rv_user_apps);
-        rv_sys_apps = (RecyclerView) view.findViewById(R.id.rv_sys_apps);
         ll_loading = (LinearLayout) view.findViewById(R.id.ll_loading);
 
         //添加分割线
         rv_user_apps.addItemDecoration(new DividerItemDecoration(
                 getActivity(), DividerItemDecoration.VERTICAL_LIST));
-        rv_sys_apps.addItemDecoration(new DividerItemDecoration(
-                getActivity(), DividerItemDecoration.VERTICAL_LIST));
         //设置布局管理器,可实现GridVIew
         rv_user_apps.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-        rv_sys_apps.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
 
 
         fillInData();
@@ -123,14 +97,10 @@ public class AppsManagerFragment extends Fragment {
         new Thread() {
             public void run() {
                 userInfo = new LinkedList<>();
-                sysInfo = new LinkedList<>();
 
                 List<AppInfo> infos = SystemInfoUtils.getAppInfos(getActivity());
                 for (AppInfo info : infos) {
-                    if (info.isUserApp())
-                        userInfo.add(info);
-                    else
-                        sysInfo.add(info);
+                    userInfo.add(info);
                 }
 
                 userAdapter = new AppInfoListAdapter(getActivity(), userInfo);
@@ -147,40 +117,10 @@ public class AppsManagerFragment extends Fragment {
                     }
                 });
                 userAdapter.setOnItemMoveLitener(new AppInfoListAdapter.OnItemMoveListener() {
-                    @Override
-                    public void onItemSwap(int fromPosition, int toPosition) {
-                        CLog.d(TAG, "from " + fromPosition + " to " + toPosition);
-                    }
 
                     @Override
                     public void onItemSwipe(int position) {
                         CLog.d(TAG, userAdapter.getItemName(position));
-                        refresh(false);
-                    }
-                });
-
-                sysAdapter = new AppInfoListAdapter(getActivity(), sysInfo);
-                sysAdapter.setOnItemClickLitener(new AppInfoListAdapter.OnItemClickLitener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        showDetailDialog(sysAdapter.getItem(position));
-                    }
-
-                    @Override
-                    public void onItemLongClick(View view, int position) {
-                        CLog.d(TAG, "onItemLongClick");
-
-                    }
-                });
-                sysAdapter.setOnItemMoveLitener(new AppInfoListAdapter.OnItemMoveListener() {
-                    @Override
-                    public void onItemSwap(int fromPosition, int toPosition) {
-                        CLog.d(TAG, "from " + fromPosition + " to " + toPosition);
-                    }
-
-                    @Override
-                    public void onItemSwipe(int position) {
-                        CLog.d(TAG, sysAdapter.getItemName(position));
                         refresh(false);
                     }
                 });
@@ -191,32 +131,18 @@ public class AppsManagerFragment extends Fragment {
                         public void run() {
                             ll_loading.setVisibility(View.GONE);
 
-                            String userPCount = String.format(getResources().getString(R.string.user_running_process), userAdapter.getItemCount());
-                            String sysPCount = String.format(getResources().getString(R.string.sys_running_process), sysAdapter.getItemCount());
-                            tv_user_apps_count.setText(userPCount);
-                            tv_sys_apps_count.setText(sysPCount);
-
                             if (userAdapter.getItemCount() == 0)
-                                tv_user_apps_count.setVisibility(View.GONE);
+                                rv_user_apps.setVisibility(View.GONE);
                             else
-                                tv_user_apps_count.setVisibility(View.VISIBLE);
-                            if (sysAdapter.getItemCount() == 0)
-                                tv_sys_apps_count.setVisibility(View.GONE);
-                            else
-                                tv_sys_apps_count.setVisibility(View.VISIBLE);
+                                rv_user_apps.setVisibility(View.VISIBLE);
 
                             rv_user_apps.setAdapter(userAdapter);
                             userItemTouchHelper = new ItemTouchHelper(new ItemTouchCallback(userAdapter));
                             userItemTouchHelper.attachToRecyclerView(rv_user_apps);
 
-                            rv_sys_apps.setAdapter(sysAdapter);
-                            sysItemTouchHelper = new ItemTouchHelper(new ItemTouchCallback(sysAdapter));
-                            sysItemTouchHelper.attachToRecyclerView(rv_sys_apps);
-
 
                             Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.tran_in);
                             rv_user_apps.startAnimation(animation);
-                            rv_sys_apps.startAnimation(animation);
                         }
                     });
                 }
