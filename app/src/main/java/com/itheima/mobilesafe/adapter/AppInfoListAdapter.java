@@ -12,8 +12,6 @@ import android.widget.TextView;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.recycler_view.OnItemTouch;
 import com.itheima.mobilesafe.utils.objects.AppInfo;
-
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,10 +31,10 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
         this.ctx = ctx;
         this.appInfos = appInfos;
 
-        calculateApps(appInfos);
+        calculateApps();
     }
 
-    private void calculateApps(List<AppInfo> appInfos) {
+    private void calculateApps() {
         for (AppInfo appInfo : appInfos) {
             if (appInfo.isUserApp())
                 userAppsCount++;
@@ -80,6 +78,7 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
         if (mOnItemMoveListener != null)
             mOnItemMoveListener.onItemSwipe(position);
         appInfos.remove(position);
+        calculateApps();
         //非常重要，调用后Adapter才能知道发生了改变。
         notifyItemRemoved(position);
     }
@@ -138,7 +137,7 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
             holder.tv_installed.setText("SD卡");
 
 
-        // 如果设置了回调，则设置点击事件
+        // 如果设置了回调，则设置点击事件（另一块view，须另外处理）
         if (mOnItemClickLitener != null) {
             holder.ll_touch_area.setOnClickListener(new View.OnClickListener() {
                 @Override

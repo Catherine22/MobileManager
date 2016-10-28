@@ -17,7 +17,6 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.AppInfoListAdapter;
@@ -50,6 +49,7 @@ public class AppsManagerFragment extends Fragment {
     private LinearLayout ll_loading;
     private List<AppInfo> userInfo;
     private ItemTouchHelper userItemTouchHelper;
+    private StaggeredGridLayoutManager manager;
 
     public static AppsManagerFragment newInstance() {
         return new AppsManagerFragment();
@@ -69,7 +69,8 @@ public class AppsManagerFragment extends Fragment {
         rv_user_apps.addItemDecoration(new DividerItemDecoration(
                 getActivity(), DividerItemDecoration.VERTICAL_LIST));
         //设置布局管理器,可实现GridVIew
-        rv_user_apps.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
+        manager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
+        rv_user_apps.setLayoutManager(manager);
 
 
         fillInData();
@@ -131,15 +132,15 @@ public class AppsManagerFragment extends Fragment {
                         public void run() {
                             ll_loading.setVisibility(View.GONE);
 
-                            if (userAdapter.getItemCount() == 0)
+                            if (userAdapter.getItemCount() == 0) {
                                 rv_user_apps.setVisibility(View.GONE);
-                            else
+                            } else {
                                 rv_user_apps.setVisibility(View.VISIBLE);
+                            }
 
                             rv_user_apps.setAdapter(userAdapter);
                             userItemTouchHelper = new ItemTouchHelper(new ItemTouchCallback(userAdapter));
                             userItemTouchHelper.attachToRecyclerView(rv_user_apps);
-
 
                             Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.tran_in);
                             rv_user_apps.startAnimation(animation);

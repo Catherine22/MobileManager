@@ -51,8 +51,19 @@
                 android:textSize="20sp" />
         </LinearLayout>
 
+
+        <TextView
+            android:id="@+id/tv_apps_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ff33b5e5"
+            android:textColor="#ffffff"
+            android:visibility="gone"
+            android:textSize="20sp" />
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_user_apps"
+            android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:listSelector="@android:color/transparent"
