@@ -158,11 +158,24 @@ public class SystemInfoUtils {
             appInfo.setVersionName(pin.versionName);
             appInfo.setFirstInstallTime(String.valueOf(pin.firstInstallTime));
             appInfo.setLastUpdateTime(String.valueOf(pin.lastUpdateTime));
+            int flag = pin.applicationInfo.flags;
 
-            if (pin.applicationInfo.flags == pin.applicationInfo.FLAG_SYSTEM)
-                appInfo.setUserApp(false);
-            else
+            /**
+             * google在设计flags时使用1<<0（=0001）, 1<<1（=0010）...等进位方式定义
+             * 例如得到的flag为6，代表同时具备FLAG_PERSISTENT（0100）与FLAG_HAS_CODE（0010）
+             *
+             * & 与操作（and，两数都为1才会得出1）
+             */
+            if ((flag & pin.applicationInfo.FLAG_SYSTEM) == 0)
                 appInfo.setUserApp(true);
+            else
+                appInfo.setUserApp(false);
+
+
+            if ((flag & pin.applicationInfo.FLAG_EXTERNAL_STORAGE) == 0)
+                appInfo.setInRom(false);
+            else
+                appInfo.setInRom(true);
 
             mList.add(appInfo);
         }

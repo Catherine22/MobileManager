@@ -50,6 +50,10 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
         return appInfos.get(position).getName();
     }
 
+    public AppInfo getItem(int position) {
+        return appInfos.get(position);
+    }
+
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
         if (mOnItemMoveListener != null)

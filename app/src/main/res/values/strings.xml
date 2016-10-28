@@ -15,4 +15,9 @@
     <string name="installed_sys_apps">系统应用（%d）</string>
     <string name="user_running_process">用户进程（%d）</string>
     <string name="sys_running_process">系统进程（%d）</string>
+
+
+    <string name="app_first_installed_time">安装日期%s</string>
+    <string name="app_last_update_time">上次更新时间%s</string>
+    <string name="app_version">版号：%s</string>
 </resources>
