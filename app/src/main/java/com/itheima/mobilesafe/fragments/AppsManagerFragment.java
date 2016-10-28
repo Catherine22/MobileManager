@@ -52,7 +52,6 @@ public class AppsManagerFragment extends Fragment {
     private LinearLayout ll_loading;
     private List<AppInfo> userInfo, sysInfo;
     private ItemTouchHelper userItemTouchHelper, sysItemTouchHelper;
-    private Dialog alertDialog;
 
     public static AppsManagerFragment newInstance() {
         return new AppsManagerFragment();
@@ -119,7 +118,6 @@ public class AppsManagerFragment extends Fragment {
         tv_sd_info.setText(String.format(getActivity().getString(R.string.sd_size), sdSize, sdP));
         tv_rom_info.setText(String.format(getActivity().getString(R.string.rom_size), romSize, romP));
 
-        SystemInfoUtils.getAppInfos(getActivity()).toString();
         CLog.d(TAG, SystemInfoUtils.getAppInfos(getActivity()).toString());
 
         new Thread() {
@@ -226,25 +224,25 @@ public class AppsManagerFragment extends Fragment {
         }.start();
     }
 
-    private TextView tv_name, tv_package_name, tv_version, tv_first_installed_time, tv_last_update_time;
+    private AutoResizeTextView tv_name, tv_package_name, tv_version, tv_first_installed_time, tv_last_update_time;
 
     private void showDetailDialog(AppInfo appInfo) {
-        alertDialog = new Dialog(getActivity());
+        Dialog alertDialog = new Dialog(getActivity());
         alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alertDialog.setContentView(R.layout.dialog_app_detail);
         //设置dialog背景透明
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         alertDialog.show();
 
-        tv_name = (TextView) alertDialog.findViewById(R.id.tv_name);
+        tv_name = (AutoResizeTextView) alertDialog.findViewById(R.id.tv_name);
         tv_name.setText(appInfo.getName());
-        tv_package_name = (TextView) alertDialog.findViewById(R.id.tv_package_name);
+        tv_package_name = (AutoResizeTextView) alertDialog.findViewById(R.id.tv_package_name);
         tv_package_name.setText(appInfo.getPackageName());
-        tv_version = (TextView) alertDialog.findViewById(R.id.tv_version);
+        tv_version = (AutoResizeTextView) alertDialog.findViewById(R.id.tv_version);
         tv_version.setText(String.format(getString(R.string.app_version), appInfo.getVersionName()));
-        tv_first_installed_time = (TextView) alertDialog.findViewById(R.id.tv_first_installed_time);
+        tv_first_installed_time = (AutoResizeTextView) alertDialog.findViewById(R.id.tv_first_installed_time);
         tv_first_installed_time.setText(String.format(getString(R.string.app_first_installed_time), appInfo.getFirstInstallTime()));
-        tv_last_update_time = (TextView) alertDialog.findViewById(R.id.tv_last_update_time);
+        tv_last_update_time = (AutoResizeTextView) alertDialog.findViewById(R.id.tv_last_update_time);
         tv_last_update_time.setText(String.format(getString(R.string.app_last_update_time), appInfo.getLastUpdateTime()));
     }
 

@@ -5,7 +5,7 @@
     android:background="#ffffff"
     android:orientation="vertical">
 
-    <TextView
+    <com.itheima.mobilesafe.ui.AutoResizeTextView
         android:id="@+id/tv_name"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -14,7 +14,7 @@
         android:textColor="#000000"
         android:textSize="22dp" />
 
-    <TextView
+    <com.itheima.mobilesafe.ui.AutoResizeTextView
         android:id="@+id/tv_package_name"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -26,7 +26,7 @@
         android:textColor="#000000"
         android:textSize="18dp" />
 
-    <TextView
+    <com.itheima.mobilesafe.ui.AutoResizeTextView
         android:id="@+id/tv_version"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -37,7 +37,8 @@
         android:textColor="#000000"
         android:textSize="18dp" />
 
-    <TextView
+
+    <com.itheima.mobilesafe.ui.AutoResizeTextView
         android:id="@+id/tv_first_installed_time"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -48,7 +49,7 @@
         android:textColor="#000000"
         android:textSize="18dp" />
 
-    <TextView
+    <com.itheima.mobilesafe.ui.AutoResizeTextView
         android:id="@+id/tv_last_update_time"
         android:layout_width="match_parent"
         android:layout_height="40dp"

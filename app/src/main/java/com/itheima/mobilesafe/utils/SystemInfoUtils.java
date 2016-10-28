@@ -167,7 +167,8 @@ public class SystemInfoUtils {
 
             /**
              * google在设计flags时使用1<<0（=0001）, 1<<1（=0010）...等进位方式定义
-             * 例如得到的flag为6，代表同时具备FLAG_PERSISTENT（0100）与FLAG_HAS_CODE（0010）
+             * 例如得到的flag为6（0110），把0110做与操作，得到0100与0010，
+             * 代表同时具备FLAG_PERSISTENT（0100）与FLAG_HAS_CODE（0010）
              *
              * & 与操作（and，两数都为1才会得出1）
              */
@@ -178,9 +179,9 @@ public class SystemInfoUtils {
 
 
             if ((flag & pin.applicationInfo.FLAG_EXTERNAL_STORAGE) == 0)
-                appInfo.setInRom(false);
-            else
                 appInfo.setInRom(true);
+            else
+                appInfo.setInRom(false);
 
             mList.add(appInfo);
         }

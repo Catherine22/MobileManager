@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.ui.recycler_view.OnItemTouch;
-import com.itheima.mobilesafe.utils.SystemInfoUtils;
 import com.itheima.mobilesafe.utils.objects.AppInfo;
 
 import java.util.Collections;
@@ -107,7 +106,11 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.iv_icon.setImageDrawable(appInfos.get(position).getIcon());
         holder.tv_name.setText(appInfos.get(position).getName());
-        holder.tv_package_name.setText(appInfos.get(position).getPackageName());
+        if (appInfos.get(position).isInRom())
+            holder.tv_installed.setText("手机内存");
+        else
+            holder.tv_installed.setText("SD卡");
+
 
         // 如果设置了回调，则设置点击事件
         if (mOnItemClickLitener != null) {
@@ -134,13 +137,13 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
 
         ImageView iv_icon;
         TextView tv_name;
-        TextView tv_package_name;
+        TextView tv_installed;
 
         MyViewHolder(View view) {
             super(view);
             iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
             tv_name = (TextView) view.findViewById(R.id.tv_name);
-            tv_package_name = (TextView) view.findViewById(R.id.tv_package_name);
+            tv_installed = (TextView) view.findViewById(R.id.tv_installed);
         }
     }
 

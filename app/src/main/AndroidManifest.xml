@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.itheima.mobilesafe"
     android:versionCode="1"
+    android:installLocation="auto"
     android:versionName="1.0">
+    <!--installLocation代表安装位置：auto预设、internalOnly内存、preferExternal尽可能外部存储设备-->
 
     <uses-sdk
         android:minSdkVersion="10"
@@ -26,7 +28,6 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.UPDATE_APP_OPS_STATS" /><!--for 4.4-->
     <uses-permission android:name="android.permission.WRITE_SMS" /><!--for 4.4 and lower-->
-
 
     <!--GPS-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
