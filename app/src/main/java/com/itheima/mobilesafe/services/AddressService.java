@@ -74,20 +74,28 @@ public class AddressService extends Service {
         public void onCallStateChanged(int state, String incomingNumber) {
             super.onCallStateChanged(state, incomingNumber);
             Log.d(TAG, "state " + state + "\nincomingNumber " + incomingNumber);
-            String address;
             switch (state) {
                 case TelephonyManager.CALL_STATE_RINGING://铃声响起时,也就是来电时
-                    address = TelephoneUtils.getAddressFromNum(incomingNumber);
+                    TelephoneUtils.getAddressFromNum(incomingNumber, new TelephoneUtils.Callback() {
+                        @Override
+                        public void onFinish(String content) {
+                            mytoast.showMyToast(content);
+                        }
+                    });
 //                    Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
-                    mytoast.showMyToast(address);
+
                     break;
                 case TelephonyManager.CALL_STATE_IDLE://电话的空闲状态 e.q. 挂电话, 来电拒接
                     mytoast.dismissMyToast();
                     break;
                 case TelephonyManager.CALL_STATE_OFFHOOK://去电时
-                    address = TelephoneUtils.getAddressFromNum(incomingNumber);
+                    TelephoneUtils.getAddressFromNum(incomingNumber, new TelephoneUtils.Callback() {
+                        @Override
+                        public void onFinish(String content) {
 //                    Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
-                    mytoast.showMyToast(address);
+                            mytoast.showMyToast(content);
+                        }
+                    });
                     break;
             }
         }
