@@ -75,12 +75,11 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
 
     @Override
     public void onItemDismiss(int position) {
-        if (mOnItemMoveListener != null)
-            mOnItemMoveListener.onItemSwipe(position);
-        appInfos.remove(position);
-        calculateApps();
-        //非常重要，调用后Adapter才能知道发生了改变。
-        notifyItemRemoved(position);
+//        if (mOnItemMoveListener != null)
+//            mOnItemMoveListener.onItemSwipe(position);
+//        appInfos.remove(position);
+//        //非常重要，调用后Adapter才能知道发生了改变。
+//        notifyItemRemoved(position);
     }
 
     public interface OnItemClickLitener {
@@ -92,7 +91,7 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
     public interface OnItemMoveListener {
 //        void onItemSwap(int fromPosition, int toPosition);
 
-        void onItemSwipe(int position);
+//        void onItemSwipe(int position);
 
     }
 

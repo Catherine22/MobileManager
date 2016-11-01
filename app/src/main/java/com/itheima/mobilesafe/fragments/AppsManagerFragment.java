@@ -10,13 +10,19 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.AppInfoListAdapter;
@@ -24,6 +30,7 @@ import com.itheima.mobilesafe.ui.AutoResizeTextView;
 import com.itheima.mobilesafe.ui.recycler_view.DividerItemDecoration;
 import com.itheima.mobilesafe.ui.recycler_view.ItemTouchCallback;
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.NetUtils;
 import com.itheima.mobilesafe.utils.SystemInfoUtils;
 import com.itheima.mobilesafe.utils.objects.AppInfo;
 
@@ -49,7 +56,7 @@ public class AppsManagerFragment extends Fragment {
     private LinearLayout ll_loading;
     private List<AppInfo> userInfo;
     private ItemTouchHelper userItemTouchHelper;
-    private StaggeredGridLayoutManager manager;
+    private PopupWindow pw;
 
     public static AppsManagerFragment newInstance() {
         return new AppsManagerFragment();
@@ -69,14 +76,20 @@ public class AppsManagerFragment extends Fragment {
         rv_user_apps.addItemDecoration(new DividerItemDecoration(
                 getActivity(), DividerItemDecoration.VERTICAL_LIST));
         //设置布局管理器,可实现GridVIew
-        manager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
+        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
         rv_user_apps.setLayoutManager(manager);
 
 
         fillInData();
 
-
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        pw.dismiss();
+        pw = null;
+        super.onDestroy();
     }
 
     private void fillInData() {
@@ -108,24 +121,46 @@ public class AppsManagerFragment extends Fragment {
                 userAdapter.setOnItemClickLitener(new AppInfoListAdapter.OnItemClickLitener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        showDetailDialog(userAdapter.getItem(position));
+                        if (pw != null && pw.isShowing()) {
+                            pw.dismiss();
+                            pw = null;
+                        }
+
+                        View v = View.inflate(getActivity(), R.layout.popup_app_manager, null);
+                        pw = new PopupWindow(v, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        int location[] = new int[2];//距离屏幕左边、上面的距离
+                        view.getLocationInWindow(location);
+
+                        //动画效果的播放必须窗体要有背景颜色(透明色也行)，否则不会生效
+                        pw.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        pw.showAtLocation(view, Gravity.LEFT | Gravity.TOP, location[0], location[1]);
+
+                        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, 1.0f, 0f, 1.0f, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0.5f);
+                        scaleAnimation.setDuration(250);
+                        AlphaAnimation alphaAnimation = new AlphaAnimation(0.5f, 1.0f);
+                        alphaAnimation.setDuration(250);
+
+                        AnimationSet set = new AnimationSet(false);
+                        set.addAnimation(scaleAnimation);
+                        set.addAnimation(alphaAnimation);
+                        v.startAnimation(set);
                     }
 
                     @Override
                     public void onItemLongClick(View view, int position) {
-                        CLog.d(TAG, "onItemLongClick");
-
+                        showDetailDialog(userAdapter.getItem(position));
                     }
                 });
-                userAdapter.setOnItemMoveLitener(new AppInfoListAdapter.OnItemMoveListener() {
-
+                rv_user_apps.addOnScrollListener(new RecyclerView.OnScrollListener() {
                     @Override
-                    public void onItemSwipe(int position) {
-                        CLog.d(TAG, userAdapter.getItemName(position));
-                        refresh(false);
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+                        if (pw != null && pw.isShowing()) {
+                            pw.dismiss();
+                            pw = null;
+                        }
                     }
                 });
-
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
