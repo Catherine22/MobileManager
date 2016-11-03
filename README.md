@@ -76,6 +76,7 @@
     }
 ```
   - [HomeActivity]
+
 #### 悬浮窗体
 ```JAVA
 View v = View.inflate(getActivity(), R.layout.popup_app_manager, null);
