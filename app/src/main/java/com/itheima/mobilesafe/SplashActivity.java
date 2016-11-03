@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -93,6 +94,8 @@ public class SplashActivity extends Activity {
             }, 2000);
 
         }
+
+        createShortcut();
     }
 
     //————————————————————————Design Pattern start————————————————————————
@@ -170,14 +173,14 @@ public class SplashActivity extends Activity {
         cf.getBrand(CarFactory.BENTLEY).show();
     }
 
-    private void testBuilder(){
+    private void testBuilder() {
         RobotDirector rd = new RobotDirector(new OldStyleRobotBuilder());
         rd.makeRobot();
         Robot robot = rd.getRobot();
-        CLog.d("Builder",robot.getArms());
-        CLog.d("Builder",robot.getHead());
-        CLog.d("Builder",robot.getLegs());
-        CLog.d("Builder",robot.getTorso());
+        CLog.d("Builder", robot.getArms());
+        CLog.d("Builder", robot.getHead());
+        CLog.d("Builder", robot.getLegs());
+        CLog.d("Builder", robot.getTorso());
     }
 
     //————————————————————————Design Pattern end————————————————————————
@@ -188,6 +191,25 @@ public class SplashActivity extends Activity {
         AlphaAnimation aa = new AlphaAnimation(0.2f, 1.0f);
         aa.setDuration(500);
         findViewById(R.id.rl_root_splash).startAnimation(aa);
+    }
+
+    /**
+     * 建立快捷方式
+     * 包含3项信息：1.名称 2.图标 3.做什么事情
+     */
+    private void createShortcut() {
+        Intent shortcutIntent = new Intent();
+        shortcutIntent.setAction("android.intent.action.MAIN");
+        shortcutIntent.addCategory("android.intent.category.LAUNCHER");
+        shortcutIntent.setClassName(getPackageName(), "com.itheima.mobilesafe.SplashActivity");
+
+        //发送广播的意图，让系统告诉桌面应用创建图标
+        Intent intent = new Intent();
+        intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+        intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "手机小卫士");
+        intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+        sendBroadcast(intent);
     }
 
     private Handler handler = new Handler() {
