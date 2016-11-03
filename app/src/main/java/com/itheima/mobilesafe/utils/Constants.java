@@ -29,6 +29,7 @@ public class Constants {
     public final static int PERMISSION_WRITE_SETTINGS = 10003;
     public final static int CHANGEING_DEFAULT_SMS_APP = 10004;
     public final static int ACCOUNT_KIT_REQ_CODE = 10005;
+    public final static int UNINSTASLL_APP = 10006;
 
     //response code
     public static final int FAILED_TO_SEND = 0;

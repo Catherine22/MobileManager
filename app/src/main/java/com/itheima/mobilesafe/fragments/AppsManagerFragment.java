@@ -1,8 +1,12 @@
 package com.itheima.mobilesafe.fragments;
 
 import android.app.Dialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -23,13 +27,16 @@ import android.view.animation.ScaleAnimation;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.AppInfoListAdapter;
 import com.itheima.mobilesafe.ui.AutoResizeTextView;
 import com.itheima.mobilesafe.ui.recycler_view.DividerItemDecoration;
 import com.itheima.mobilesafe.ui.recycler_view.ItemTouchCallback;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.NetUtils;
 import com.itheima.mobilesafe.utils.SystemInfoUtils;
 import com.itheima.mobilesafe.utils.objects.AppInfo;
@@ -38,12 +45,16 @@ import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 
+import tw.com.softworld.messagescenter.Client;
+import tw.com.softworld.messagescenter.CustomReceiver;
+import tw.com.softworld.messagescenter.Result;
+
 /**
  * Created by Catherine on 2016/8/25.
  * Soft-World Inc.
  * catherine919@soft-world.com.tw
  */
-public class AppsManagerFragment extends Fragment {
+public class AppsManagerFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "AppsManagerFragment";
     private final String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -57,6 +68,8 @@ public class AppsManagerFragment extends Fragment {
     private List<AppInfo> userInfo;
     private ItemTouchHelper userItemTouchHelper;
     private PopupWindow pw;
+    private AppInfo onSelectedItem;
+    private Client client;
 
     public static AppsManagerFragment newInstance() {
         return new AppsManagerFragment();
@@ -79,16 +92,37 @@ public class AppsManagerFragment extends Fragment {
         StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
         rv_user_apps.setLayoutManager(manager);
 
-
-        fillInData();
+        CustomReceiver cr = new CustomReceiver() {
+            @Override
+            public void onBroadcastReceive(Result result) {
+                PackageManager pm = getActivity().getPackageManager();
+                try {
+                    pm.getApplicationInfo(onSelectedItem.getPackageName(), PackageManager.GET_META_DATA);
+                    fillInData();
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        client = new Client(getActivity(), cr);
+        client.gotMessages(BroadcastActions.FINISHED_UNINSTALLING);
 
         return view;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        fillInData();
+    }
+
+    @Override
     public void onDestroy() {
-        pw.dismiss();
-        pw = null;
+        if (pw != null) {
+            pw.dismiss();
+            pw = null;
+        }
+        client.release();
         super.onDestroy();
     }
 
@@ -125,8 +159,14 @@ public class AppsManagerFragment extends Fragment {
                             pw.dismiss();
                             pw = null;
                         }
-
+                        onSelectedItem = userAdapter.getItem(position);
                         View v = View.inflate(getActivity(), R.layout.popup_app_manager, null);
+                        LinearLayout ll_share = (LinearLayout) v.findViewById(R.id.ll_share);
+                        ll_share.setOnClickListener(AppsManagerFragment.this);
+                        LinearLayout ll_uninstall = (LinearLayout) v.findViewById(R.id.ll_uninstall);
+                        ll_uninstall.setOnClickListener(AppsManagerFragment.this);
+                        LinearLayout ll_open = (LinearLayout) v.findViewById(R.id.ll_open);
+                        ll_open.setOnClickListener(AppsManagerFragment.this);
                         pw = new PopupWindow(v, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         int location[] = new int[2];//距离屏幕左边、上面的距离
                         view.getLocationInWindow(location);
@@ -224,4 +264,92 @@ public class AppsManagerFragment extends Fragment {
             fillInData();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ll_open:
+                CLog.d(TAG, "open " + onSelectedItem.getPackageName());
+                if (pw != null && pw.isShowing()) {
+                    pw.dismiss();
+                    pw = null;
+                }
+                openApp(onSelectedItem.getPackageName());
+                break;
+            case R.id.ll_share:
+                CLog.d(TAG, "share " + onSelectedItem.getPackageName());
+                if (pw != null && pw.isShowing()) {
+                    pw.dismiss();
+                    pw = null;
+                }
+                share(onSelectedItem);
+                break;
+            case R.id.ll_uninstall:
+                CLog.d(TAG, "uninstall " + onSelectedItem.getPackageName());
+                if (pw != null && pw.isShowing()) {
+                    pw.dismiss();
+                    pw = null;
+                }
+                uninstallApp(onSelectedItem);
+                break;
+        }
+    }
+
+    /**
+     * 分享信息
+     * 所有有在manifest中加入intent-filter（含action.SEND、CATEGORY_DEFAULT、text/plain）特性的应用都能收到次intent，
+     * 也就是反之，在manifest中加入需要的intent-filter，可以拦截到对应的intent。
+     * @param appinfo 应用信息
+     */
+    private void share(AppInfo appinfo) {
+        Intent intent = new Intent();
+        intent.setAction("android.intent.action.SEND");
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, "推荐你使用「" + appinfo.getName()+"」软件");
+        startActivity(intent);
+    }
+
+    /**
+     * 卸载应用
+     * @param appinfo 应用信息
+     */
+    private void uninstallApp(AppInfo appinfo) {
+//        <intent-filter>
+//        <action android:name="android.intent.action.VIEW" />
+//        <action android:name="android.intent.action.DELETE" />
+//        <action android:name="android.intent.action.UNINSTALL_PACKAGE" />
+//        <category android:name="android.intent.category.DEFAULT" />
+//        <data android:scheme="package" />
+        if (appinfo.isUserApp()) {
+            Intent intent = new Intent();
+            intent.setAction("android.intent.action.VIEW");
+            intent.setAction("android.intent.action.DELETE");
+            intent.setAction("android.intent.action.UNINSTALL_PACKAGE");
+            intent.addCategory("android.intent.category.DEFAULT");
+            intent.setData(Uri.parse("package:" + appinfo.getPackageName()));
+            getActivity().startActivityForResult(intent, Constants.UNINSTASLL_APP);
+        } else
+            Toast.makeText(getActivity(), "当前应用为系统应用，没法卸載", Toast.LENGTH_LONG).show();
+
+    }
+
+    /**
+     * 开启应用
+     * @param packageName 应用包名
+     */
+    private void openApp(String packageName) {
+        PackageManager pm = getActivity().getPackageManager();
+//                Intent intent = new Intent();
+//                intent.setAction("android.intent.action.MAIN");
+//                intent.addCategory("android.intent.category.LAUNCHER");
+//                //获取到全部具有action.MAIN与category.LAUNCHER（也就是具有启动能力）的应用
+//                List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, PackageManager.GET_INTENT_FILTERS);
+
+        Intent intent = pm.getLaunchIntentForPackage(packageName);
+        if (intent != null)
+            startActivity(intent);
+        else
+            Toast.makeText(getActivity(), "没法启动当前应用", Toast.LENGTH_LONG).show();
+
+    }
 }

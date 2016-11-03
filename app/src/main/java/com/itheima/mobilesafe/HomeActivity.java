@@ -610,6 +610,10 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 // Surface the result to your user in an appropriate way.
                 CLog.d(TAG, "toastMessage:" + toastMessage);
                 break;
+
+            case Constants.UNINSTASLL_APP:
+                sv.pushBoolean(BroadcastActions.FINISHED_UNINSTALLING, true);
+                break;
         }
         CLog.d(TAG, "onActivityResult " + requestCode + " " + resultCode);
     }

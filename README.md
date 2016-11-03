@@ -6,6 +6,7 @@
 | 号码归属地查询 | [NumberAddressQueryFragment] |
 | 设置黑名单 | [BlacklistFragment] |
 | 进程管理、删除 | [TaskFragment] |
+| 应用卸载、启动、分享 | [AppsManagerFragment] |
 | 监听来电，显示号码归属地悬浮窗 | [AddressService] |
 | 短信、通话拦截 | [BlockCallsSmsService] |
 | 取得GPS位置 | [GPSService] |
@@ -75,7 +76,28 @@
     }
 ```
   - [HomeActivity]
-  
+#### 悬浮窗体
+```JAVA
+View v = View.inflate(getActivity(), R.layout.popup_app_manager, null);
+pw = new PopupWindow(v, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+int location[] = new int[2];//距离屏幕左边、上面的距离
+view.getLocationInWindow(location);
+
+//动画效果的播放必须窗体要有背景颜色(透明色也行)，否则不会生效
+pw.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+pw.showAtLocation(view, Gravity.LEFT | Gravity.TOP, location[0], location[1]);
+
+ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, 1.0f, 0f, 1.0f, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0.5f);
+scaleAnimation.setDuration(250);
+AlphaAnimation alphaAnimation = new AlphaAnimation(0.5f, 1.0f);
+alphaAnimation.setDuration(250);
+
+AnimationSet set = new AnimationSet(false);
+set.addAnimation(scaleAnimation);
+set.addAnimation(alphaAnimation);
+v.startAnimation(set);
+```
+  -  [AppsManagerFragment]
 #### 可滑动、上下交换的RecyclerView
   - [BlacklistFragment]
   - [BlacklistAdapter]      
@@ -222,7 +244,8 @@ private void endCall() {
 ## App links几个要点
  - android M 及其新版支援以http/https为scheme的Url开启app（之前的版本导向浏览器）
  - 如果希望google搜寻结果出现打开app的链接，须注册[App Indexing on Google Search]
- - 如果预设导向该app而非浏览器等其他app（弹出选项），有一个auto-verify机制，intent-filter中须定义、domain中也得定义app信息于assetlinks.json
+ - 如果预设导向该app而非浏览器等其他app（弹出选项），有一个auto-verify机制，intent-filter中须定义
+ - 在domain中定义app信息于assetlinks.json，当链接以浏览器开启时，导向该domain时可根据assetlinks.json信息开启app
 ```xml
 <intent-filter android:autoVerify="true">
     <!-- Accepts URIs that begin with "http://itheima.com/mobilesafe" -->
@@ -481,8 +504,9 @@ public interface MyPermissionsResultListener {
    [ServiceUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/ServiceUtils.java>
    [SmsBackup]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/backup/SmsBackup.java>
    [App Indexing on Google Search]:<https://support.google.com/googleplay/android-developer/answer/6041489>
-   [TaskFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/TaskFragment.java
-   [TaskInfoListAdapter]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/adapter/TaskInfoListAdapter.java
+   [TaskFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/TaskFragment.java>
+   [AppsManagerFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/AppsManagerFragment.java>
+   [TaskInfoListAdapter]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/adapter/TaskInfoListAdapter.java>
    [MyAppWidgetProvider]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/MyAppWidgetProvider.java>
    [my_appwidget_info]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/xml/my_appwidget_info.xml>
    [AutoCleanService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/AutoCleanService.java>
