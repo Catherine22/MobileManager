@@ -175,6 +175,12 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             } else
                 defaultSysSmsApp = sp.getString(SpNames.default_sms_app, getPackageName());
         }
+        //利用intent（比如在SplashActivity建立的快捷图标）开启
+        if (getIntent() != null) {
+            if (Constants.TASK_FRAG == getIntent().getIntExtra("OPEN_PAGE", -1)) {
+                callFragment(Constants.TASK_FRAG);
+            }
+        }
     }
 
     /**

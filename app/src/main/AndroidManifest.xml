@@ -94,6 +94,11 @@
         <activity
             android:name="com.itheima.mobilesafe.HomeActivity"
             android:windowSoftInputMode="adjustPan">
+            <!--建立桌面快捷图标时使用此intent filter可以在开启时直接导向HomeActivity-->
+            <intent-filter>
+                <action android:name="com.itheima.home" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
             <intent-filter android:autoVerify="true">
                 <data android:scheme="@string/branch_scheme" />
                 <!-- Accepts URIs that begin with "http://itheima.com/mobilesafe" -->

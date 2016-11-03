@@ -195,21 +195,46 @@ public class SplashActivity extends Activity {
 
     /**
      * 建立快捷方式
-     * 包含3项信息：1.名称 2.图标 3.做什么事情
+     * 广播的意图须包含3项信息：1.名称 2.图标 3.intent的条件过滤
      */
     private void createShortcut() {
-        Intent shortcutIntent = new Intent();
-        shortcutIntent.setAction("android.intent.action.MAIN");
-        shortcutIntent.addCategory("android.intent.category.LAUNCHER");
-        shortcutIntent.setClassName(getPackageName(), "com.itheima.mobilesafe.SplashActivity");
+        SharedPreferences sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
+        boolean firstOpen = sp.getBoolean(SpNames.first_open, true);
+        if (firstOpen) {    //避免重复创建
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean(SpNames.first_open, false);
+            editor.apply();
 
-        //发送广播的意图，让系统告诉桌面应用创建图标
-        Intent intent = new Intent();
-        intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-        intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "手机小卫士");
-        intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
-        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-        sendBroadcast(intent);
+            //建立一般快捷图标（环保，因为应用卸载后系统自动删除）
+            Intent shortcutIntent = new Intent();
+            shortcutIntent.setAction("android.intent.action.MAIN");//只要apps内的intent-filter内包含此action都符合
+            shortcutIntent.addCategory("android.intent.category.LAUNCHER");//所有可以执行的apps都符合
+            shortcutIntent.setClassName(getPackageName(), "com.itheima.mobilesafe.SplashActivity");//指定特定目标
+
+            //如果想创建其他快捷图标，比如点击后直接导向HomeActivity而非启动页面，
+            //需要在manifest为HomeActivity加入自订的intent-filter，並指定給EXTRA_SHORTCUT_INTENT
+            //应用卸载后不会删除
+            Intent homeShortcutIntent = new Intent();
+            homeShortcutIntent.setAction("com.itheima.home");
+            homeShortcutIntent.addCategory("android.intent.category.DEFAULT");
+            homeShortcutIntent.putExtra("OPEN_PAGE", Constants.TASK_FRAG);//自定义信息，用来导向特定页面
+
+            //发送广播的意图，让系统告诉桌面应用创建图标
+            Intent intent = new Intent();
+            intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+            intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "手机小卫士");
+            intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+            intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+            sendBroadcast(intent);
+
+            //发送广播的意图，创建另一个快捷图标，直接导向特定页面
+            Intent intent2 = new Intent();
+            intent2.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+            intent2.putExtra(Intent.EXTRA_SHORTCUT_NAME, "手机小卫士TASK");
+            intent2.putExtra(Intent.EXTRA_SHORTCUT_INTENT, homeShortcutIntent);
+            intent2.putExtra(Intent.EXTRA_SHORTCUT_ICON, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+            sendBroadcast(intent2);
+        }
     }
 
     private Handler handler = new Handler() {

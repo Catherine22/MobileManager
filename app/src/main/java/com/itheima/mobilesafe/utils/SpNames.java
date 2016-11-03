@@ -24,4 +24,5 @@ public class SpNames {
     public final static String accutacy = "accutacy";
     public final static String address_x = "address_x";
     public final static String address_y = "address_y";
+    public final static String first_open = "first_open";
 }
