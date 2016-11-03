@@ -7,8 +7,17 @@
     <string name="admin_receiver_status">设置管理员权限</string>
     <string name="device_admin">Device Admin</string>
 
-    <string name="widget_memory">剩余:%1$s/已用内存:%2$s</string>
+    <string name="widget_memory">剩余空间:%1$s/已用内存:%2$s</string>
+    <string name="sd_size">SD卡可用空间:%1$s（%2$s）</string>
+    <string name="rom_size">內存可用空间:%1$s（%2$s）</string>
     <string name="running_process">运行中进程：%d个</string>
+    <string name="installed_apps">目前已安装%d个应用</string>
+    <string name="installed_sys_apps">系统应用（%d）</string>
     <string name="user_running_process">用户进程（%d）</string>
     <string name="sys_running_process">系统进程（%d）</string>
+
+
+    <string name="app_first_installed_time">安装日期：%s</string>
+    <string name="app_last_update_time">上次更新时间：%s</string>
+    <string name="app_version">版号：%s</string>
 </resources>

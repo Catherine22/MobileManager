@@ -60,22 +60,22 @@ android {
     }
 
     //配置自定义打包名称, 打包apk時用
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def outputFile = output.outputFile
-            def fileName
-            if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                if (variant.buildType.name.equals('release')) {
-                    variant.mergedFlavor.versionName = variant.mergedFlavor.versionName + "_" + releaseTime()
-                    fileName = "${variant.mergedFlavor.applicationId}_${variant.mergedFlavor.versionName}_release.apk"
-                } else if (variant.buildType.name.equals('debug')) {
-                    variant.mergedFlavor.versionName = variant.mergedFlavor.versionName + "_" + releaseTime()
-                    fileName = "${variant.mergedFlavor.applicationId}_${variant.mergedFlavor.versionName}_debug.apk"
-                }
-                output.outputFile = new File(outputFile.parent, fileName)
-            }
-        }
-    }
+//    applicationVariants.all { variant ->
+//        variant.outputs.each { output ->
+//            def outputFile = output.outputFile
+//            def fileName
+//            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+//                if (variant.buildType.name.equals('release')) {
+//                    variant.mergedFlavor.versionName = variant.mergedFlavor.versionName + "_" + releaseTime()
+//                    fileName = "${variant.mergedFlavor.applicationId}_${variant.mergedFlavor.versionName}_release.apk"
+//                } else if (variant.buildType.name.equals('debug')) {
+//                    variant.mergedFlavor.versionName = variant.mergedFlavor.versionName + "_" + releaseTime()
+//                    fileName = "${variant.mergedFlavor.applicationId}_${variant.mergedFlavor.versionName}_debug.apk"
+//                }
+//                output.outputFile = new File(outputFile.parent, fileName)
+//            }
+//        }
+//    }
 }
 
 dependencies {

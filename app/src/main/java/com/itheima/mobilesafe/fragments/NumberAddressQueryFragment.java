@@ -51,8 +51,7 @@ public class NumberAddressQueryFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() >= 3) {
                     queryAddress();
-                }
-                else
+                } else
                     tv_result.setText("查无此号");
             }
 
@@ -92,8 +91,17 @@ public class NumberAddressQueryFragment extends Fragment {
     private void queryAddress() {
         if (!TextUtils.isEmpty(ed_phone.getText().toString())) {
             String number = ed_phone.getText().toString();
-            String address = TelephoneUtils.getAddressFromNum(number);
-            tv_result.setText(address);
+            TelephoneUtils.getAddressFromNum(number, new TelephoneUtils.Callback() {
+                @Override
+                public void onFinish(final String content) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv_result.setText(content);
+                        }
+                    });
+                }
+            });
         } else
             Toast.makeText(getActivity(), "您还没输入电话号码!", Toast.LENGTH_SHORT).show();
     }

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.itheima.mobilesafe"
+    android:installLocation="auto"
     android:versionCode="1"
     android:versionName="1.0">
+    <!--installLocation代表安装位置：auto预设、internalOnly内存、preferExternal尽可能外部存储设备-->
 
     <uses-sdk
         android:minSdkVersion="10"
@@ -26,7 +28,7 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.UPDATE_APP_OPS_STATS" /><!--for 4.4-->
     <uses-permission android:name="android.permission.WRITE_SMS" /><!--for 4.4 and lower-->
-
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
 
     <!--GPS-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -92,6 +94,11 @@
         <activity
             android:name="com.itheima.mobilesafe.HomeActivity"
             android:windowSoftInputMode="adjustPan">
+            <!--建立桌面快捷图标时使用此intent filter可以在开启时直接导向HomeActivity-->
+            <intent-filter>
+                <action android:name="com.itheima.home" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
             <intent-filter android:autoVerify="true">
                 <data android:scheme="@string/branch_scheme" />
                 <!-- Accepts URIs that begin with "http://itheima.com/mobilesafe" -->
@@ -142,10 +149,10 @@
         </receiver>
 
         <receiver android:name=".receivers.OpenAppReceiver">
-        <intent-filter>
-            <action android:name="com.itheima.mobliesafe.OPEN_APP" />
-        </intent-filter>
-    </receiver>
+            <intent-filter>
+                <action android:name="com.itheima.mobliesafe.OPEN_APP" />
+            </intent-filter>
+        </receiver>
 
         <receiver android:name=".receivers.SMSReceiver">
             <intent-filter android:priority="2147483647"><!-- max integer -->
