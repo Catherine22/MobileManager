@@ -61,7 +61,11 @@ public class BlacklistFragment extends Fragment implements View.OnClickListener 
 
         DaoFactory daoF = new DaoFactory();
         dao = (BlacklistDao) daoF.createDao(getActivity(), DaoConstants.BLACKLIST);
-        blockedCallers = dao.queryAll();
+        try {
+            blockedCallers = dao.queryAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         tv_no_data = (TextView) view.findViewById(R.id.tv_no_data);
         tv_add = (TextView) view.findViewById(R.id.tv_add);

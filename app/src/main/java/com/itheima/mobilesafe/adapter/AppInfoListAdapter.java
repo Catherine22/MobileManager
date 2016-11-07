@@ -10,8 +10,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
+import com.itheima.mobilesafe.ui.AdjustView;
 import com.itheima.mobilesafe.ui.recycler_view.OnItemTouch;
 import com.itheima.mobilesafe.utils.objects.AppInfo;
+
 import java.util.List;
 
 /**
@@ -51,6 +53,11 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
         return holder;
     }
 
+    public void setLock(int position, boolean isLocked) {
+        appInfos.get(position).setLocked(isLocked);
+        notifyItemChanged(position);
+    }
+
     @Override
     public int getItemCount() {
         return appInfos.size();
@@ -62,6 +69,19 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
 
     public AppInfo getItem(int position) {
         return appInfos.get(position);
+    }
+
+    public interface OnItemClickLitener {
+        void onItemClick(View view, int position);
+
+        void onItemLongClick(View view, int position);
+    }
+
+    public interface OnItemMoveListener {
+        void onItemSwap(int fromPosition, int toPosition);
+
+        void onItemSwipe(int position);
+
     }
 
     @Override
@@ -82,18 +102,6 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
 //        notifyItemRemoved(position);
     }
 
-    public interface OnItemClickLitener {
-        void onItemClick(View view, int position);
-
-        void onItemLongClick(View view, int position);
-    }
-
-    public interface OnItemMoveListener {
-//        void onItemSwap(int fromPosition, int toPosition);
-
-//        void onItemSwipe(int position);
-
-    }
 
     /**
      * 注册监听器（交换位置、滑动删除）
@@ -135,6 +143,11 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
         else
             holder.tv_installed.setText("SD卡");
 
+        if (appInfos.get(position).isLocked())
+            holder.iv_lock.setImageDrawable(AdjustView.getDrawable(ctx, R.drawable.lock));
+        else
+            holder.iv_lock.setImageDrawable(AdjustView.getDrawable(ctx, R.drawable.unlock));
+
 
         // 如果设置了回调，则设置点击事件（另一块view，须另外处理）
         if (mOnItemClickLitener != null) {
@@ -160,7 +173,7 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
     class MyViewHolder extends RecyclerView.ViewHolder {
 
         LinearLayout ll_touch_area;
-        ImageView iv_icon;
+        ImageView iv_icon, iv_lock;
         TextView tv_name;
         TextView tv_installed;
         TextView tv_apps_count;
@@ -169,6 +182,7 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoListAdapter.
             super(view);
             ll_touch_area = (LinearLayout) view.findViewById(R.id.ll_touch_area);
             iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
+            iv_lock = (ImageView) view.findViewById(R.id.iv_lock);
             tv_name = (TextView) view.findViewById(R.id.tv_name);
             tv_installed = (TextView) view.findViewById(R.id.tv_installed);
             tv_apps_count = (TextView) view.findViewById(R.id.tv_apps_count);
