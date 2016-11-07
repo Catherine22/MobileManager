@@ -50,7 +50,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
         CLog.d(TAG, "onAppWidgetOptionsChanged");
 
         Intent service = new Intent(context, AutoCleanService.class);
-        context.startService(service);
+        context.getApplicationContext().startService(service);
 
     }
 
@@ -59,6 +59,6 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
         super.onDeleted(context, appWidgetIds);
         CLog.d(TAG, "onDeleted");
         Intent service = new Intent(context, AutoCleanService.class);
-        context.stopService(service);
+        context.getApplicationContext().stopService(service);
     }
 }

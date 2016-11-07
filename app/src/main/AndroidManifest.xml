@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.itheima.mobilesafe"
     android:installLocation="auto"
     android:versionCode="1"
@@ -17,7 +18,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
 
     <!--使用WakeLock使Android应用程序保持后台唤醒-->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -130,6 +134,11 @@
                 <data android:scheme="mms" />
                 <data android:scheme="mmsto" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.itheima.mobilesafe.TypePwd"
+            android:launchMode="singleTask">
+
         </activity>
 
         <service android:name=".services.GPSService" />

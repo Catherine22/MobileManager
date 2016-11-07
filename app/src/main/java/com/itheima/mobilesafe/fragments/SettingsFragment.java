@@ -151,10 +151,10 @@ public class SettingsFragment extends Fragment {
                                 CLog.d(TAG, "onGranted()");
                                 if (siv_show_address.isChecked()) {
                                     siv_show_address.setChecked(false);
-                                    getActivity().stopService(addService);
+                                    getActivity().getApplicationContext().stopService(addService);
                                 } else {
                                     siv_show_address.setChecked(true);
-                                    getActivity().startService(addService);
+                                    getActivity().getApplicationContext().startService(addService);
                                 }
                             }
 
@@ -223,10 +223,10 @@ public class SettingsFragment extends Fragment {
                                 CLog.d(TAG, "onGranted()");
                                 if (siv_block.isChecked()) {
                                     siv_block.setChecked(false);
-                                    getActivity().stopService(blockService);
+                                    getActivity().getApplicationContext().stopService(blockService);
                                 } else {
                                     siv_block.setChecked(true);
-                                    getActivity().startService(blockService);
+                                    getActivity().getApplicationContext().startService(blockService);
                                 }
                             }
 
@@ -255,10 +255,10 @@ public class SettingsFragment extends Fragment {
             public void onClick(View v) {
                 if (siv_lock_apps.isChecked()) {
                     siv_lock_apps.setChecked(false);
-                    getActivity().stopService(lockAppsService);
+                    getActivity().getApplicationContext().stopService(lockAppsService);
                 } else {
                     siv_lock_apps.setChecked(true);
-                    getActivity().startService(lockAppsService);
+                    getActivity().getApplicationContext().startService(lockAppsService);
                 }
             }
         });

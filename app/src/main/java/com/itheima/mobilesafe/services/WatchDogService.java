@@ -7,17 +7,25 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.itheima.mobilesafe.TypePwd;
+import com.itheima.mobilesafe.db.dao.AppsLockDao;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import tw.com.softworld.messagescenter.Client;
+import tw.com.softworld.messagescenter.CustomReceiver;
+import tw.com.softworld.messagescenter.Result;
+
 /**
  * Created by Catherine on 2016/11/7.
  * Soft-World Inc.
  * catherine919@soft-world.com.tw
  */
+
 
 /**
  * 用来监视应用程序的状态
@@ -27,17 +35,26 @@ public class WatchDogService extends Service {
     private ActivityManager am;
     private List<ActivityManager.RunningTaskInfo> tasks;
     private String packname;
+    private AppsLockDao dao;
     private boolean flag = true;//服务销毁时关闭看门狗
+    private Client client;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        CLog.d(TAG, "onCreate");
+        dao = new AppsLockDao(WatchDogService.this);
         am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        CustomReceiver cr = new CustomReceiver() {
+            @Override
+            public void onBroadcastReceive(Result result) {
+
+            }
+        };
+        client = new Client(WatchDogService.this,cr);
+        client.gotMessages(BroadcastActions.WATCHDOG_FLAG);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             new Thread() {
                 public void run() {
-                    CLog.d(TAG, "run()");
                     while (flag) {//所有应用程序的看门狗都是while true的死循环
                         /**
                          * 每开启一个应用程序就会创建一个任务栈，存放用户开启的activities
@@ -46,8 +63,8 @@ public class WatchDogService extends Service {
                         tasks = am.getRunningTasks(100);
                         //拿到栈顶的activity也就是当前运行的activity
                         packname = tasks.get(0).topActivity.getPackageName();
-                        CLog.d(TAG, "当前用户操作：" + packname);
-
+//                        CLog.d(TAG, "当前用户操作：" + packname);
+                        protectApp(packname);
                         try {
                             Thread.sleep(50);//重要代码，用来提高CPU效能
                         } catch (InterruptedException e) {
@@ -57,47 +74,53 @@ public class WatchDogService extends Service {
                 }
             }.start();
         } else {
-            try {
-                Class<?> clazz = Class.forName("android.app.ActivityManager");
-                Method methods[] = clazz.getDeclaredMethods();
-                for (int i = 0; i < methods.length; i++) {
-                    CLog.d(TAG, "找到的方法：" + methods[i].toString());
-                }
-                final Method method = clazz.getMethod("getRunningTasks", int.class);
-                new Thread() {
-                    public void run() {
-                        while (flag) {
-                            try {
-                                tasks = (List<ActivityManager.RunningTaskInfo>) method.invoke(am, 100);
-                                packname = tasks.get(0).topActivity.getPackageName();
-                                CLog.w(TAG, "当前用户操作：" + packname);
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            } catch (InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
+            new Thread() {
+                public void run() {
+                    while (flag) {
+                        /**
+                         * LOLLIPOP以上用getRunningAppProcesses().get(0).processName取代am.getRunningTasks(100).get(0).topActivity.getPackageName()，
+                         * 添加权限<uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
+                         */
+                        packname = am.getRunningAppProcesses().get(0).processName;
+                        CLog.w(TAG, "当前用户操作：" + packname);
+                        protectApp(packname);
 
-
-                            try {
-                                Thread.sleep(50);//重要代码，用来提高CPU效能
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                        try {
+                            Thread.sleep(50);//重要代码，用来提高CPU效能
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                     }
-                }.start();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
+                }
+            }.start();
+
 
         }
     }
 
+    /**
+     * 检查应用是否有被用户指定加密，如果有则弹出解锁画面
+     *
+     * @param packname 包名
+     */
+    private void protectApp(String packname) {
+        if (dao.find(packname)) {
+            CLog.d(TAG, "解锁 " + packname);
+            //弹出解锁介面
+            Intent intent = new Intent();
+            intent.setClass(getApplicationContext(), TypePwd.class);
+            //因为服务没有任务栈信息，所以必须给activity指定运行的任务栈
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+        //不弹出解锁介面
+    }
+
     @Override
     public void onDestroy() {
+        CLog.d(TAG, "onDestroy()");
         flag = false;
+        client.release();
         super.onDestroy();
     }
 

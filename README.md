@@ -6,12 +6,13 @@
 | 号码归属地查询 | [NumberAddressQueryFragment] |
 | 设置黑名单 | [BlacklistFragment] |
 | 进程管理、删除 | [TaskFragment] |
-| 应用卸载、启动、分享 | [AppsManagerFragment] |
+| 应用卸载、启动、分享、应用锁 | [AppsManagerFragment] |
 | 监听来电，显示号码归属地悬浮窗 | [AddressService] |
 | 短信、通话拦截 | [BlockCallsSmsService] |
 | 取得GPS位置 | [GPSService] |
 | 拦截短信后，利用管理员权限卸载应用、设置锁屏、清除数据 | [SMSReceiver], [MyAdminManager] |
 | 数据备份、还原（短信） | [SmsBackup] |
+| 看门狗 |[WatchDogService]|
 | Facebook Account kit 登入 |[SettingsFragment], [AccountKitUtils]|
 | Deep linking（以branch.io实现） |[HomeActivity]|
 
@@ -295,6 +296,46 @@ private void endCall() {
 }
 ```
 
+#### Reflection范例
+```JAVA
+try {
+    Class<?> clazz = Class.forName("android.app.ActivityManager");
+    Method methods[] = clazz.getDeclaredMethods();
+    final ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+    //打印所有找到的方法
+    for (int i = 0; i < methods.length; i++) {
+        Log.d(TAG, "找到的方法：" + methods[i].toString());
+    }
+
+    /**
+     * 取代tasks = am.getRunningTasks(100);
+     */
+    final Method method = clazz.getMethod("getRunningTasks", int.class);
+    private List<ActivityManager.RunningTaskInfo> tasks = (List<ActivityManager.RunningTaskInfo>) method.invoke(am, 100);
+    
+    //拿到栈顶的activity也就是当前运行的activity
+    String packname = tasks.get(0).topActivity.getPackageName();
+    CLog.d(TAG, "当前用户操作：" + packname);
+} catch (ClassNotFoundException e) {
+    e.printStackTrace();
+} catch (NoSuchMethodException e) {
+    e.printStackTrace();
+}
+```
+  - 在method.invoke(am, 100)里，如果是static方法，am改成null，如果不是，需填入实例
+  - 获取实例，比如ActivityManager(Context context, Handler handler){...}
+```JAVA
+Class<?> clazz = Class.forName("android.app.ActivityManager");
+Constructor<?> cons = clazz.getConstructor(String.class, Handler.class);
+ActivityManager am = (ActivityManager)cons.newInstance(this, new Handler());
+//实际应用ActivityManager获取实例用getSystemService方法而非new一个ActivityManager
+/**
+ * LOLLIPOP以上用getRunningAppProcesses().get(0).processName取代am.getRunningTasks(100).get(0).topActivity.getPackageName()，
+ * 添加权限<uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" /> 
+ */
+```
+  - [WatchDogService]
+
 #### Design Pattern
   - [Singleton]
   - [Factory]
@@ -574,4 +615,5 @@ public interface MyPermissionsResultListener {
    [AutoCleanService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/AutoCleanService.java>
    [AccountKitUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/login/AccountKitUtils.java>
    [SettingsFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/SettingsFragment.java>
+   [WatchDogService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/WatchDogService.java>
    
