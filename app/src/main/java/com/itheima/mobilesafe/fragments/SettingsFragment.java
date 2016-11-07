@@ -27,6 +27,7 @@ import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
 import com.itheima.mobilesafe.services.AddressService;
 import com.itheima.mobilesafe.services.BlockCallsSmsService;
+import com.itheima.mobilesafe.services.WatchDogService;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.ui.SettingNextView;
 import com.itheima.mobilesafe.utils.BroadcastActions;
@@ -49,13 +50,13 @@ import tw.com.softworld.messagescenter.Result;
  */
 public class SettingsFragment extends Fragment {
     private final static String TAG = "SettingsFragment";
-    private SettingItemView siv_update, siv_admin, siv_show_address, siv_block;
+    private SettingItemView siv_update, siv_admin, siv_show_address, siv_block, siv_lock_apps;
     private SettingNextView snv_set_background, snv_login;
     private TextView tv_uninstall;
     private SharedPreferences sp;
     private MainInterface mainInterface;
     private MyAdminManager myAdminManager;
-    private Intent addService, blockService;
+    private Intent addService, blockService, lockAppsService;
     private Client client;
     private AccountKitUtils accountKitUtils;
     private int chosenType;
@@ -68,6 +69,7 @@ public class SettingsFragment extends Fragment {
         sp = getActivity().getSharedPreferences(SpNames.FILE_CONFIG, Context.MODE_PRIVATE);
         addService = new Intent(getActivity(), AddressService.class);
         blockService = new Intent(getActivity(), BlockCallsSmsService.class);
+        lockAppsService = new Intent(getActivity(), WatchDogService.class);
         mainInterface = (MainInterface) getActivity();
         myAdminManager = new MyAdminManager(getActivity());
         initView(view);
@@ -83,6 +85,7 @@ public class SettingsFragment extends Fragment {
         snv_set_background = (SettingNextView) view.findViewById(R.id.snv_set_background);
         snv_login = (SettingNextView) view.findViewById(R.id.snv_login);
         siv_block = (SettingItemView) view.findViewById(R.id.siv_block);
+        siv_lock_apps = (SettingItemView) view.findViewById(R.id.siv_lock_apps);
         tv_uninstall = (TextView) view.findViewById(R.id.tv_uninstall);
         tv_uninstall.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,6 +237,29 @@ public class SettingsFragment extends Fragment {
                                 getActivity().stopService(addService);
                             }
                         });
+            }
+        });
+
+        boolean lockApps = ServiceUtils.isRunningService(getActivity(), "com.itheima.mobilesafe.services.WatchDogService");
+        if (lockApps) {
+            //应用锁已经开启
+            siv_lock_apps.setChecked(true);
+        } else {
+            //应用锁已经关闭
+            siv_lock_apps.setChecked(false);
+        }
+
+        siv_lock_apps.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (siv_lock_apps.isChecked()) {
+                    siv_lock_apps.setChecked(false);
+                    getActivity().stopService(lockAppsService);
+                } else {
+                    siv_lock_apps.setChecked(true);
+                    getActivity().startService(lockAppsService);
+                }
             }
         });
 

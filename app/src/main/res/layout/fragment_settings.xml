@@ -1,70 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:itheima="http://schemas.android.com/apk/com.itheima.mobilesafe"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/backgroundPrimary"
-    android:clickable="true"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <com.itheima.mobilesafe.ui.SettingNextView
-        android:id="@+id/snv_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <com.itheima.mobilesafe.ui.SettingItemView
-        android:id="@+id/siv_update"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        itheima:desc_off="设置自动更新已经关闭"
-        itheima:desc_on="设置自动更新已经开启"
-        itheima:title_="设置自动更新" />
-
-    <com.itheima.mobilesafe.ui.SettingItemView
-        android:id="@+id/siv_admin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        itheima:desc_off="管理员权限已经关闭"
-        itheima:desc_on="管理员权限已经开启"
-        itheima:title_="开启管理员权限" />
-
-    <com.itheima.mobilesafe.ui.SettingItemView
-        android:id="@+id/siv_block"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        itheima:desc_off="黑名单拦截已经关闭"
-        itheima:desc_on="黑名单拦截已经开启"
-        itheima:title_="设置黑名单" />
-
-
-    <com.itheima.mobilesafe.ui.SettingItemView
-        android:id="@+id/siv_show_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        itheima:desc_off="显示号码归属地已经关闭"
-        itheima:desc_on="显示号码归属地已经开启"
-        itheima:title_="设置显示号码归属地" />
-
-    <com.itheima.mobilesafe.ui.SettingNextView
-        android:id="@+id/snv_set_background"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="match_parent"
+        android:background="@color/backgroundPrimary"
+        android:clickable="true"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_uninstall"
+        <com.itheima.mobilesafe.ui.SettingNextView
+            android:id="@+id/snv_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.itheima.mobilesafe.ui.SettingItemView
+            android:id="@+id/siv_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            itheima:desc_off="设置自动更新已经关闭"
+            itheima:desc_on="设置自动更新已经开启"
+            itheima:title_="设置自动更新" />
+
+        <com.itheima.mobilesafe.ui.SettingItemView
+            android:id="@+id/siv_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            itheima:desc_off="管理员权限已经关闭"
+            itheima:desc_on="管理员权限已经开启"
+            itheima:title_="开启管理员权限" />
+
+        <com.itheima.mobilesafe.ui.SettingItemView
+            android:id="@+id/siv_block"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            itheima:desc_off="黑名单拦截已经关闭"
+            itheima:desc_on="黑名单拦截已经开启"
+            itheima:title_="设置黑名单" />
+
+
+        <com.itheima.mobilesafe.ui.SettingItemView
+            android:id="@+id/siv_show_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            itheima:desc_off="显示号码归属地已经关闭"
+            itheima:desc_on="显示号码归属地已经开启"
+            itheima:title_="设置显示号码归属地" />
+
+
+        <com.itheima.mobilesafe.ui.SettingItemView
+            android:id="@+id/siv_lock_apps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            itheima:desc_off="应用锁已经关闭"
+            itheima:desc_on="应用锁已经开启"
+            itheima:title_="设置应用锁" />
+
+        <com.itheima.mobilesafe.ui.SettingNextView
+            android:id="@+id/snv_set_background"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:background="@drawable/gradient_box_selector"
-            android:paddingLeft="10dp"
-            android:gravity="center_vertical"
-            android:textColor="@android:color/white"
-            android:text="卸载安全卫士"
-            android:textSize="20sp" />
-    </RelativeLayout>
+            android:layout_height="50dp">
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/tv_uninstall"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:background="@drawable/gradient_box_selector"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:text="卸载安全卫士"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+    </LinearLayout>
+</ScrollView>
