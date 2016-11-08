@@ -136,16 +136,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.itheima.mobilesafe.TypePwd"
-            android:launchMode="singleTask">
-
+            android:name="com.itheima.mobilesafe.TypePwdActivity">
         </activity>
 
         <service android:name=".services.GPSService" />
         <service android:name=".services.AddressService" />
         <service android:name=".services.BlockCallsSmsService" />
         <service android:name=".services.WatchDogService" />
-        <service android:name=".services.AutoCleanService" />
+        <service android:name=".services.UpdateWidgetService" />
 
         <receiver android:name=".receivers.BootCompletedReceiver">
             <intent-filter>

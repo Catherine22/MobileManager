@@ -2,18 +2,19 @@ package com.itheima.mobilesafe.services;
 
 import android.app.ActivityManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.itheima.mobilesafe.TypePwd;
+import com.itheima.mobilesafe.TypePwdActivity;
 import com.itheima.mobilesafe.db.dao.AppsLockDao;
 import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import tw.com.softworld.messagescenter.Client;
@@ -38,20 +39,28 @@ public class WatchDogService extends Service {
     private AppsLockDao dao;
     private boolean flag = true;//服务销毁时关闭看门狗
     private Client client;
+    private String unlockPackname;
+    private ScreenOffReceiver sOffReceiver;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         dao = new AppsLockDao(WatchDogService.this);
         am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        //注册屏幕状态receiver
+        sOffReceiver = new ScreenOffReceiver();
+        registerReceiver(sOffReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        //接受来自解锁画面传来的值
         CustomReceiver cr = new CustomReceiver() {
             @Override
             public void onBroadcastReceive(Result result) {
-
+                unlockPackname = result.getString();
             }
         };
-        client = new Client(WatchDogService.this,cr);
-        client.gotMessages(BroadcastActions.WATCHDOG_FLAG);
+        client = new Client(WatchDogService.this, cr);
+        client.gotMessages(BroadcastActions.WATCHDOG_STOP);
+        //取得当前应用程序
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             new Thread() {
                 public void run() {
@@ -82,7 +91,7 @@ public class WatchDogService extends Service {
                          * 添加权限<uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
                          */
                         packname = am.getRunningAppProcesses().get(0).processName;
-                        CLog.w(TAG, "当前用户操作：" + packname);
+//                        CLog.w(TAG, "当前用户操作：" + packname);
                         protectApp(packname);
 
                         try {
@@ -104,22 +113,39 @@ public class WatchDogService extends Service {
      * @param packname 包名
      */
     private void protectApp(String packname) {
-        if (dao.find(packname)) {
+        if (dao.find(packname) && !packname.equals(unlockPackname)) {
             CLog.d(TAG, "解锁 " + packname);
             //弹出解锁介面
             Intent intent = new Intent();
-            intent.setClass(getApplicationContext(), TypePwd.class);
+            intent.setClass(getApplicationContext(), TypePwdActivity.class);
             //因为服务没有任务栈信息，所以必须给activity指定运行的任务栈
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("packname", packname);
             startActivity(intent);
         }
         //不弹出解锁介面
+    }
+
+
+    /**
+     * 锁屏时禁用，省电
+     */
+    private class ScreenOffReceiver extends BroadcastReceiver {
+        private final static String TAG = "ScreenOffReceiver";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            CLog.d(TAG, "屏幕关闭了");
+
+            unlockPackname = null;
+        }
     }
 
     @Override
     public void onDestroy() {
         CLog.d(TAG, "onDestroy()");
         flag = false;
+        unregisterReceiver(sOffReceiver);
         client.release();
         super.onDestroy();
     }
