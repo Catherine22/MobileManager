@@ -22,6 +22,13 @@ import tw.com.softworld.messagescenter.Server;
  * catherine919@soft-world.com.tw
  */
 
+/**
+ * 任务栈比较：
+ *
+ * singleTask 不管是位于栈顶还是栈底，再次运行这个Activity时，都会destory掉它上面所有Activities来保证整个栈中只有一个自己（在栈顶了）
+ * singleTop 如果刚好位于栈顶，则不会创建新的activity，比如由底到顶是ABCD，再创一个D还是ABCD，但创B会变成ABCDB
+ * singleInstance 创一个新的任务栈，把activity放到全新的任务栈里（变成两个任务栈（ABC是栈1，D是栈2）
+ */
 public class TypePwdActivity extends Activity {
     private TextView tv_title;
     private ImageView iv_icon;
@@ -66,7 +73,7 @@ public class TypePwdActivity extends Activity {
                         }
                     };
                     Server server = new Server(TypePwdActivity.this, ar);
-                    server.pushString(BroadcastActions.WATCHDOG_STOP, packname);
+                    server.pushString(BroadcastActions.STOP_WATCHDOG, packname);
                     finish();
                 }
             }

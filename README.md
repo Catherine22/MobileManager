@@ -182,7 +182,7 @@ Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like 
 /**
  * 输入手机号码查询归属地
  * 限中国地区号码
- * 
+ *
  * 规则如下:
  * 1. 11码
  * 2. 13, 14, 15, 16开头
@@ -191,19 +191,22 @@ Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like 
 private String phone="1351234567";
 if(phone.matches("^1[3456]\\d{9}$")){
  //符合规则
- 
+
  /**
  * ^ 开头
  * 1 第一位限定1
  * [3456] 第二位是3、4、5、6任一都行
  * [0-9] 效果等同于 \d，适用于之后的九位数字，所以是 \d\d\d\d\d\d\d\d\d 等同于 \d{9}
  * $ 结尾
- * 
+ *
  * 正则式为 ^1[3456]\d{9}$
  */
  }
 
 ```
+
+#### 任务栈
+  - [TypePwdActivity]
 
 #### 建立桌面快捷图标
 ```JAVA
@@ -280,7 +283,7 @@ private void endCall() {
         //呼叫的方法与带入的参数型别
         Method method = clazz.getDeclaredMethod("getService", String.class);
         //the object on which to call this method (or null for static methods)
-        IBinder b = (IBinder) method.invoke(null, Context.TELEPHONY_SERVICE); 
+        IBinder b = (IBinder) method.invoke(null, Context.TELEPHONY_SERVICE);
         ITelephony.Stub.asInterface(b).endCall();
     } catch (ClassNotFoundException e) {
         e.printStackTrace();
@@ -312,7 +315,7 @@ try {
      */
     final Method method = clazz.getMethod("getRunningTasks", int.class);
     private List<ActivityManager.RunningTaskInfo> tasks = (List<ActivityManager.RunningTaskInfo>) method.invoke(am, 100);
-    
+
     //拿到栈顶的activity也就是当前运行的activity
     String packname = tasks.get(0).topActivity.getPackageName();
     CLog.d(TAG, "当前用户操作：" + packname);
@@ -331,7 +334,7 @@ ActivityManager am = (ActivityManager)cons.newInstance(this, new Handler());
 //实际应用ActivityManager获取实例用getSystemService方法而非new一个ActivityManager
 /**
  * LOLLIPOP以上用getRunningAppProcesses().get(0).processName取代am.getRunningTasks(100).get(0).topActivity.getPackageName()，
- * 添加权限<uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" /> 
+ * 添加权限<uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
  */
 ```
   - [WatchDogService]
@@ -367,7 +370,7 @@ ActivityManager am = (ActivityManager)cons.newInstance(this, new Handler());
 android:windowSoftInputMode="adjustPan">
 	<intent-filter android:autoVerify="true">
 		<data android:scheme="itheima.mobilesafe" />
-		
+
 		<action android:name="android.intent.action.VIEW" />
 		<category android:name="android.intent.category.DEFAULT" />
 		<category android:name="android.intent.category.BROWSABLE" />
@@ -568,6 +571,7 @@ public interface MyPermissionsResultListener {
    [fragment_settings]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/layout/fragment_settings.xml>
    [attrs]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/values/attrs.xml>
    [HomeActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/HomeActivity.java>
+   [TypePwdActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/TypePwdActivity.java>
    [Encryption]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/Encryption.java>
    [build.gradle]:<https://github.com/Catherine22/MobileManager/blob/master/app/build.gradle>
    [AndroidManifest]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/AndroidManifest.xml>
@@ -616,4 +620,3 @@ public interface MyPermissionsResultListener {
    [AccountKitUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/login/AccountKitUtils.java>
    [SettingsFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/SettingsFragment.java>
    [WatchDogService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/WatchDogService.java>
-   

@@ -36,30 +36,54 @@ public class WatchDogService extends Service {
     private ActivityManager am;
     private List<ActivityManager.RunningTaskInfo> tasks;
     private String packname;
-    private AppsLockDao dao;
     private boolean flag = true;//服务销毁时关闭看门狗
     private Client client;
     private String unlockPackname;
     private ScreenOffReceiver sOffReceiver;
+    private ScreenOnReceiver sOnReceiver;
+    private List<String> protectedApps;
+    private Intent intentTypePwd;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
-        dao = new AppsLockDao(WatchDogService.this);
+        final AppsLockDao dao = new AppsLockDao(WatchDogService.this);
         am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         //注册屏幕状态receiver
         sOffReceiver = new ScreenOffReceiver();
+        sOnReceiver = new ScreenOnReceiver();
         registerReceiver(sOffReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
-        //接受来自解锁画面传来的值
+        registerReceiver(sOnReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
         CustomReceiver cr = new CustomReceiver() {
             @Override
             public void onBroadcastReceive(Result result) {
-                unlockPackname = result.getString();
+                if (result.getString() != null)//接受来自解锁画面传来的值
+                    unlockPackname = result.getString();
+                else//接受改变数据的请求
+                    protectedApps = dao.queryAll();
+
             }
         };
         client = new Client(WatchDogService.this, cr);
-        client.gotMessages(BroadcastActions.WATCHDOG_STOP);
+        client.gotMessages(BroadcastActions.STOP_WATCHDOG);
+        client.gotMessages(BroadcastActions.UPDATE_WATCHDOG);
+
+
+        /**
+         * 把intent搬出来先初始化，不要放在子线程里再初始，提高效率
+         */
+        intentTypePwd = new Intent();
+        intentTypePwd.setClass(getApplicationContext(), TypePwdActivity.class);
+        //因为服务没有任务栈信息，所以必须给activity指定运行的任务栈
+        intentTypePwd.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        /**
+         * 使用queryAll拿到全部的数据，再用list暂存，以后要查询时就直接查list
+         * 查内存的速度比查文件或数据库快10倍以上
+         */
+        protectedApps = dao.queryAll();
+
         //取得当前应用程序
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             new Thread() {
@@ -69,13 +93,13 @@ public class WatchDogService extends Service {
                          * 每开启一个应用程序就会创建一个任务栈，存放用户开启的activities
                          * （所以当所有的activities都退出后，任务栈就清空了）
                          */
-                        tasks = am.getRunningTasks(100);
+                        tasks = am.getRunningTasks(1);//少query提高效率
                         //拿到栈顶的activity也就是当前运行的activity
                         packname = tasks.get(0).topActivity.getPackageName();
-//                        CLog.d(TAG, "当前用户操作：" + packname);
+//                        CLog.d(TAG, "当前用户操作：" + packname);//不打印logs提高效率
                         protectApp(packname);
                         try {
-                            Thread.sleep(50);//重要代码，用来提高CPU效能
+                            Thread.sleep(20);//重要代码，用来提高CPU效能
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -91,11 +115,11 @@ public class WatchDogService extends Service {
                          * 添加权限<uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
                          */
                         packname = am.getRunningAppProcesses().get(0).processName;
-//                        CLog.w(TAG, "当前用户操作：" + packname);
+//                        CLog.w(TAG, "当前用户操作：" + packname);//不打印logs提高效率
                         protectApp(packname);
 
                         try {
-                            Thread.sleep(50);//重要代码，用来提高CPU效能
+                            Thread.sleep(20);//重要代码，用来提高CPU效能
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -113,31 +137,37 @@ public class WatchDogService extends Service {
      * @param packname 包名
      */
     private void protectApp(String packname) {
-        if (dao.find(packname) && !packname.equals(unlockPackname)) {
-            CLog.d(TAG, "解锁 " + packname);
+        if (protectedApps.contains(packname) && !packname.equals(unlockPackname)) {
+//            CLog.d(TAG, "解锁 " + packname);
             //弹出解锁介面
-            Intent intent = new Intent();
-            intent.setClass(getApplicationContext(), TypePwdActivity.class);
-            //因为服务没有任务栈信息，所以必须给activity指定运行的任务栈
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("packname", packname);
-            startActivity(intent);
+            intentTypePwd.putExtra("packname", packname);
+            startActivity(intentTypePwd);
         }
         //不弹出解锁介面
     }
 
 
     /**
-     * 锁屏时禁用，省电
+     * 锁屏时禁用，移除packname，重新上锁
      */
     private class ScreenOffReceiver extends BroadcastReceiver {
         private final static String TAG = "ScreenOffReceiver";
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            CLog.d(TAG, "屏幕关闭了");
-
+//            CLog.d(TAG, "屏幕关闭了");
             unlockPackname = null;
+            flag = false;//省电
+        }
+    }
+
+    private class ScreenOnReceiver extends BroadcastReceiver {
+        private final static String TAG = "ScreenOnReceiver";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+//            CLog.d(TAG, "屏幕开启了");
+            flag = true;//省电
         }
     }
 
@@ -146,6 +176,7 @@ public class WatchDogService extends Service {
         CLog.d(TAG, "onDestroy()");
         flag = false;
         unregisterReceiver(sOffReceiver);
+        unregisterReceiver(sOnReceiver);
         client.release();
         super.onDestroy();
     }
