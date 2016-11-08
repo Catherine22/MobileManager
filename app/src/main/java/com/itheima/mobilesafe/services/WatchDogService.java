@@ -41,6 +41,8 @@ public class WatchDogService extends Service {
     private Client client;
     private String unlockPackname;
     private ScreenOffReceiver sOffReceiver;
+    private ScreenOnReceiver sOnReceiver;
+
 
 
     @Override
@@ -50,7 +52,9 @@ public class WatchDogService extends Service {
         am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         //注册屏幕状态receiver
         sOffReceiver = new ScreenOffReceiver();
+        sOnReceiver = new ScreenOnReceiver();
         registerReceiver(sOffReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        registerReceiver(sOnReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
         //接受来自解锁画面传来的值
         CustomReceiver cr = new CustomReceiver() {
             @Override
@@ -128,7 +132,7 @@ public class WatchDogService extends Service {
 
 
     /**
-     * 锁屏时禁用，省电
+     * 锁屏时禁用，移除packname，重新上锁
      */
     private class ScreenOffReceiver extends BroadcastReceiver {
         private final static String TAG = "ScreenOffReceiver";
@@ -136,8 +140,18 @@ public class WatchDogService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             CLog.d(TAG, "屏幕关闭了");
-
             unlockPackname = null;
+            flag = false;//省电
+        }
+    }
+
+    private class ScreenOnReceiver extends BroadcastReceiver {
+        private final static String TAG = "ScreenOnReceiver";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            CLog.d(TAG, "屏幕开启了");
+            flag = true;//省电
         }
     }
 
@@ -146,6 +160,7 @@ public class WatchDogService extends Service {
         CLog.d(TAG, "onDestroy()");
         flag = false;
         unregisterReceiver(sOffReceiver);
+        unregisterReceiver(sOnReceiver);
         client.release();
         super.onDestroy();
     }

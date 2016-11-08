@@ -135,9 +135,11 @@
                 <data android:scheme="mmsto" />
             </intent-filter>
         </activity>
+        <!--excludeFromRecents设置true应用就不会出现在最近使用的列表里-->
         <activity
             android:name="com.itheima.mobilesafe.TypePwdActivity"
-            android:launchMode="singleInstance"></activity>
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"></activity>
 
         <service android:name=".services.GPSService" />
         <service android:name=".services.AddressService" />
