@@ -73,7 +73,7 @@ public class TypePwdActivity extends Activity {
                         }
                     };
                     Server server = new Server(TypePwdActivity.this, ar);
-                    server.pushString(BroadcastActions.WATCHDOG_STOP, packname);
+                    server.pushString(BroadcastActions.STOP_WATCHDOG, packname);
                     finish();
                 }
             }

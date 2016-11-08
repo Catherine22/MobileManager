@@ -12,5 +12,6 @@ public class BroadcastActions {
     public final static String DISABLE_SWIPING = "DISABLE_SWIPING";
     public final static String LOCATION_INFO = "LOCATION_INFO";
     public final static String FINISHED_UNINSTALLING = "FINISHED_UNINSTALLING";
-    public final static String WATCHDOG_STOP = "WATCHDOG_STOP";
+    public final static String STOP_WATCHDOG = "STOP_WATCHDOG";
+    public final static String UPDATE_WATCHDOG = "UPDATE_WATCHDOG";
 }
