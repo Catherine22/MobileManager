@@ -136,8 +136,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.itheima.mobilesafe.TypePwdActivity">
-        </activity>
+            android:name="com.itheima.mobilesafe.TypePwdActivity"
+            android:launchMode="singleInstance"></activity>
 
         <service android:name=".services.GPSService" />
         <service android:name=".services.AddressService" />

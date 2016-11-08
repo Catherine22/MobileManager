@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.itheima.mobilesafe.db.AppsLockDbOpenHelper;
 
 /**
- * Created by Catherine on 2016/11/7.
+ * Created by Catherine on 2016/11/8.
  * Soft-World Inc.
  * catherine919@soft-world.com.tw
  */
