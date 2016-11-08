@@ -17,7 +17,7 @@ public class AppInfo {
     private String versionName;
     private boolean inRom;
     private boolean isUserApp;
-
+    private boolean isLocked;
 
     @Override
     public String toString() {
@@ -30,6 +30,7 @@ public class AppInfo {
                 ", versionName='" + versionName + '\'' +
                 ", inRom=" + inRom +
                 ", isUserApp=" + isUserApp +
+                ", isLocked=" + isLocked +
                 '}';
     }
 
@@ -39,22 +40,6 @@ public class AppInfo {
 
     public void setFirstInstallTime(String firstInstallTime) {
         this.firstInstallTime = firstInstallTime;
-    }
-
-    public String getLastUpdateTime() {
-        return lastUpdateTime;
-    }
-
-    public void setLastUpdateTime(String lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
-    }
-
-    public String getVersionName() {
-        return versionName;
-    }
-
-    public void setVersionName(String versionName) {
-        this.versionName = versionName;
     }
 
     public Drawable getIcon() {
@@ -73,12 +58,28 @@ public class AppInfo {
         this.inRom = inRom;
     }
 
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
+
     public boolean isUserApp() {
         return isUserApp;
     }
 
     public void setUserApp(boolean userApp) {
         isUserApp = userApp;
+    }
+
+    public String getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(String lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
     }
 
     public String getName() {
@@ -95,5 +96,13 @@ public class AppInfo {
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+    }
+
+    public String getVersionName() {
+        return versionName;
+    }
+
+    public void setVersionName(String versionName) {
+        this.versionName = versionName;
     }
 }

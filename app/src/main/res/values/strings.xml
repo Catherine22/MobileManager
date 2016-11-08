@@ -15,6 +15,7 @@
     <string name="installed_sys_apps">系统应用（%d）</string>
     <string name="user_running_process">用户进程（%d）</string>
     <string name="sys_running_process">系统进程（%d）</string>
+    <string name="packname">当前应用：%s</string>
 
 
     <string name="app_first_installed_time">安装日期：%s</string>

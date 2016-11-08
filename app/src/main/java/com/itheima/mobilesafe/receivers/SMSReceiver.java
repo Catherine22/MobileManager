@@ -89,7 +89,7 @@ public class SMSReceiver extends BroadcastReceiver {
 
                         //启动服务
                         Intent i = new Intent(context, GPSService.class);
-                        context.startService(i);
+                        context.getApplicationContext().startService(i);
                         CustomReceiver cr = new CustomReceiver() {
                             @Override
                             public void onBroadcastReceive(Result result) {

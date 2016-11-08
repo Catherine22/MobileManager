@@ -24,6 +24,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -31,6 +32,8 @@ import android.widget.Toast;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.adapter.AppInfoListAdapter;
+import com.itheima.mobilesafe.db.dao.AppsLockDao;
+import com.itheima.mobilesafe.ui.AdjustView;
 import com.itheima.mobilesafe.ui.AutoResizeTextView;
 import com.itheima.mobilesafe.ui.recycler_view.DividerItemDecoration;
 import com.itheima.mobilesafe.ui.recycler_view.ItemTouchCallback;
@@ -69,7 +72,11 @@ public class AppsManagerFragment extends Fragment implements View.OnClickListene
     private ItemTouchHelper userItemTouchHelper;
     private PopupWindow pw;
     private AppInfo onSelectedItem;
+    private int onSelectedPosition;
     private Client client;
+    private AppsLockDao dao;
+    private ImageView iv_lock;
+    private TextView tv_lock;
 
     public static AppsManagerFragment newInstance() {
         return new AppsManagerFragment();
@@ -106,6 +113,8 @@ public class AppsManagerFragment extends Fragment implements View.OnClickListene
         };
         client = new Client(getActivity(), cr);
         client.gotMessages(BroadcastActions.FINISHED_UNINSTALLING);
+
+        dao = new AppsLockDao(getActivity());
 
         return view;
     }
@@ -148,6 +157,7 @@ public class AppsManagerFragment extends Fragment implements View.OnClickListene
 
                 List<AppInfo> infos = SystemInfoUtils.getAppInfos(getActivity());
                 for (AppInfo info : infos) {
+                    info.setLocked(dao.find(info.getPackageName()));
                     userInfo.add(info);
                 }
 
@@ -160,6 +170,8 @@ public class AppsManagerFragment extends Fragment implements View.OnClickListene
                             pw = null;
                         }
                         onSelectedItem = userAdapter.getItem(position);
+                        onSelectedPosition = position;
+
                         View v = View.inflate(getActivity(), R.layout.popup_app_manager, null);
                         LinearLayout ll_share = (LinearLayout) v.findViewById(R.id.ll_share);
                         ll_share.setOnClickListener(AppsManagerFragment.this);
@@ -167,6 +179,20 @@ public class AppsManagerFragment extends Fragment implements View.OnClickListene
                         ll_uninstall.setOnClickListener(AppsManagerFragment.this);
                         LinearLayout ll_open = (LinearLayout) v.findViewById(R.id.ll_open);
                         ll_open.setOnClickListener(AppsManagerFragment.this);
+                        LinearLayout ll_lock = (LinearLayout) v.findViewById(R.id.ll_lock);
+                        ll_lock.setOnClickListener(AppsManagerFragment.this);
+
+                        iv_lock = (ImageView) v.findViewById(R.id.iv_lock);
+                        tv_lock = (TextView) v.findViewById(R.id.tv_lock);
+                        if (userAdapter.getItem(position).isLocked()) {
+                            iv_lock.setImageDrawable(AdjustView.getDrawable(getActivity(), R.drawable.unlock));
+                            tv_lock.setText("解锁");
+                        } else {
+                            iv_lock.setImageDrawable(AdjustView.getDrawable(getActivity(), R.drawable.lock));
+                            tv_lock.setText("加密");
+                        }
+
+
                         pw = new PopupWindow(v, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         int location[] = new int[2];//距离屏幕左边、上面的距离
                         view.getLocationInWindow(location);
@@ -214,8 +240,8 @@ public class AppsManagerFragment extends Fragment implements View.OnClickListene
                             }
 
                             rv_user_apps.setAdapter(userAdapter);
-                            userItemTouchHelper = new ItemTouchHelper(new ItemTouchCallback(userAdapter));
-                            userItemTouchHelper.attachToRecyclerView(rv_user_apps);
+//                            userItemTouchHelper = new ItemTouchHelper(new ItemTouchCallback(userAdapter));
+//                            userItemTouchHelper.attachToRecyclerView(rv_user_apps);
 
                             Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.tran_in);
                             rv_user_apps.startAnimation(animation);
@@ -291,6 +317,21 @@ public class AppsManagerFragment extends Fragment implements View.OnClickListene
                 }
                 uninstallApp(onSelectedItem);
                 break;
+            case R.id.ll_lock:
+                CLog.d(TAG, "lock " + onSelectedItem.getPackageName());
+                if (dao.find(onSelectedItem.getPackageName())) {
+                    dao.remove(onSelectedItem.getPackageName());
+                    userAdapter.setLock(onSelectedPosition, false);
+                    iv_lock.setImageDrawable(AdjustView.getDrawable(getActivity(), R.drawable.lock));
+                    tv_lock.setText("加密");
+                } else {
+                    dao.add(onSelectedItem.getPackageName());
+                    userAdapter.setLock(onSelectedPosition, true);
+                    iv_lock.setImageDrawable(AdjustView.getDrawable(getActivity(), R.drawable.unlock));
+                    tv_lock.setText("解锁");
+                }
+
+                break;
         }
     }
 
@@ -298,6 +339,7 @@ public class AppsManagerFragment extends Fragment implements View.OnClickListene
      * 分享信息
      * 所有有在manifest中加入intent-filter（含action.SEND、CATEGORY_DEFAULT、text/plain）特性的应用都能收到次intent，
      * 也就是反之，在manifest中加入需要的intent-filter，可以拦截到对应的intent。
+     *
      * @param appinfo 应用信息
      */
     private void share(AppInfo appinfo) {
@@ -305,12 +347,13 @@ public class AppsManagerFragment extends Fragment implements View.OnClickListene
         intent.setAction("android.intent.action.SEND");
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, "推荐你使用「" + appinfo.getName()+"」软件");
+        intent.putExtra(Intent.EXTRA_TEXT, "推荐你使用「" + appinfo.getName() + "」软件");
         startActivity(intent);
     }
 
     /**
      * 卸载应用
+     *
      * @param appinfo 应用信息
      */
     private void uninstallApp(AppInfo appinfo) {
@@ -335,6 +378,7 @@ public class AppsManagerFragment extends Fragment implements View.OnClickListene
 
     /**
      * 开启应用
+     *
      * @param packageName 应用包名
      */
     private void openApp(String packageName) {

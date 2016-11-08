@@ -12,8 +12,8 @@
         android:layout_height="wrap_content"
         android:background="#ff33b5e5"
         android:textColor="#ffffff"
-        android:visibility="gone"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/ll_touch_area"
@@ -26,10 +26,12 @@
         <ImageView
             android:id="@+id/iv_icon"
             android:layout_width="50dp"
-            android:layout_height="50dp" />
+            android:layout_height="50dp"
+            android:src="@drawable/default_iv" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
@@ -44,6 +46,7 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:maxLines="1"
                 android:scrollHorizontally="true"
+                android:text="AAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                 android:textSize="20sp" />
 
             <TextView
@@ -57,7 +60,13 @@
                 android:textColor="#808080"
                 android:textSize="15sp" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_lock"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/unlock" />
     </LinearLayout>
-
-
 </LinearLayout>

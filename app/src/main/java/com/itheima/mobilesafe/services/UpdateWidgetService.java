@@ -29,7 +29,7 @@ import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
  * catherine919@soft-world.com.tw
  */
 
-public class AutoCleanService extends Service {
+public class UpdateWidgetService extends Service {
     private final static String TAG = "AutoCleanService";
     private Timer timer;
     private TimerTask timerTask;
@@ -49,11 +49,12 @@ public class AutoCleanService extends Service {
         super.onCreate();
         CLog.d(TAG, "onCreate");
         awm = AppWidgetManager.getInstance(this);
-        cm = new ComponentName(AutoCleanService.this, MyAppWidgetProvider.class);
+        cm = new ComponentName(UpdateWidgetService.this, MyAppWidgetProvider.class);
 
+
+        //注册屏幕状态receiver
         sOffReceiver = new ScreenOffReceiver();
         sOnReceiver = new ScreenOnReceiver();
-
         registerReceiver(sOffReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
         registerReceiver(sOnReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
 
@@ -80,8 +81,8 @@ public class AutoCleanService extends Service {
                 @Override
                 public void run() {
                     CLog.d(TAG, "timerTask");
-                    long availMen = SystemInfoUtils.getAvailableMemory(AutoCleanService.this);
-                    long totalMen = SystemInfoUtils.getTotalMemory(AutoCleanService.this);
+                    long availMen = SystemInfoUtils.getAvailableMemory(UpdateWidgetService.this);
+                    long totalMen = SystemInfoUtils.getTotalMemory(UpdateWidgetService.this);
                     //实际上widgets是桌面进程在处理而非手机卫士进程处理
                     //其实不算是view，继承Parcelable将数据放到公共的内存里（在此处是桌面进程调用）
                     RemoteViews views = new RemoteViews(getPackageName(), R.layout.appwidget_regular);
@@ -94,12 +95,12 @@ public class AutoCleanService extends Service {
 
                     //描述一个动作，该动作是由另一个进程执行（在此处是桌面进程）
                     //此处可理解为自定义一个广播事件，由PendingIntent包装后交由桌面进程发送广播
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(AutoCleanService.this, 0, intent, FLAG_UPDATE_CURRENT);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(UpdateWidgetService.this, 0, intent, FLAG_UPDATE_CURRENT);
                     views.setOnClickPendingIntent(R.id.iv_clean, pendingIntent);
 
                     Intent intent2 = new Intent();
                     intent2.setAction("com.itheima.mobliesafe.OPEN_APP");
-                    PendingIntent pendingIntent2 = PendingIntent.getBroadcast(AutoCleanService.this, 0, intent2, FLAG_UPDATE_CURRENT);
+                    PendingIntent pendingIntent2 = PendingIntent.getBroadcast(UpdateWidgetService.this, 0, intent2, FLAG_UPDATE_CURRENT);
                     views.setOnClickPendingIntent(R.id.tv_widget_memory, pendingIntent2);
 
                     //必须放最后，否则收不到广播
@@ -124,6 +125,10 @@ public class AutoCleanService extends Service {
     }
 
 
+
+    /**
+     * 锁屏时禁用，省电
+     */
     private class ScreenOffReceiver extends BroadcastReceiver {
         private final static String TAG = "ScreenOffReceiver";
 
@@ -135,6 +140,9 @@ public class AutoCleanService extends Service {
         }
     }
 
+    /**
+     * 屏幕解锁时启用
+     */
     private class ScreenOnReceiver extends BroadcastReceiver {
         private final static String TAG = "ScreenOnReceiver";
 

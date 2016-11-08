@@ -4,10 +4,9 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.itheima.mobilesafe.services.AutoCleanService;
+import com.itheima.mobilesafe.services.UpdateWidgetService;
 import com.itheima.mobilesafe.utils.CLog;
 
 /**
@@ -49,8 +48,8 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
         CLog.d(TAG, "onAppWidgetOptionsChanged");
 
-        Intent service = new Intent(context, AutoCleanService.class);
-        context.startService(service);
+        Intent service = new Intent(context, UpdateWidgetService.class);
+        context.getApplicationContext().startService(service);
 
     }
 
@@ -58,7 +57,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
     public void onDeleted(Context context, int[] appWidgetIds) {
         super.onDeleted(context, appWidgetIds);
         CLog.d(TAG, "onDeleted");
-        Intent service = new Intent(context, AutoCleanService.class);
-        context.stopService(service);
+        Intent service = new Intent(context, UpdateWidgetService.class);
+        context.getApplicationContext().stopService(service);
     }
 }

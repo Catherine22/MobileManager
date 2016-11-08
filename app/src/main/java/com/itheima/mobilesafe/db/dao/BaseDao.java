@@ -7,9 +7,9 @@ package com.itheima.mobilesafe.db.dao;
  */
 
 public interface BaseDao {
-    boolean find(String key);
+    boolean find(String key) throws Exception;
 
-    void remove(String key);
+    void remove(String key) throws Exception;
 
-    Object queryAll();
+    Object queryAll() throws Exception;
 }
