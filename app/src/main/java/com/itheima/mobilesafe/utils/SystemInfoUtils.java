@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.TrafficStats;
 import android.os.Build;
 import android.os.Debug;
 import android.os.StatFs;
@@ -156,6 +157,10 @@ public class SystemInfoUtils {
             appInfo.setPackageName(pin.packageName);
             appInfo.setIcon(pin.applicationInfo.loadIcon(pm));
 
+            appInfo.setUid(pin.applicationInfo.uid);
+//            File rcvFile = new File("proc/uid_stat/" + pin.applicationInfo.uid + "/tcp_rcv");
+//            File sndFile = new File("proc/uid_stat/" + pin.applicationInfo.uid + "/tcp_snd");
+
             appInfo.setVersionName(pin.versionName);
 
             String fit = new SimpleDateFormat("MM/dd/yyyy").format(new Date(pin.firstInstallTime));
@@ -271,6 +276,17 @@ public class SystemInfoUtils {
         }
 
         return blockCount * blockSize;
+    }
+
+    public static void getTraffic(Context ctx) {
+        PackageManager pm = ctx.getPackageManager();
+        List<ApplicationInfo> installedApplications = pm.getInstalledApplications(0);
+        for (ApplicationInfo info : installedApplications) {
+            int uid = info.uid;
+            long tx = TrafficStats.getUidTxBytes(uid);
+            long rx = TrafficStats.getUidRxBytes(uid);
+
+        }
     }
 
     /**
