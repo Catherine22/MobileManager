@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.TrafficStats;
 import android.os.Build;
 import android.os.Debug;
 import android.os.StatFs;
@@ -155,6 +156,10 @@ public class SystemInfoUtils {
             appInfo.setName(pin.applicationInfo.loadLabel(pm).toString());
             appInfo.setPackageName(pin.packageName);
             appInfo.setIcon(pin.applicationInfo.loadIcon(pm));
+
+            appInfo.setUid(pin.applicationInfo.uid);
+//            File rcvFile = new File("proc/uid_stat/" + pin.applicationInfo.uid + "/tcp_rcv");
+//            File sndFile = new File("proc/uid_stat/" + pin.applicationInfo.uid + "/tcp_snd");
 
             appInfo.setVersionName(pin.versionName);
 

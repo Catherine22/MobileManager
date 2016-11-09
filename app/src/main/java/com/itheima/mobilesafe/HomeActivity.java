@@ -47,6 +47,7 @@ import com.itheima.mobilesafe.fragments.ContactsFragment;
 import com.itheima.mobilesafe.fragments.NumberAddressQueryFragment;
 import com.itheima.mobilesafe.fragments.SettingsFragment;
 import com.itheima.mobilesafe.fragments.TaskFragment;
+import com.itheima.mobilesafe.fragments.TrafficManagerFragment;
 import com.itheima.mobilesafe.fragments.setup.Setup1Fragment;
 import com.itheima.mobilesafe.fragments.setup.Setup2Fragment;
 import com.itheima.mobilesafe.fragments.setup.Setup3Fragment;
@@ -259,6 +260,12 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 title = "黑名单拦截";
                 fragment = new BlacklistFragment();
                 tag = "BLACKLIST";
+                break;
+            case Constants.TRAFFIC_MAG_FRAG:
+                title = "流量统计";
+                fragment = new TrafficManagerFragment();
+                tag = "TRAFFIC_MAG";
+                break;
         }
 
         titles.push(title);
@@ -329,6 +336,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                                 Toast.makeText(HomeActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
                             }
                         });
+                        break;
+                    case 4://流量统计
+                        callFragment(Constants.TRAFFIC_MAG_FRAG);
                         break;
                     case 7://高级工具
                         callFragment(Constants.A_TOOLS_FRAG);

@@ -18,6 +18,9 @@ public class AppInfo {
     private boolean inRom;
     private boolean isUserApp;
     private boolean isLocked;
+    private long tcpRcv;
+    private long tcpSnd;
+    private int uid;
 
     @Override
     public String toString() {
@@ -31,6 +34,9 @@ public class AppInfo {
                 ", inRom=" + inRom +
                 ", isUserApp=" + isUserApp +
                 ", isLocked=" + isLocked +
+                ", tcpRcv=" + tcpRcv +
+                ", tcpSnd=" + tcpSnd +
+                ", uid=" + uid +
                 '}';
     }
 
@@ -96,6 +102,30 @@ public class AppInfo {
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+    }
+
+    public long getTcpRcv() {
+        return tcpRcv;
+    }
+
+    public void setTcpRcv(long tcpRcv) {
+        this.tcpRcv = tcpRcv;
+    }
+
+    public long getTcpSnd() {
+        return tcpSnd;
+    }
+
+    public void setTcpSnd(long tcpSnt) {
+        this.tcpSnd = tcpSnt;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
     }
 
     public String getVersionName() {
