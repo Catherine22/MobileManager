@@ -278,17 +278,6 @@ public class SystemInfoUtils {
         return blockCount * blockSize;
     }
 
-    public static void getTraffic(Context ctx) {
-        PackageManager pm = ctx.getPackageManager();
-        List<ApplicationInfo> installedApplications = pm.getInstalledApplications(0);
-        for (ApplicationInfo info : installedApplications) {
-            int uid = info.uid;
-            long tx = TrafficStats.getUidTxBytes(uid);
-            long rx = TrafficStats.getUidRxBytes(uid);
-
-        }
-    }
-
     /**
      * 自动转换单位
      *
