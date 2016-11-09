@@ -23,6 +23,7 @@ public class Constants {
     public final static int NUM_ADDRESS_QUERY_FRAG = 15;
     public final static int BLACKLIST_FRAG = 16;
     public final static int TRAFFIC_MAG_FRAG = 17;
+    public final static int ANTI_VIRUS = 18;
 
     //activity request code
     public final static int REQUEST_CODE_ENABLE_ADMIN = 10001;

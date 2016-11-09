@@ -41,6 +41,7 @@ import com.facebook.accountkit.PhoneNumber;
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
 import com.itheima.mobilesafe.fragments.AToolsFragment;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
+import com.itheima.mobilesafe.fragments.AntiVirusFragment;
 import com.itheima.mobilesafe.fragments.AppsManagerFragment;
 import com.itheima.mobilesafe.fragments.BlacklistFragment;
 import com.itheima.mobilesafe.fragments.ContactsFragment;
@@ -266,6 +267,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 fragment = new TrafficManagerFragment();
                 tag = "TRAFFIC_MAG";
                 break;
+            case Constants.ANTI_VIRUS:
+                title = "手机杀毒";
+                fragment = new AntiVirusFragment();
+                tag = "ANTI_VIRUS";
+                break;
         }
 
         titles.push(title);
@@ -339,6 +345,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                         break;
                     case 4://流量统计
                         callFragment(Constants.TRAFFIC_MAG_FRAG);
+                        break;
+                    case 5://手机杀毒
+                        callFragment(Constants.ANTI_VIRUS);
                         break;
                     case 7://高级工具
                         callFragment(Constants.A_TOOLS_FRAG);
