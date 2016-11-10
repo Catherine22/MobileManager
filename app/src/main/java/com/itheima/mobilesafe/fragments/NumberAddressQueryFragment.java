@@ -91,7 +91,7 @@ public class NumberAddressQueryFragment extends Fragment {
     private void queryAddress() {
         if (!TextUtils.isEmpty(ed_phone.getText().toString())) {
             String number = ed_phone.getText().toString();
-            TelephoneUtils.getAddressFromNum(number, new TelephoneUtils.Callback() {
+            TelephoneUtils.getAddressFromNum(getActivity(), number, new TelephoneUtils.Callback() {
                 @Override
                 public void onFinish(final String content) {
                     getActivity().runOnUiThread(new Runnable() {

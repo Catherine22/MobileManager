@@ -10,8 +10,6 @@ import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 
-import com.itheima.mobilesafe.R;
-
 /**
  * Created by Catherine on 2016/9/21.
  * Soft-World Inc.

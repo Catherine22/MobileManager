@@ -1,8 +1,10 @@
 package com.itheima.mobilesafe.utils;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.itheima.mobilesafe.db.dao.DaoConstants;
 import com.itheima.mobilesafe.db.dao.NumberAddressDao;
 import com.itheima.mobilesafe.utils.objects.MobileQuery;
 
@@ -28,11 +30,12 @@ public class TelephoneUtils {
     /**
      * 取得号码归属地,先用内建的数据库查询,若数据库版本过旧查不到则通过第三方的API查询
      *
-     * @param number  phone number
-     * @param myCallback  return response
+     * @param ctx        Context
+     * @param number     phone number
+     * @param myCallback return response
      */
     @Nullable
-    public static void getAddressFromNum(String number, final Callback myCallback) {
+    public static void getAddressFromNum(final Context ctx, String number, final Callback myCallback) {
 
         switch (number.length()) {
             case 3:
@@ -70,7 +73,8 @@ public class TelephoneUtils {
                 //符合规则
                 if (number.matches("^1[3456]\\d{9}$")) {
                     //手机号码
-                    NumberAddressDao nad = new NumberAddressDao();
+                    DaoFactory daoF = new DaoFactory();
+                    NumberAddressDao nad = (NumberAddressDao) daoF.createDao(ctx, DaoConstants.NUMBERADDRESS);
                     address = nad.queryNumber(number);
                     if (TextUtils.isEmpty(address)) {
                         final String url = Settings.taoBaoGetAddressUrl;
@@ -108,7 +112,7 @@ public class TelephoneUtils {
                                     myCallback.onFinish("查无此号");
                             }
                         });
-                    }else{
+                    } else {
                         myCallback.onFinish(address);
                     }
                 }

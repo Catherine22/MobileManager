@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.itheima.mobilesafe.db.AppsLockDbOpenHelper;
 import com.itheima.mobilesafe.utils.BroadcastActions;
-import com.itheima.mobilesafe.utils.SpNames;
 
 import java.util.ArrayList;
 import java.util.List;
