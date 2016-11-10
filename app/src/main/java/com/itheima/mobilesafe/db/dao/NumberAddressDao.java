@@ -1,5 +1,6 @@
 package com.itheima.mobilesafe.db.dao;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
@@ -20,8 +21,8 @@ public class NumberAddressDao implements BaseDao {
     private final static String TAG = "NumberAddressDao";
     private SQLiteDatabase sqLiteDatabase;
 
-    public NumberAddressDao() {
-        sqLiteDatabase = SQLiteDatabase.openDatabase(Constants.DB_PATH, null, SQLiteDatabase.OPEN_READONLY);
+    public NumberAddressDao(Context ctx) {
+        sqLiteDatabase = SQLiteDatabase.openDatabase("/data/data/" + ctx.getPackageName() + "/files/address.db", null, SQLiteDatabase.OPEN_READONLY);
     }
 
     /**
@@ -48,6 +49,7 @@ public class NumberAddressDao implements BaseDao {
 
     /**
      * 检查号码是否存在列表中
+     *
      * @param number 手机号码
      * @return boolean 是否存在列表中
      */

@@ -494,18 +494,22 @@ public class SplashActivity extends Activity {
         SharedPreferences sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
         Settings.safePhone = sp.getString(SpNames.safe_phone, "");
 
-        //取得包名, 设置常量
-        Constants.DB_NAME = "address.db";
-        Constants.PACKAGE_NAME = getPackageName();
-        Constants.DB_PATH = "/data/data/" + Constants.PACKAGE_NAME + "/files/" + Constants.DB_NAME;
 
-        //拷贝数据库到/data/data/包名/files目录下
+        copyDb("address.db");
+        copyDb("descpvirus.db");
+    }
+
+    /**
+     * 拷贝数据库到/data/data/包名/files目录下
+     * @param fileName
+     */
+    private void copyDb(String fileName) {
         try {
-            File file = new File(getFilesDir(), Constants.DB_NAME);
+            File file = new File(getFilesDir(), fileName);
             if (file.exists() && file.length() > 0) {//文件已存在,且长度正常,就不需要再拷贝了
 //                CLog.d(TAG, Constants.DB_NAME + " 文件已存在");
             } else {
-                InputStream is = getAssets().open(Constants.DB_NAME);
+                InputStream is = getAssets().open(fileName);
                 FileOutputStream fos = new FileOutputStream(file);
                 byte[] buffer = new byte[1024];
                 int len = 0;
