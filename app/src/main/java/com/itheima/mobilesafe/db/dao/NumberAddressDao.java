@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import com.itheima.mobilesafe.utils.Constants;
-
 /**
  * Created by Catherine on 2016/8/25.
  * Soft-World Inc.

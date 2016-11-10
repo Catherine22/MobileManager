@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.TrafficStats;
 import android.os.Build;
 import android.os.Debug;
 import android.os.StatFs;

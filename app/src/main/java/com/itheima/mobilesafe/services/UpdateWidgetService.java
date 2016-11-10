@@ -20,7 +20,6 @@ import com.itheima.mobilesafe.utils.SystemInfoUtils;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
 /**

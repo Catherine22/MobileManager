@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.itheima.mobilesafe.utils.CLog;
-
 /**
  * Created by Catherine on 2016/11/10.
  * Soft-World Inc.

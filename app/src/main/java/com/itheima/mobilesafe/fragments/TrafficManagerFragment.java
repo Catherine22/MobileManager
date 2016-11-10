@@ -15,7 +15,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.itheima.mobilesafe.R;
-import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.SystemInfoUtils;
 
 import java.util.ArrayList;
