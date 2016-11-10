@@ -496,7 +496,7 @@ public class SplashActivity extends Activity {
 
 
         copyDb("address.db");
-        copyDb("descpvirus.db");
+        copyDb("antivirus.db");
     }
 
     /**

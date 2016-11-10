@@ -20,9 +20,10 @@ import com.itheima.mobilesafe.utils.Constants;
 public class NumberAddressDao implements BaseDao {
     private final static String TAG = "NumberAddressDao";
     private SQLiteDatabase sqLiteDatabase;
+    private Context ctx;
 
     public NumberAddressDao(Context ctx) {
-        sqLiteDatabase = SQLiteDatabase.openDatabase("/data/data/" + ctx.getPackageName() + "/files/address.db", null, SQLiteDatabase.OPEN_READONLY);
+        this.ctx = ctx;
     }
 
     /**
@@ -33,6 +34,7 @@ public class NumberAddressDao implements BaseDao {
      */
     public String queryNumber(String number) {
         String address = "";
+        sqLiteDatabase = SQLiteDatabase.openDatabase("/data/data/" + ctx.getPackageName() + "/files/address.db", null, SQLiteDatabase.OPEN_READONLY);
         Cursor cursor = sqLiteDatabase.rawQuery("select location from data2 where id = (select outkey from data1 where id = ?)", new String[]{number.substring(0, 7)});
         try {
             while (cursor.moveToNext()) {
@@ -56,6 +58,7 @@ public class NumberAddressDao implements BaseDao {
     @Override
     public boolean find(String number) {
         String address = "";
+        sqLiteDatabase = SQLiteDatabase.openDatabase("/data/data/" + ctx.getPackageName() + "/files/address.db", null, SQLiteDatabase.OPEN_READONLY);
         Cursor cursor = sqLiteDatabase.rawQuery("select location from data2 where id = (select outkey from data1 where id = ?)", new String[]{number.substring(0, 7)});
         try {
             while (cursor.moveToNext()) {

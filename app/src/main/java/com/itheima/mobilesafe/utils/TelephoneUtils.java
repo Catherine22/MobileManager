@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.itheima.mobilesafe.db.dao.DaoConstants;
 import com.itheima.mobilesafe.db.dao.NumberAddressDao;
 import com.itheima.mobilesafe.utils.objects.MobileQuery;
 
@@ -72,7 +73,8 @@ public class TelephoneUtils {
                 //符合规则
                 if (number.matches("^1[3456]\\d{9}$")) {
                     //手机号码
-                    NumberAddressDao nad = new NumberAddressDao(ctx);
+                    DaoFactory daoF = new DaoFactory();
+                    NumberAddressDao nad = (NumberAddressDao) daoF.createDao(ctx, DaoConstants.NUMBERADDRESS);
                     address = nad.queryNumber(number);
                     if (TextUtils.isEmpty(address)) {
                         final String url = Settings.taoBaoGetAddressUrl;
