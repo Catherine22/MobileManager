@@ -46,9 +46,14 @@
                 android:textSize="20sp" />
 
             <ProgressBar
-                android:j
+                android:id="@+id/pb"
+                style="@android:style/Widget.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:minHeight="15dp"
+                android:layout_marginRight="10dp"
+                android:indeterminateDrawable="@drawable/progress_indeterminate_horizontal"
+                android:progressDrawable="@drawable/progress_horizontal" />
         </LinearLayout>
 
     </LinearLayout>

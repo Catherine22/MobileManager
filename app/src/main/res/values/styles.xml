@@ -16,6 +16,7 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:typeface">serif</item>
+        <item name="android:actionBarStyle">@android:style/Widget.ActionBar</item>
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
@@ -66,5 +67,4 @@
         <item name="android:background">@drawable/button_selector</item>
         <item name="android:gravity">center</item>
     </style>
-
 </resources>
