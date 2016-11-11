@@ -12,7 +12,8 @@
 | 取得GPS位置 | [GPSService] |
 | 拦截短信后，利用管理员权限卸载应用、设置锁屏、清除数据 | [SMSReceiver], [MyAdminManager] |
 | 数据备份、还原（短信） | [SmsBackup] |
-| 看门狗 |[WatchDogService]|
+| 看门狗 | [WatchDogService] |
+| 病毒查杀 | [AntiVirusFragment] |
 | Facebook Account kit 登入 |[SettingsFragment], [AccountKitUtils]|
 | Deep linking（以branch.io实现） |[HomeActivity]|
 
@@ -109,6 +110,38 @@ v.startAnimation(set);
 
   - [TaskFragment]
   - [TaskInfoListAdapter]
+
+#### 两种在UI线程更新介面的方法
+```JAVA
+getActivity().runOnUiThread(new Runnable() {
+    @Override
+    public void run() {
+        tv_title.setText("刷新textview");
+    }
+});
+```
+
+```JAVA
+private void sendMessage() {
+  Message msg = Message.obtain();
+  msg.obj = “你好啊”;
+  msg.what = 0;
+  handler.sendMessage(msg);
+}
+
+
+private Handler handler = new Handler() {
+    @Override
+    public void handleMessage(Message msg) {
+        switch (msg.what) {
+            case 0:
+                String str = (String) msg.obj;
+                tv_title.setText(str);
+            break;
+        }
+    }
+};
+```
 
 ## 其他应用
 
@@ -619,4 +652,5 @@ public interface MyPermissionsResultListener {
    [AutoCleanService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/AutoCleanService.java>
    [AccountKitUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/login/AccountKitUtils.java>
    [SettingsFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/SettingsFragment.java>
+   [AntiVirusFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/AntiVirusFragment.java>
    [WatchDogService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/WatchDogService.java>

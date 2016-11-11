@@ -89,6 +89,7 @@
 
         <activity
             android:name="com.itheima.mobilesafe.SplashActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -98,6 +99,7 @@
         </activity>
         <activity
             android:name="com.itheima.mobilesafe.HomeActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustPan">
             <!--建立桌面快捷图标时使用此intent filter可以在开启时直接导向HomeActivity-->
             <intent-filter>
@@ -138,8 +140,9 @@
         <!--excludeFromRecents设置true应用就不会出现在最近使用的列表里-->
         <activity
             android:name="com.itheima.mobilesafe.TypePwdActivity"
-            android:launchMode="singleInstance"
-            android:excludeFromRecents="true"></activity>
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"></activity>
 
         <service android:name=".services.GPSService" />
         <service android:name=".services.AddressService" />
@@ -261,7 +264,9 @@
             android:name="com.facebook.accountkit.FacebookAppEventsEnabled"
             android:value="true" />
 
-        <activity android:name="com.facebook.accountkit.ui.AccountKitActivity">
+        <activity
+            android:name="com.facebook.accountkit.ui.AccountKitActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
