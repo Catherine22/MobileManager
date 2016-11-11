@@ -44,6 +44,7 @@ import com.itheima.mobilesafe.fragments.AntiTheftFragment;
 import com.itheima.mobilesafe.fragments.AntiVirusFragment;
 import com.itheima.mobilesafe.fragments.AppsManagerFragment;
 import com.itheima.mobilesafe.fragments.BlacklistFragment;
+import com.itheima.mobilesafe.fragments.ClearCacheFragment;
 import com.itheima.mobilesafe.fragments.ContactsFragment;
 import com.itheima.mobilesafe.fragments.NumberAddressQueryFragment;
 import com.itheima.mobilesafe.fragments.SettingsFragment;
@@ -267,10 +268,15 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 fragment = new TrafficManagerFragment();
                 tag = "TRAFFIC_MAG";
                 break;
-            case Constants.ANTI_VIRUS:
+            case Constants.ANTI_VIRUS_FRAG:
                 title = "手机杀毒";
                 fragment = new AntiVirusFragment();
                 tag = "ANTI_VIRUS";
+                break;
+            case Constants.CLEAR_CACHE_FRAG:
+                title = "缓存清理";
+                fragment = new ClearCacheFragment();
+                tag = "CLEAR_CACHE";
                 break;
         }
 
@@ -347,7 +353,20 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                         callFragment(Constants.TRAFFIC_MAG_FRAG);
                         break;
                     case 5://手机杀毒
-                        callFragment(Constants.ANTI_VIRUS);
+                        callFragment(Constants.ANTI_VIRUS_FRAG);
+                        break;
+                    case 6://缓存清理
+                        getPermissions(new String[]{Manifest.permission.GET_PACKAGE_SIZE}, new MyPermissionsResultListener() {
+                            @Override
+                            public void onGranted() {
+                                callFragment(Constants.CLEAR_CACHE_FRAG);
+                            }
+
+                            @Override
+                            public void onDenied() {
+                                Toast.makeText(HomeActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         break;
                     case 7://高级工具
                         callFragment(Constants.A_TOOLS_FRAG);
@@ -713,6 +732,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         if (fm.getBackStackEntryCount() > 0) {
             fm.popBackStack();
             titles.pop();
+            if (titles.empty())
+                titles.push("功能列表");
+
             tv_title.setText(titles.peek());
 
             if (tv_title.getText().toString().equals("设置"))
