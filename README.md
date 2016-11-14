@@ -14,6 +14,8 @@
 | 数据备份、还原（短信） | [SmsBackup] |
 | 看门狗 | [WatchDogService] |
 | 病毒查杀 | [AntiVirusFragment] |
+| 清除缓存 | [ClearCacheFragment] |
+| 应用上传、下载流量统计 | [TrafficManagerFragment] |
 | Facebook Account kit 登入 |[SettingsFragment], [AccountKitUtils]|
 | Deep linking（以branch.io实现） |[HomeActivity]|
 
@@ -371,6 +373,7 @@ ActivityManager am = (ActivityManager)cons.newInstance(this, new Handler());
  */
 ```
   - [WatchDogService]
+  - [ClearCacheFragment]  search Reflection
 
 #### Design Pattern
   - [Singleton]
@@ -652,5 +655,7 @@ public interface MyPermissionsResultListener {
    [AutoCleanService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/AutoCleanService.java>
    [AccountKitUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/login/AccountKitUtils.java>
    [SettingsFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/SettingsFragment.java>
+   [TrafficManagerFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/TrafficManagerFragment.java>
    [AntiVirusFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/AntiVirusFragment.java>
+   [ClearCacheFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/ClearCacheFragment.java>
    [WatchDogService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/WatchDogService.java>
