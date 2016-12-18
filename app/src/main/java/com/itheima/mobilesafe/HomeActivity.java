@@ -69,6 +69,7 @@ import com.itheima.mobilesafe.utils.objects.UserInfo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -344,7 +345,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                             }
 
                             @Override
-                            public void onDenied() {
+                            public void onDenied(List<String> deniedPermissions) {
                                 Toast.makeText(HomeActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -363,7 +364,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                             }
 
                             @Override
-                            public void onDenied() {
+                            public void onDenied(List<String> deniedPermissions) {
                                 Toast.makeText(HomeActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -387,18 +388,19 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             }
 
             @Override
-            public void onDenied() {
+            public void onDenied(List<String> deniedPermissions) {
                 Toast.makeText(HomeActivity.this, "权限不足", Toast.LENGTH_LONG).show();
                 finish();
             }
         });
     }
 
-
-    private boolean grantedSAW = true;//同意特殊权限(SYSTEM_ALERT_WINDOW)
-    private boolean grantedWS = true;//同意特殊权限(WRITE_SETTINGS)
-    private boolean grantedAll = true;//同意一般权限
-    private int specCount = 0;//等待同意特殊權限數(没有获取就不用添加)
+    private final int grantedSAW = 0x0001;      //同意特殊权限(SYSTEM_ALERT_WINDOW)
+    private final int grantedWS = 0x0010;       //同意特殊权限(WRITE_SETTINGS)
+    private int requestSpec = 0x0000;           //需要的特殊权限
+    private int grantedSpec = 0x0000;           //已取得的特殊权限
+    private int confirmedSpec = 0x0000;         //已询问的特殊权限
+    private List<String> deniedPermissionsList; //需要的一般權限
 
     /**
      * 要求用户打开权限,仅限android 6.0 以上
@@ -412,49 +414,52 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     @Override
     public void getPermissions(String[] permissions, MyPermissionsResultListener listener) {
         this.listener = listener;
-        List<String> deniedPermissionsList = new LinkedList<>();
-        specCount = 0;
+        deniedPermissionsList = new LinkedList<>();
+
         for (String p : permissions) {
-            if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED && !p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW) && !p.equals(Manifest.permission.WRITE_SETTINGS))
-                deniedPermissionsList.add(p);
-            else if (p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
+            if (p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
+                requestSpec |= grantedSAW;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(HomeActivity.this)) {
-                    grantedSAW = false;
-                    specCount++;
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
-                    startActivityForResult(intent, Constants.OVERLAY_PERMISSION_REQ_CODE);
+                    grantedSpec &= grantedSAW;
                 } else
-                    grantedSAW = true;
-
+                    grantedSpec |= grantedSAW;
             } else if (p.equals(Manifest.permission.WRITE_SETTINGS)) {
+                requestSpec |= grantedWS;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(HomeActivity.this)) {
-                    grantedWS = false;
-                    specCount++;
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + HomeActivity.this.getPackageName()));
-                    startActivityForResult(intent, Constants.PERMISSION_WRITE_SETTINGS);
+                    grantedSpec &= grantedWS;
                 } else
-                    grantedWS = true;
-
-            } else {
-                grantedSAW = true;
-                grantedWS = true;
-                // You've got SYSTEM_ALERT_WINDOW permission.
+                    grantedSpec |= grantedWS;
+            } else if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
+                deniedPermissionsList.add(p);
             }
         }
 
-
-        if (deniedPermissionsList.size() != 0) {
-            grantedAll = false;
-            String[] deniedPermissions = new String[deniedPermissionsList.size()];
-            for (int i = 0; i < deniedPermissionsList.size(); i++) {
-                deniedPermissions[i] = deniedPermissionsList.get(i);
-            }
-            ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
-        } else {
-            // All of the permissions granted
-            grantedAll = true;
-            if (grantedSAW && grantedWS)
+        if (requestSpec != grantedSpec) {
+            getASpecPermission(requestSpec | grantedSpec);
+        } else {// Granted all of the special permissions
+            if (deniedPermissionsList.size() != 0) {
+                //Ask for the permissions
+                String[] deniedPermissions = new String[deniedPermissionsList.size()];
+                for (int i = 0; i < deniedPermissionsList.size(); i++) {
+                    deniedPermissions[i] = deniedPermissionsList.get(i);
+                }
+                ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+            } else {
                 listener.onGranted();
+            }
+        }
+    }
+
+    private void getASpecPermission(int permissions) {
+        CLog.d(TAG, "getSpec " + permissions);
+        if ((permissions & grantedSAW) == grantedSAW) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
+            startActivityForResult(intent, Constants.OVERLAY_PERMISSION_REQ_CODE);
+        }
+
+        if ((permissions & grantedWS) == grantedWS) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + HomeActivity.this.getPackageName()));
+            startActivityForResult(intent, Constants.PERMISSION_WRITE_SETTINGS);
         }
     }
 
@@ -536,29 +541,43 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         editor.apply();
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        doNext(requestCode, grantResults);
-    }
+        CLog.d(TAG, "onRequestPermissionsResult");
 
-    private void doNext(int requestCode, int[] grantResults) {
-        int count = 0;
-        if (requestCode == ACCESS_PERMISSION) {
-            for (int grantResult : grantResults) {
-                if (grantResult == PackageManager.PERMISSION_GRANTED)
-                    count++;
+        List<String> deniedResults = new ArrayList<>();
+        for (int i = 0; i < grantResults.length; i++) {
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                deniedResults.add(permissions[i]);
             }
-            grantedAll = count == grantResults.length;
-
-            if (grantedAll && grantedSAW && grantedWS)//全部同意
-                listener.onGranted();// Permission Granted
         }
+
+        if (~(requestSpec ^ grantedSpec) != grantedWS) {
+            deniedResults.add("Manifest.permission.WRITE_SETTINGS");
+        }
+
+        if (~(requestSpec ^ grantedSpec) != grantedSAW) {
+            deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
+        }
+
+        if (deniedResults.size() != 0) {
+            listener.onDenied(deniedResults);
+            CLog.d(TAG, "denied " + deniedResults.toString());
+        } else {
+            listener.onGranted();
+            CLog.d(TAG, "granted all");
+        }
+
+        requestSpec = 0x0000;
+        grantedSpec = 0x0000;
+        confirmedSpec = 0x0000;
+        deniedPermissionsList = null;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        CLog.d(TAG, "request:" + requestCode + "/resultCode" + resultCode);
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case Constants.REQUEST_CODE_ENABLE_ADMIN:
@@ -571,35 +590,46 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case Constants.OVERLAY_PERMISSION_REQ_CODE:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    specCount--;
+                    confirmedSpec |= grantedSAW;
+
                     if (!Settings.canDrawOverlays(this)) {
-                        // Special permission not granted...
-                        grantedSAW = false;
-                        listener.onDenied();
+                        //denied
+                        grantedSpec &= grantedSAW;
                     } else {
-                        grantedSAW = true;
-                        if (grantedAll && grantedWS)
+                        grantedSpec |= grantedSAW;
+                    }
+                    if (confirmedSpec == requestSpec) {
+                        if (deniedPermissionsList.size() != 0) {
+                            //Ask for the permissions
+                            String[] deniedPermissions = new String[deniedPermissionsList.size()];
+                            for (int i = 0; i < deniedPermissionsList.size(); i++) {
+                                deniedPermissions[i] = deniedPermissionsList.get(i);
+                            }
+                            ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+                        } else
                             listener.onGranted();
-                        // You've got SYSTEM_ALERT_WINDOW permission.
-                        if (!grantedSAW && specCount == 1)//表示用戶不同意另一個特殊權限
-                            listener.onDenied();
                     }
                 }
                 break;
             case Constants.PERMISSION_WRITE_SETTINGS:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    specCount--;
+                    confirmedSpec |= grantedWS;
                     if (!Settings.System.canWrite(this)) {
-                        // Special permission not granted...
-                        grantedWS = false;
-                        listener.onDenied();
+                        //denied
+                        grantedSpec &= grantedWS;
                     } else {
-                        grantedWS = true;
-                        if (grantedAll && grantedSAW)
+                        grantedSpec |= grantedWS;
+                    }
+                    if (confirmedSpec == requestSpec) {
+                        if (deniedPermissionsList.size() != 0) {
+                            //Ask for the permissions
+                            String[] deniedPermissions = new String[deniedPermissionsList.size()];
+                            for (int i = 0; i < deniedPermissionsList.size(); i++) {
+                                deniedPermissions[i] = deniedPermissionsList.get(i);
+                            }
+                            ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+                        } else
                             listener.onGranted();
-                        // You've got SYSTEM_ALERT_WINDOW permission.
-                        if (!grantedSAW && specCount == 1)//表示用戶不同意另一個特殊權限
-                            listener.onDenied();
                     }
                 }
                 break;
@@ -609,7 +639,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     CLog.d(TAG, "defaultSmsApp " + defaultSmsApp);
                     if (listener != null && resultCode == RESULT_OK) {
                         if (defaultSmsApp.equals(defaultSysSmsApp))
-                            listener.onDenied();
+                            listener.onDenied(null);
                         else
                             listener.onGranted();
                     }

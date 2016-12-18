@@ -21,6 +21,8 @@ import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.utils.SpNames;
 
+import java.util.List;
+
 import tw.com.softworld.messagescenter.AsyncResponse;
 import tw.com.softworld.messagescenter.Server;
 
@@ -82,7 +84,7 @@ public class Setup2Fragment extends Fragment {
                                 }
 
                                 @Override
-                                public void onDenied() {
+                                public void onDenied(List<String> deniedPermissions) {
                                     CLog.d(TAG, "onDenied");
                                     getActivity().finish();
                                 }
