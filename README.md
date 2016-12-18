@@ -421,10 +421,12 @@ android:windowSoftInputMode="adjustPan">
 
 [HomeActivity]
 ```JAVA
-private boolean grantedSAW = true;//同意特殊权限(SYSTEM_ALERT_WINDOW)
-private boolean grantedWS = true;//同意特殊权限(WRITE_SETTINGS)
-private boolean grantedAll = true;//同意一般权限
-private int specCount = 0;//等待同意特殊權限數(没有获取就不用添加)
+private final int grantedSAW = 0x0001;      //同意特殊权限(SYSTEM_ALERT_WINDOW)
+private final int grantedWS = 0x0010;       //同意特殊权限(WRITE_SETTINGS)
+private int requestSpec = 0x0000;           //需要的特殊权限
+private int grantedSpec = 0x0000;           //已取得的特殊权限
+private int confirmedSpec = 0x0000;         //已询问的特殊权限
+private List<String> deniedPermissionsList; //需要的一般權限
 
 /**
  * 要求用户打开权限,仅限android 6.0 以上
@@ -438,120 +440,164 @@ private int specCount = 0;//等待同意特殊權限數(没有获取就不用添
 @Override
 public void getPermissions(String[] permissions, MyPermissionsResultListener listener) {
     this.listener = listener;
-    List<String> deniedPermissionsList = new LinkedList<>();
-    specCount = 0;
+    deniedPermissionsList = new LinkedList<>();
+
     for (String p : permissions) {
-        if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED && !p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW) && !p.equals(Manifest.permission.WRITE_SETTINGS))
-            deniedPermissionsList.add(p);
-        else if (p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
+        if (p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
+            requestSpec |= grantedSAW;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(HomeActivity.this)) {
-                grantedSAW = false;
-                specCount++;
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
-                startActivityForResult(intent, Constants.OVERLAY_PERMISSION_REQ_CODE);
+                grantedSpec &= grantedSAW;
             } else
-                grantedSAW = true;
+                grantedSpec |= grantedSAW;
         } else if (p.equals(Manifest.permission.WRITE_SETTINGS)) {
+            requestSpec |= grantedWS;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(HomeActivity.this)) {
-                grantedWS = false;
-                specCount++;
-                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + HomeActivity.this.getPackageName()));
-                startActivityForResult(intent, Constants.PERMISSION_WRITE_SETTINGS);
+                grantedSpec &= grantedWS;
             } else
-                grantedWS = true;
-        } else {
-            grantedSAW = true;
-            grantedWS = true;
-            // You've got SYSTEM_ALERT_WINDOW permission.
+                grantedSpec |= grantedWS;
+        } else if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
+            deniedPermissionsList.add(p);
         }
     }
 
-    if (deniedPermissionsList.size() != 0) {
-        grantedAll = false;
-        String[] deniedPermissions = new String[deniedPermissionsList.size()];
-        for (int i = 0; i < deniedPermissionsList.size(); i++) {
-            deniedPermissions[i] = deniedPermissionsList.get(i);
-        }
-        ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
-    } else {
-        // All of the permissions granted
-        grantedAll = true;
-        if (grantedSAW && grantedWS)
+    if (requestSpec != grantedSpec) {
+        getASpecPermission(requestSpec | grantedSpec);
+    } else {// Granted all of the special permissions
+        if (deniedPermissionsList.size() != 0) {
+            //Ask for the permissions
+            String[] deniedPermissions = new String[deniedPermissionsList.size()];
+            for (int i = 0; i < deniedPermissionsList.size(); i++) {
+                deniedPermissions[i] = deniedPermissionsList.get(i);
+            }
+            ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+        } else {
             listener.onGranted();
+        }
     }
-    return;
+}
+
+private void getASpecPermission(int permissions) {
+    if ((permissions & grantedSAW) == grantedSAW) {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
+        startActivityForResult(intent, Constants.OVERLAY_PERMISSION_REQ_CODE);
+    }
+
+    if ((permissions & grantedWS) == grantedWS) {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + HomeActivity.this.getPackageName()));
+        startActivityForResult(intent, Constants.PERMISSION_WRITE_SETTINGS);
+    }
 }
 
 @Override
 public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    doNext(requestCode, grantResults);
-}
+   super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-private void doNext(int requestCode, int[] grantResults) {
-    int count = 0;
-    if (requestCode == ACCESS_PERMISSION) {
-        for (int i = 0; i < grantResults.length; i++) {
-            if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
-                count++;
+    List<String> deniedResults = new ArrayList<>();
+    for (int i = 0; i < grantResults.length; i++) {
+        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+            deniedResults.add(permissions[i]);
         }
-        if (count == grantResults.length)
-            grantedAll = true;
-        else
-            grantedAll = false;
-
-        if (grantedAll && grantedSAW && grantedWS)//全部同意
-            listener.onGranted();// Permission Granted
     }
-}
 
+    if ((requestSpec & grantedWS) == grantedWS && (grantedSpec & grantedWS) != grantedWS) {
+        deniedResults.add("Manifest.permission.WRITE_SETTINGS");
+    }
+
+    if ((requestSpec & grantedSAW) == grantedSAW && (grantedSpec & grantedSAW) != grantedSAW) {
+        deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
+    }
+
+    if (deniedResults.size() != 0) {
+        listener.onDenied(deniedResults);
+    } else {
+        listener.onGranted();
+    }
+
+    requestSpec = 0x0000;
+    grantedSpec = 0x0000;
+    confirmedSpec = 0x0000;
+    deniedPermissionsList = null;
+}
+    
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    CLog.d(TAG, "request:" + requestCode + "/resultCode" + resultCode);
     super.onActivityResult(requestCode, resultCode, data);
     switch (requestCode) {
-        case Constants.REQUEST_CODE_ENABLE_ADMIN:
-            if (resultCode == RESULT_OK) {
-                sv.pushBoolean("ADMIN_PERMISSION", true);
-            } else {
-                sv.pushBoolean("ADMIN_PERMISSION", false);
-            }
-            break;
         case Constants.OVERLAY_PERMISSION_REQ_CODE:
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                specCount--;
+                confirmedSpec |= grantedSAW;
+
                 if (!Settings.canDrawOverlays(this)) {
-                    // Special permission not granted...
-                    grantedSAW = false;
-                    listener.onDenied();
+                    //denied
+                    grantedSpec &= grantedSAW;
                 } else {
-                    grantedSAW = true;
-                    if (grantedAll && grantedWS)
-                        listener.onGranted();
-                    // You've got SYSTEM_ALERT_WINDOW permission.
-                    if (!grantedSAW && specCount == 1)//表示用戶不同意另一個特殊權限
-                        listener.onDenied();
+                    grantedSpec |= grantedSAW;
+                }
+                if (confirmedSpec == requestSpec) {
+                    if (deniedPermissionsList.size() != 0) {
+                        //Ask for the permissions
+                        String[] deniedPermissions = new String[deniedPermissionsList.size()];
+                        for (int i = 0; i < deniedPermissionsList.size(); i++) {
+                            deniedPermissions[i] = deniedPermissionsList.get(i);
+                        }
+                        ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+                    } else {
+                        List<String> deniedResults = new ArrayList<>();
+                        if ((requestSpec & grantedWS) == grantedWS && (grantedSpec & grantedWS) != grantedWS) {
+                            deniedResults.add("Manifest.permission.WRITE_SETTINGS");
+                        }
+
+                        if ((requestSpec & grantedSAW) == grantedSAW && (grantedSpec & grantedSAW) != grantedSAW) {
+                            deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
+                        }
+			    
+			if (deniedResults.size() != 0) {
+                            listener.onDenied(deniedResults);
+                        } else {
+                            listener.onGranted();
+                        }
+                    }
                 }
             }
             break;
         case Constants.PERMISSION_WRITE_SETTINGS:
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                specCount--;
+                confirmedSpec |= grantedWS;
                 if (!Settings.System.canWrite(this)) {
-                    // Special permission not granted...
-                    grantedWS = false;
-                    listener.onDenied();
+                    //denied
+                    grantedSpec &= grantedWS;
                 } else {
-                    grantedWS = true;
-                    if (grantedAll && grantedSAW)
-                        listener.onGranted();
-                    // You've got SYSTEM_ALERT_WINDOW permission.
-                    if (!grantedSAW && specCount == 1)//表示用戶不同意另一個特殊權限
-                        listener.onDenied();
+                    grantedSpec |= grantedWS;
+                }
+                if (confirmedSpec == requestSpec) {
+                    if (deniedPermissionsList.size() != 0) {
+                        //Ask for the permissions
+                        String[] deniedPermissions = new String[deniedPermissionsList.size()];
+                        for (int i = 0; i < deniedPermissionsList.size(); i++) {
+                            deniedPermissions[i] = deniedPermissionsList.get(i);
+                        }
+                        ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+                    } else {
+                         List<String> deniedResults = new ArrayList<>();
+                        if ((requestSpec & grantedWS) == grantedWS && (grantedSpec & grantedWS) != grantedWS) {
+                            deniedResults.add("Manifest.permission.WRITE_SETTINGS");
+                        }
+			
+			if ((requestSpec & grantedSAW) == grantedSAW && (grantedSpec & grantedSAW) != grantedSAW) {
+                            deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
+                        }
+			
+			if (deniedResults.size() != 0) {
+                            listener.onDenied(deniedResults);
+                        } else {
+                            listener.onGranted();
+                        }
+                    }
                 }
             }
             break;
     }
-    CLog.d(TAG, "onActivityResult " + requestCode + " " + resultCode);
 }
 ```
 [Setup2Fragment]
@@ -579,7 +625,7 @@ private void doSomethingWithPermissions(){
             //You've got all permissions you need
             }
             @Override
-            public void onDenied() {
+            public void onDenied(List<String> deniedPermissions) {
                 //Do something to handle this situaction
             }
         }
@@ -597,7 +643,7 @@ public interface MyPermissionsResultListener {
     /**
      * 用户拒绝打开权限
      */
-    void onDenied();
+    void onDenied(List<String> deniedPermissions);
 }
 ```
 
