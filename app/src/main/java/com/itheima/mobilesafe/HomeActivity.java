@@ -1,6 +1,7 @@
 package com.itheima.mobilesafe;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +12,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.provider.Telephony;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -28,25 +31,40 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.accountkit.AccessToken;
+import com.facebook.accountkit.Account;
+import com.facebook.accountkit.AccountKit;
+import com.facebook.accountkit.AccountKitCallback;
+import com.facebook.accountkit.AccountKitError;
+import com.facebook.accountkit.AccountKitLoginResult;
+import com.facebook.accountkit.PhoneNumber;
 import com.itheima.mobilesafe.adapter.MyGridViewAdapter;
 import com.itheima.mobilesafe.fragments.AToolsFragment;
 import com.itheima.mobilesafe.fragments.AntiTheftFragment;
+import com.itheima.mobilesafe.fragments.AntiVirusFragment;
+import com.itheima.mobilesafe.fragments.AppsManagerFragment;
 import com.itheima.mobilesafe.fragments.BlacklistFragment;
+import com.itheima.mobilesafe.fragments.ClearCacheFragment;
 import com.itheima.mobilesafe.fragments.ContactsFragment;
 import com.itheima.mobilesafe.fragments.NumberAddressQueryFragment;
 import com.itheima.mobilesafe.fragments.SettingsFragment;
 import com.itheima.mobilesafe.fragments.TaskFragment;
+import com.itheima.mobilesafe.fragments.TrafficManagerFragment;
 import com.itheima.mobilesafe.fragments.setup.Setup1Fragment;
 import com.itheima.mobilesafe.fragments.setup.Setup2Fragment;
 import com.itheima.mobilesafe.fragments.setup.Setup3Fragment;
 import com.itheima.mobilesafe.fragments.setup.Setup4Fragment;
 import com.itheima.mobilesafe.fragments.setup.SetupFragment;
+import com.itheima.mobilesafe.interfaces.LoginTypeListener;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Encryption;
 import com.itheima.mobilesafe.utils.MyAdminManager;
+import com.itheima.mobilesafe.utils.SpNames;
+import com.itheima.mobilesafe.utils.objects.UserInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +88,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private MyPermissionsResultListener listener;
     private MyAdminManager myAdminManager;
     private Server sv;
-    private TelephonyManager tm;
     private final int ACCESS_PERMISSION = 1001;
     private final static String[] names = {
             "手机防盗", "通讯卫士", "软件管理",
@@ -137,7 +154,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         initComponent();
 
         //取得sim卡信息
-        tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         try {
             com.itheima.mobilesafe.utils.Settings.simSerialNumber = tm.getSimSerialNumber();
         } catch (SecurityException e) {
@@ -149,6 +166,24 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 //        BlacklistDao dao = new BlacklistDao(this);
 //        for (int i = 0; i < 100; i++)
 //            dao.add("Lisi", "1351234567" + i, BlacklistDao.MODE_CALLS_BLOCKED);
+
+        //持久化到内存中，避免无法还原
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(this);
+            if (!defaultSmsApp.equals(getPackageName())) {
+                defaultSysSmsApp = defaultSmsApp;
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString(SpNames.default_sms_app, defaultSysSmsApp);
+                editor.apply();
+            } else
+                defaultSysSmsApp = sp.getString(SpNames.default_sms_app, getPackageName());
+        }
+        //利用intent（比如在SplashActivity建立的快捷图标）开启
+        if (getIntent() != null) {
+            if (Constants.TASK_FRAG == getIntent().getIntExtra("OPEN_PAGE", -1)) {
+                callFragment(Constants.TASK_FRAG);
+            }
+        }
     }
 
     /**
@@ -167,6 +202,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 title = "进程管理";
                 fragment = new TaskFragment();
                 tag = "TASK";
+                break;
+            case Constants.APPS_MAG_FRAG:
+                title = "软件管理";
+                fragment = new AppsManagerFragment();
+                tag = "APPS_MAG";
                 break;
             case Constants.A_TOOLS_FRAG:
                 title = "高级工具";
@@ -222,6 +262,22 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 title = "黑名单拦截";
                 fragment = new BlacklistFragment();
                 tag = "BLACKLIST";
+                break;
+            case Constants.TRAFFIC_MAG_FRAG:
+                title = "流量统计";
+                fragment = new TrafficManagerFragment();
+                tag = "TRAFFIC_MAG";
+                break;
+            case Constants.ANTI_VIRUS_FRAG:
+                title = "手机杀毒";
+                fragment = new AntiVirusFragment();
+                tag = "ANTI_VIRUS";
+                break;
+            case Constants.CLEAR_CACHE_FRAG:
+                title = "缓存清理";
+                fragment = new ClearCacheFragment();
+                tag = "CLEAR_CACHE";
+                break;
         }
 
         titles.push(title);
@@ -277,8 +333,40 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     case 1://黑名单拦截
                         callFragment(Constants.BLACKLIST_FRAG);
                         break;
+                    case 2://软件管理
+                        callFragment(Constants.APPS_MAG_FRAG);
+                        break;
                     case 3://进程管理
-                        callFragment(Constants.TASK_FRAG);
+                        getPermissions(new String[]{Manifest.permission.KILL_BACKGROUND_PROCESSES}, new MyPermissionsResultListener() {
+                            @Override
+                            public void onGranted() {
+                                callFragment(Constants.TASK_FRAG);
+                            }
+
+                            @Override
+                            public void onDenied() {
+                                Toast.makeText(HomeActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        break;
+                    case 4://流量统计
+                        callFragment(Constants.TRAFFIC_MAG_FRAG);
+                        break;
+                    case 5://手机杀毒
+                        callFragment(Constants.ANTI_VIRUS_FRAG);
+                        break;
+                    case 6://缓存清理
+                        getPermissions(new String[]{Manifest.permission.GET_PACKAGE_SIZE}, new MyPermissionsResultListener() {
+                            @Override
+                            public void onGranted() {
+                                callFragment(Constants.CLEAR_CACHE_FRAG);
+                            }
+
+                            @Override
+                            public void onDenied() {
+                                Toast.makeText(HomeActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         break;
                     case 7://高级工具
                         callFragment(Constants.A_TOOLS_FRAG);
@@ -368,7 +456,84 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             if (grantedSAW && grantedWS)
                 listener.onGranted();
         }
-        return;
+    }
+
+    private String defaultSysSmsApp;
+
+    /**
+     * 设置预设的短信app，在android 4.4 以上必须设置才能执行部分短信相关操作
+     * 没有实际处理短信处理的逻辑, 所以必须在使用完后要求用户改回来
+     * {@link com.itheima.mobilesafe.os.HeadlessSmsSendService}
+     * {@link com.itheima.mobilesafe.os.MmsReceiver}
+     * {@link com.itheima.mobilesafe.os.SmsReceiver}
+     *
+     * @param setThisAsDefault 是否让此应用成为预设短信app，false则改回原先预设app
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @Override
+    public void setDefaultSmsApp(boolean setThisAsDefault, @Nullable MyPermissionsResultListener listener) {
+        this.listener = listener;
+        String currDefault = Telephony.Sms.getDefaultSmsPackage(this);
+        CLog.d(TAG, "sys sms app: " + defaultSysSmsApp);
+        CLog.d(TAG, "current default app: " + currDefault);
+        if (setThisAsDefault) {
+            if (currDefault.equals(defaultSysSmsApp)) {
+                Intent intent = new Intent();
+                intent.setAction(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, getPackageName());
+                startActivityForResult(intent, Constants.CHANGEING_DEFAULT_SMS_APP);
+            } else {
+                if (listener != null)
+                    listener.onGranted();
+            }
+        } else {
+            Intent intent = new Intent();
+            intent.setAction(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, defaultSysSmsApp);
+            startActivityForResult(intent, Constants.CHANGEING_DEFAULT_SMS_APP);
+        }
+    }
+
+
+    @Override
+    public void getLoginType(final LoginTypeListener listener) {
+        SharedPreferences sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
+        int savedLoginType = sp.getInt(SpNames.loginType, Constants.NONE);
+        if (savedLoginType == Constants.ACCOUNTKIT) {
+            if (AccountKit.getCurrentAccessToken() != null) {
+                AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                    @Override
+                    public void onSuccess(final Account account) {
+                        setLoginType(Constants.ACCOUNTKIT);
+                        listener.onResponse(Constants.ACCOUNTKIT);
+                        UserInfo.id = account.getId();
+                        final PhoneNumber number = account.getPhoneNumber();
+                        UserInfo.phoneNumber = number == null ? null : number.toString();
+                        UserInfo.email = account.getEmail();
+                    }
+
+                    @Override
+                    public void onError(final AccountKitError error) {
+                        CLog.e(TAG, "error:" + error.toString());
+                    }
+                });
+            } else {
+                setLoginType(Constants.NONE);
+                listener.onResponse(Constants.NONE);
+            }
+
+        } else {
+            setLoginType(Constants.NONE);
+            listener.onResponse(Constants.NONE);
+        }
+    }
+
+    @Override
+    public void setLoginType(int type) {
+        SharedPreferences sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt(SpNames.loginType, type);
+        editor.apply();
     }
 
 
@@ -381,14 +546,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private void doNext(int requestCode, int[] grantResults) {
         int count = 0;
         if (requestCode == ACCESS_PERMISSION) {
-            for (int i = 0; i < grantResults.length; i++) {
-                if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
+            for (int grantResult : grantResults) {
+                if (grantResult == PackageManager.PERMISSION_GRANTED)
                     count++;
             }
-            if (count == grantResults.length)
-                grantedAll = true;
-            else
-                grantedAll = false;
+            grantedAll = count == grantResults.length;
 
             if (grantedAll && grantedSAW && grantedWS)//全部同意
                 listener.onGranted();// Permission Granted
@@ -401,10 +563,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         switch (requestCode) {
             case Constants.REQUEST_CODE_ENABLE_ADMIN:
                 if (resultCode == RESULT_OK) {
-                    sv.pushBoolean("ADMIN_PERMISSION", true);
+                    sv.pushBoolean(BroadcastActions.ADMIN_PERMISSION, true);
                 } else {
-                    sv.pushBoolean("ADMIN_PERMISSION", false);
+                    sv.pushBoolean(BroadcastActions.ADMIN_PERMISSION, false);
                 }
+
                 break;
             case Constants.OVERLAY_PERMISSION_REQ_CODE:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -439,6 +602,61 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                             listener.onDenied();
                     }
                 }
+                break;
+            case Constants.CHANGEING_DEFAULT_SMS_APP:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(this);
+                    CLog.d(TAG, "defaultSmsApp " + defaultSmsApp);
+                    if (listener != null && resultCode == RESULT_OK) {
+                        if (defaultSmsApp.equals(defaultSysSmsApp))
+                            listener.onDenied();
+                        else
+                            listener.onGranted();
+                    }
+                }
+                break;
+            case Constants.ACCOUNT_KIT_REQ_CODE:
+                AccountKitLoginResult loginResult = AccountKit.loginResultWithIntent(data);
+                String toastMessage;
+                if (loginResult == null || loginResult.wasCancelled()) {
+                    toastMessage = "Login Cancelled";
+                } else if (loginResult.getError() != null) {
+                    toastMessage = loginResult.getError().getErrorType().getMessage();
+                } else {
+                    final AccessToken accessToken = loginResult.getAccessToken();
+                    final long tokenRefreshIntervalInSeconds =
+                            loginResult.getTokenRefreshIntervalInSeconds();
+                    if (accessToken != null) {
+                        toastMessage = "Success:" + accessToken.getAccountId()
+                                + tokenRefreshIntervalInSeconds;
+
+                        setLoginType(Constants.ACCOUNTKIT);
+
+                        AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                            @Override
+                            public void onSuccess(final Account account) {
+                                UserInfo.id = account.getId();
+                                final PhoneNumber number = account.getPhoneNumber();
+                                UserInfo.phoneNumber = number == null ? null : number.toString();
+                                UserInfo.email = account.getEmail();
+                            }
+
+                            @Override
+                            public void onError(final AccountKitError error) {
+                                CLog.e(TAG, "error:" + error.toString());
+                            }
+                        });
+                    } else {
+                        toastMessage = "Unknown response type";
+                    }
+                }
+
+                // Surface the result to your user in an appropriate way.
+                CLog.d(TAG, "toastMessage:" + toastMessage);
+                break;
+
+            case Constants.UNINSTASLL_APP:
+                sv.pushBoolean(BroadcastActions.FINISHED_UNINSTALLING, true);
                 break;
         }
         CLog.d(TAG, "onActivityResult " + requestCode + " " + resultCode);
@@ -502,7 +720,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
      * @return Is password empty or not
      */
     private boolean isSetupPwd() {
-        String pwd = sp.getString("password", null);
+        String pwd = sp.getString(SpNames.password, null);
         return !TextUtils.isEmpty(pwd);
     }
 
@@ -514,6 +732,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         if (fm.getBackStackEntryCount() > 0) {
             fm.popBackStack();
             titles.pop();
+            if (titles.empty())
+                titles.push("功能列表");
+
             tv_title.setText(titles.peek());
 
             if (tv_title.getText().toString().equals("设置"))
@@ -538,12 +759,12 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
                 if (password.equals(confirmingPassword)) {
                     SharedPreferences.Editor editor = sp.edit();
-                    editor.putString("password", Encryption.doMd5(password));
+                    editor.putString(SpNames.password, Encryption.doMd5(password));
                     editor.apply();
                     alertDialog.dismiss();
 
-                    sp = getSharedPreferences("config", MODE_PRIVATE);
-                    if (!sp.getBoolean("configed", false))
+                    sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
+                    if (!sp.getBoolean(SpNames.configed, false))
                         callFragment(Constants.SETUP_FRAG);
                     else
                         callFragment(Constants.ANTI_THEFT_FRAG);
@@ -557,7 +778,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case R.id.bt_type_ok:
                 String input = et_type_pwd.getText().toString().trim();
-                String savedPassword = sp.getString("password", "");
+                String savedPassword = sp.getString(SpNames.password, "");
                 if (TextUtils.isEmpty(input)) {
                     Toast.makeText(this, "密码不得为空", Toast.LENGTH_LONG).show();
                     return;
@@ -565,8 +786,8 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
 
                 if (Encryption.doMd5(input).equals(savedPassword)) {
                     alertDialog.dismiss();
-                    sp = getSharedPreferences("config", MODE_PRIVATE);
-                    if (!sp.getBoolean("configed", false))
+                    sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
+                    if (!sp.getBoolean(SpNames.configed, false))
                         callFragment(Constants.SETUP_FRAG);
                     else
                         callFragment(Constants.ANTI_THEFT_FRAG);

@@ -1,52 +1,88 @@
 apply plugin: 'com.android.application'
 
-android {
-  signingConfigs {
-    config {
-      keyAlias 'productiongg'
-      keyPassword 'ggcompany123!'
-      storeFile file('/Users/Nexton/Dropbox/Keystores/Other/productiongg.jks')
-      storePassword 'ggcompany123!'
-    }
-  }
-  compileSdkVersion 23
-  buildToolsVersion "23.0.3"
-  defaultConfig {
-    applicationId "tw.com.softworld.mobilemanager"
-    minSdkVersion 15
-    targetSdkVersion 23
-    versionCode 1
-    versionName "1.0"
-    signingConfig signingConfigs.config
+//定义时间
+def releaseTime() {
+    return new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("CTT"))
+}
 
-  }
-  buildTypes {
-    release {
-      minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-      signingConfig signingConfigs.config
+
+android {
+    signingConfigs {
+        config {
+            keyAlias 'productiongg'
+            keyPassword 'ggcompany123!'
+            storeFile file('/Users/Nexton/Dropbox/Keystores/Other/productiongg.jks')
+            storePassword 'ggcompany123!'
+        }
     }
-  }
-  productFlavors {
-    MobileManager {
-      applicationId "com.itheima.mobilesafe"
-      versionName "Release 1.0"
-      versionCode 1
-      signingConfig signingConfigs.config
+
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "4g"
     }
-    MobileManagerPro {
-      applicationId "com.itheima.mobilesafe.pro"
-      versionName "Release 1.0"
-      versionCode 1
-      signingConfig signingConfigs.config
+
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+    defaultConfig {
+        applicationId "tw.com.softworld.mobilemanager"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        signingConfig signingConfigs.config
     }
-  }
+    buildTypes {
+        debug {
+            buildConfigField("boolean", "SHOW_LOG", "true")
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            buildConfigField("boolean", "SHOW_LOG", "false")
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        MobileManager {
+            applicationId "com.itheima.mobilesafe"
+            versionName "Release 1.0"
+            versionCode 1
+            signingConfig signingConfigs.config
+        }
+        MobileManagerPro {
+            applicationId "com.itheima.mobilesafe.pro"
+            versionName "Release 1.0"
+            versionCode 1
+            signingConfig signingConfigs.config
+        }
+    }
+
+    //配置自定义打包名称, 打包apk時用
+//    applicationVariants.all { variant ->
+//        variant.outputs.each { output ->
+//            def outputFile = output.outputFile
+//            def fileName
+//            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+//                if (variant.buildType.name.equals('release')) {
+//                    variant.mergedFlavor.versionName = variant.mergedFlavor.versionName + "_" + releaseTime()
+//                    fileName = "${variant.mergedFlavor.applicationId}_${variant.mergedFlavor.versionName}_release.apk"
+//                } else if (variant.buildType.name.equals('debug')) {
+//                    variant.mergedFlavor.versionName = variant.mergedFlavor.versionName + "_" + releaseTime()
+//                    fileName = "${variant.mergedFlavor.applicationId}_${variant.mergedFlavor.versionName}_debug.apk"
+//                }
+//                output.outputFile = new File(outputFile.parent, fileName)
+//            }
+//        }
+//    }
 }
 
 dependencies {
-  compile 'com.android.support:support-v4:24.1.1'
-  compile 'catherine.mobile:messagescenter:+'
-  compile 'com.android.support:recyclerview-v7:23.4.0'
-  compile 'io.branch.sdk.android:library:2.+'
-  compile files('libs/gson-2.7.jar')
+    compile 'com.android.support:support-v4:24.1.1'
+    compile 'catherine.mobile:messagescenter:+'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'io.branch.sdk.android:library:2.+'
+    compile 'com.facebook.android:account-kit-sdk:4.+'
+    compile files('libs/gson-2.7.jar')
 }

@@ -11,7 +11,6 @@ import android.view.View;
 
 import com.itheima.mobilesafe.ui.MyToast;
 import com.itheima.mobilesafe.utils.CLog;
-import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.TelephoneUtils;
 
 /**
@@ -54,10 +53,6 @@ public class AddressService extends Service {
 
             }
         });
-        //取得包名, 设置常量
-        Constants.DB_NAME = "address.db";
-        Constants.PACKAGE_NAME = getPackageName();
-        Constants.DB_PATH = "/data/data/" + Constants.PACKAGE_NAME + "/files/" + Constants.DB_NAME;
     }
 
     @Override
@@ -74,20 +69,28 @@ public class AddressService extends Service {
         public void onCallStateChanged(int state, String incomingNumber) {
             super.onCallStateChanged(state, incomingNumber);
             Log.d(TAG, "state " + state + "\nincomingNumber " + incomingNumber);
-            String address;
             switch (state) {
                 case TelephonyManager.CALL_STATE_RINGING://铃声响起时,也就是来电时
-                    address = TelephoneUtils.getAddressFromNum(incomingNumber);
+                    TelephoneUtils.getAddressFromNum(getApplicationContext(), incomingNumber, new TelephoneUtils.Callback() {
+                        @Override
+                        public void onFinish(String content) {
+                            mytoast.showMyToast(content);
+                        }
+                    });
 //                    Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
-                    mytoast.showMyToast(address);
+
                     break;
                 case TelephonyManager.CALL_STATE_IDLE://电话的空闲状态 e.q. 挂电话, 来电拒接
                     mytoast.dismissMyToast();
                     break;
                 case TelephonyManager.CALL_STATE_OFFHOOK://去电时
-                    address = TelephoneUtils.getAddressFromNum(incomingNumber);
+                    TelephoneUtils.getAddressFromNum(getApplicationContext(), incomingNumber, new TelephoneUtils.Callback() {
+                        @Override
+                        public void onFinish(String content) {
 //                    Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
-                    mytoast.showMyToast(address);
+                            mytoast.showMyToast(content);
+                        }
+                    });
                     break;
             }
         }

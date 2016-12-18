@@ -14,10 +14,12 @@ import android.widget.Toast;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
-import com.itheima.mobilesafe.utils.BackupFactory;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.backup.BackupConstants;
+import com.itheima.mobilesafe.utils.backup.BackupFactory;
 import com.itheima.mobilesafe.utils.backup.SmsBackup;
+
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 
@@ -28,7 +30,7 @@ import java.io.IOException;
  */
 public class AToolsFragment extends Fragment {
 
-    private static final String TAG = "AToolsFragment";
+//    private static final String TAG = "AToolsFragment";
     private MainInterface mainInterface;
     private BackupFactory backupFactory;
     private SmsBackup sb;
@@ -88,7 +90,7 @@ public class AToolsFragment extends Fragment {
                                 });
 
                                 try {
-                                    sb.backup();
+                                    sb.backupToLocal();
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -129,8 +131,27 @@ public class AToolsFragment extends Fragment {
         tv_sms_recovery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sb = (SmsBackup) backupFactory.createBackup(getActivity(), BackupConstants.SMS_BACKUP);
-                sb.recovery();
+                mainInterface.setDefaultSmsApp(true, new MyPermissionsResultListener() {
+                    @Override
+                    public void onGranted() {
+                        sb = (SmsBackup) backupFactory.createBackup(getActivity(), BackupConstants.SMS_BACKUP);
+                        try {
+                            sb.restoreFromLocal(true);
+                            Toast.makeText(getActivity(), "还原成功", Toast.LENGTH_SHORT).show();
+                        } catch (IOException | XmlPullParserException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getActivity(), "还原失败", Toast.LENGTH_SHORT).show();
+                        }
+                        mainInterface.setDefaultSmsApp(false, null);
+                    }
+
+                    @Override
+                    public void onDenied() {
+                        Toast.makeText(getActivity(), "获取权限失败", Toast.LENGTH_SHORT).show();
+                        mainInterface.setDefaultSmsApp(false, null);
+                    }
+                });
+
             }
         });
         return view;

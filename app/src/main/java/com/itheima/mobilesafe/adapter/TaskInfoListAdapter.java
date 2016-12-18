@@ -25,18 +25,17 @@ public class TaskInfoListAdapter extends RecyclerView.Adapter<TaskInfoListAdapte
 
     private Context ctx;
     private List<TaskInfo> taskInfos;
-    private MyViewHolder holder;
     private OnItemClickLitener mOnItemClickLitener;
+    private OnItemMoveListener mOnItemMoveListener;
 
-    public TaskInfoListAdapter(Context ctx, List<TaskInfo> taskInfos, OnItemClickLitener mOnItemClickLitener) {
-        this.mOnItemClickLitener = mOnItemClickLitener;
+    public TaskInfoListAdapter(Context ctx, List<TaskInfo> taskInfos) {
         this.ctx = ctx;
         this.taskInfos = taskInfos;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        holder = new MyViewHolder(LayoutInflater.from(
+        MyViewHolder holder = new MyViewHolder(LayoutInflater.from(
                 ctx).inflate(R.layout.list_item_task_info, parent,
                 false));
         return holder;
@@ -47,8 +46,14 @@ public class TaskInfoListAdapter extends RecyclerView.Adapter<TaskInfoListAdapte
         return taskInfos.size();
     }
 
+    public String getItemName(int position) {
+        return taskInfos.get(position).packageName;
+    }
+
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
+        if (mOnItemMoveListener != null)
+            mOnItemMoveListener.onItemSwap(fromPosition, toPosition);
         Collections.swap(taskInfos, fromPosition, toPosition);
         //非常重要，调用后Adapter才能知道发生了改变。
         notifyItemMoved(fromPosition, toPosition);
@@ -56,6 +61,8 @@ public class TaskInfoListAdapter extends RecyclerView.Adapter<TaskInfoListAdapte
 
     @Override
     public void onItemDismiss(int position) {
+        if (mOnItemMoveListener != null)
+            mOnItemMoveListener.onItemSwipe(position);
         taskInfos.remove(position);
         //非常重要，调用后Adapter才能知道发生了改变。
         notifyItemRemoved(position);
@@ -67,7 +74,27 @@ public class TaskInfoListAdapter extends RecyclerView.Adapter<TaskInfoListAdapte
         void onItemLongClick(View view, int position);
     }
 
+    public interface OnItemMoveListener {
+        void onItemSwap(int fromPosition, int toPosition);
 
+        void onItemSwipe(int position);
+
+    }
+
+    /**
+     * 注册监听器（交换位置、滑动删除）
+     *
+     * @param mOnItemMoveListener 监听器
+     */
+    public void setOnItemMoveLitener(OnItemMoveListener mOnItemMoveListener) {
+        this.mOnItemMoveListener = mOnItemMoveListener;
+    }
+
+    /**
+     * 注册监听器（点击、长按）
+     *
+     * @param mOnItemClickLitener 监听器
+     */
     public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
         this.mOnItemClickLitener = mOnItemClickLitener;
     }
@@ -105,7 +132,7 @@ public class TaskInfoListAdapter extends RecyclerView.Adapter<TaskInfoListAdapte
         TextView tv_name;
         TextView tv_memory_info;
 
-        public MyViewHolder(View view) {
+        MyViewHolder(View view) {
             super(view);
             iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
             tv_name = (TextView) view.findViewById(R.id.tv_name);

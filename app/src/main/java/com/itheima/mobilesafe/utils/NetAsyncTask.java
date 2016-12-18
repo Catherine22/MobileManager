@@ -1,12 +1,13 @@
 package com.itheima.mobilesafe.utils;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * Created by Yi-Jing on 2016/9/16.
  */
 
-public class NetAsyncTask extends AsyncTask<String, Void, String> {
+public class NetAsyncTask extends AsyncTask<Integer, Void, String> {
     private String url;
     private String[] name;
     private String[] data;
@@ -20,23 +21,19 @@ public class NetAsyncTask extends AsyncTask<String, Void, String> {
     }
 
     @Override
-    protected String doInBackground(String... type) {
+    protected String doInBackground(Integer... type) {
         String response = "";
-        NetUtils.TYPE whichType = NetUtils.TYPE.values()[Integer.parseInt(type[0])];
-        switch (whichType) {
-            case GET:
-                response = NetUtils.sendDataByGet(url, name, data);
-                break;
-            case POST:
-                response = NetUtils.sendDataByPost(url, name, data);
-                break;
-            case POST_JSON:
+        Log.d("doInBackground", type[0] + "");
+        if ((type[0] & NetUtils.POST) == NetUtils.POST){
+            if ((type[0] & NetUtils.JSON) == NetUtils.JSON)
                 response = NetUtils.sendJSONByPost(url, name, data);
-                break;
-            default:
-                response = NetUtils.sendDataByGet(url, name, data);
-                break;
+            else
+                response = NetUtils.sendDataByPost(url, name, data);
         }
+        else {
+            response = NetUtils.sendDataByGet(url, name, data);
+        }
+
         return response;
     }
 

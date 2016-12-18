@@ -13,4 +13,15 @@
         <attr name="dots_src_on" format="integer" />
         <attr name="dots_src_off" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="ProgressBar">
+        <!-- Restricts to ONLY indeterminate mode (state-keeping progress mode will not work). -->
+        <attr name="indeterminateOnly" format="boolean" />
+        <!-- Drawable used for the progress mode. -->
+        <attr name="progressDrawable" format="reference" />
+        <!-- Drawable used for the indeterminate mode. -->
+        <attr name="indeterminateDrawable" format="reference" />
+        <attr name="minHeight" format="dimension" />
+        <attr name="maxHeight" format="dimension" />
+    </declare-styleable>
 </resources>

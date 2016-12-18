@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.itheima.mobilesafe.receivers.MyDeviceAdminReceiver;
+
 /**
  * Created by Catherine on 2016/8/24.
  * Soft-World Inc.

@@ -8,4 +8,6 @@ package com.itheima.mobilesafe.db.dao;
 
 public class DaoConstants {
     public final static int BLACKLIST = 0;
+    public final static int NUMBERADDRESS = 1;
+    public final static int VIRUS = 2;
 }

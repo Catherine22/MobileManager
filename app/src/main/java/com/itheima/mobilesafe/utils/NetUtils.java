@@ -20,11 +20,10 @@ public class NetUtils {
     public static final String DOMAIN = "http://xxx/xxx/api/";
     private static final int READ_TIMEOUT = 5000;
     private static final int CONNECT_TIMEOUT = 10000;
-    enum TYPE{
-        GET,
-        POST,
-        POST_JSON
-    }
+
+    protected final static int GET = 1 << 0;
+    protected final static int POST = 1 << 1;
+    protected final static int JSON = 1 << 2;
 
     public interface Callback {
         void onResponse(String response);
@@ -50,7 +49,7 @@ public class NetUtils {
 
     // Using AsyncTask
     public static void get(final String url, final String[] name, final String[] data, final Callback callback) {
-        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE.GET));
+        new NetAsyncTask(url, name, data, callback).execute(GET);
     }
 
     // Using handle
@@ -73,7 +72,7 @@ public class NetUtils {
 
     // Using AsyncTask
     public static void post(final String url, final String[] name, final String[] data, final Callback callback) {
-        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE.POST));
+        new NetAsyncTask(url, name, data, callback).execute(POST);
     }
 
     // Using handle
@@ -96,7 +95,7 @@ public class NetUtils {
 
     // Using AsyncTask
     public static void postJSON(final String url, final String[] name, final String[] data, final Callback callback) {
-        new NetAsyncTask(url, name, data, callback).execute(String.valueOf(TYPE.POST_JSON));
+        new NetAsyncTask(url, name, data, callback).execute(POST | JSON);
     }
 
     protected static String sendDataByGet(final String path, final String[] name, final String[] data) {
@@ -125,7 +124,7 @@ public class NetUtils {
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
                 InputStream is = conn.getInputStream();
-                String result = StreamUtils.toString(is);
+                String result = StreamUtils.toGBKString(is);
                 return result;// SENT_SUCCESSFULLY
             } else
                 throw new NetworkErrorException(responseCode + "");// FAILED_TO_SEND
@@ -194,6 +193,7 @@ public class NetUtils {
         try {
             URL url = new URL(path);
             conn = (HttpURLConnection) url.openConnection();
+            conn.setInstanceFollowRedirects(true);
             conn.setRequestMethod("POST");
             conn.setReadTimeout(READ_TIMEOUT);
             conn.setConnectTimeout(CONNECT_TIMEOUT);

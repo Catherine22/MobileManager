@@ -1,11 +1,14 @@
 package com.itheima.mobilesafe.ui;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 
 /**
  * Created by Catherine on 2016/9/21.
@@ -16,6 +19,7 @@ import android.graphics.Shader;
 public class AdjustView {
     /**
      * Draw an image in circular shape
+     *
      * @param images
      * @param showShadow
      * @return
@@ -49,5 +53,15 @@ public class AdjustView {
         //This will draw the image.
         c.drawCircle(images.getWidth() / 2, images.getHeight() / 2, radius, paint);
         return circleBitmap;
+    }
+
+    public static Drawable getDrawable(Context ctx, int id) {
+        Drawable drawable = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            drawable = ctx.getResources().getDrawable(id, null);
+        } else
+            drawable = ctx.getResources().getDrawable(id);
+
+        return drawable;
     }
 }

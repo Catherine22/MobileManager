@@ -28,20 +28,20 @@ public class BlacklistDao implements BaseDao {
     @SuppressWarnings("unused")
     public static final int NOT_FOUND = -1;
     /**
-     * block calls and sms
-     */
-    @SuppressWarnings("unused")
-    public static final int MODE_BOTH_BLOCKED = 0;
-    /**
      * block calls
      */
     @SuppressWarnings("unused")
-    public static final int MODE_CALLS_BLOCKED = 1;
+    public static final int MODE_CALLS_BLOCKED = 1 << 0;
     /**
      * block sms
      */
     @SuppressWarnings("unused")
-    public static final int MODE_SMS_BLOCKED = 2;
+    public static final int MODE_SMS_BLOCKED = 1 << 1;
+    /**
+     * block calls and sms
+     */
+    @SuppressWarnings("unused")
+    public static final int MODE_BOTH_BLOCKED = MODE_CALLS_BLOCKED | MODE_SMS_BLOCKED;
     public static final String MODES[] = {"全部拦截", "电话拦截", "短信拦截"};
     private final String TABLE = "blacklist";
 
@@ -118,7 +118,7 @@ public class BlacklistDao implements BaseDao {
      */
     public void add(BlockedCaller caller, @Nullable OnResponse response) {
         if (!find(caller.getNumber())) {
-            SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+            SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
             if (db.isOpen()) {
                 ContentValues values = new ContentValues();
                 values.put("name", caller.getName());
@@ -150,7 +150,7 @@ public class BlacklistDao implements BaseDao {
      */
     public void modify(BlockedCaller caller, @Nullable OnResponse response) {
         if (find(caller.getNumber())) {
-            SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+            SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
             if (db.isOpen()) {
                 ContentValues values = new ContentValues();
                 values.put("number", caller.getNumber());
@@ -180,7 +180,7 @@ public class BlacklistDao implements BaseDao {
      * @param response return the result of modifying data
      */
     private void modifyById(String _id, BlockedCaller caller, @Nullable OnResponse response) {
-        SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+        SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
         if (db.isOpen()) {
             ContentValues values = new ContentValues();
             values.put("number", caller.getNumber());

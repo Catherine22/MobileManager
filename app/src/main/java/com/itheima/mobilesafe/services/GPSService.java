@@ -14,7 +14,9 @@ import android.support.annotation.Nullable;
 
 import com.itheima.mobilesafe.services.gcj02.ModifyOffset;
 import com.itheima.mobilesafe.services.gcj02.PointDouble;
+import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
+import com.itheima.mobilesafe.utils.SpNames;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,11 +105,11 @@ public class GPSService extends Service {
                 }
             }
 
-            SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+            SharedPreferences sp = getSharedPreferences(SpNames.FILE_CONFIG, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sp.edit();
-            editor.putString("longitude", longitude + "");
-            editor.putString("latitude", latitude + "");
-            editor.putString("accutacy", accutacy + "");
+            editor.putString(SpNames.longitude, longitude + "");
+            editor.putString(SpNames.latitude, latitude + "");
+            editor.putString(SpNames.accutacy, accutacy + "");
             editor.apply();
 
             AsyncResponse ar = new AsyncResponse() {
@@ -118,10 +120,10 @@ public class GPSService extends Service {
             };
             Server sv = new Server(GPSService.this, ar);
             Bundle bundle = new Bundle();
-            bundle.putString("longitude", longitude + "");
-            bundle.putString("latitude", latitude + "");
-            bundle.putString("accutacy", accutacy + "");
-            sv.pushBundle("LOCATION_INFO", bundle);
+            bundle.putString(SpNames.longitude, longitude + "");
+            bundle.putString(SpNames.latitude, latitude + "");
+            bundle.putString(SpNames.accutacy, accutacy + "");
+            sv.pushBundle(BroadcastActions.LOCATION_INFO, bundle);
         }
 
         @Override

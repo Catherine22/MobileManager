@@ -5,6 +5,8 @@ import android.content.Context;
 import com.itheima.mobilesafe.db.dao.BaseDao;
 import com.itheima.mobilesafe.db.dao.BlacklistDao;
 import com.itheima.mobilesafe.db.dao.DaoConstants;
+import com.itheima.mobilesafe.db.dao.NumberAddressDao;
+import com.itheima.mobilesafe.db.dao.VirusDao;
 
 /**
  * Created by Catherine on 2016/10/6.
@@ -18,6 +20,12 @@ public class DaoFactory {
         switch (type) {
             case DaoConstants.BLACKLIST:
                 baseDao = new BlacklistDao(ctx);
+                break;
+            case DaoConstants.NUMBERADDRESS:
+                baseDao = new NumberAddressDao(ctx);
+                break;
+            case DaoConstants.VIRUS:
+                baseDao = new VirusDao(ctx);
                 break;
             default:
                 baseDao = null;
