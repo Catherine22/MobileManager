@@ -451,7 +451,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void getASpecPermission(int permissions) {
-        CLog.d(TAG, "getSpec " + permissions);
         if ((permissions & grantedSAW) == grantedSAW) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
             startActivityForResult(intent, Constants.OVERLAY_PERMISSION_REQ_CODE);
@@ -544,7 +543,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        CLog.d(TAG, "onRequestPermissionsResult");
 
         List<String> deniedResults = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
@@ -553,20 +551,18 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             }
         }
 
-        if (~(requestSpec ^ grantedSpec) != grantedWS) {
+        if ((requestSpec & grantedWS) == grantedWS && (grantedSpec & grantedWS) != grantedWS) {
             deniedResults.add("Manifest.permission.WRITE_SETTINGS");
         }
 
-        if (~(requestSpec ^ grantedSpec) != grantedSAW) {
+        if ((requestSpec & grantedSAW) == grantedSAW && (grantedSpec & grantedSAW) != grantedSAW) {
             deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
         }
 
         if (deniedResults.size() != 0) {
             listener.onDenied(deniedResults);
-            CLog.d(TAG, "denied " + deniedResults.toString());
         } else {
             listener.onGranted();
-            CLog.d(TAG, "granted all");
         }
 
         requestSpec = 0x0000;
@@ -606,8 +602,22 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                                 deniedPermissions[i] = deniedPermissionsList.get(i);
                             }
                             ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
-                        } else
-                            listener.onGranted();
+                        } else {
+                            List<String> deniedResults = new ArrayList<>();
+                            if ((requestSpec & grantedWS) == grantedWS && (grantedSpec & grantedWS) != grantedWS) {
+                                deniedResults.add("Manifest.permission.WRITE_SETTINGS");
+                            }
+
+                            if ((requestSpec & grantedSAW) == grantedSAW && (grantedSpec & grantedSAW) != grantedSAW) {
+                                deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
+                            }
+
+                            if (deniedResults.size() != 0) {
+                                listener.onDenied(deniedResults);
+                            } else {
+                                listener.onGranted();
+                            }
+                        }
                     }
                 }
                 break;
@@ -628,8 +638,22 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                                 deniedPermissions[i] = deniedPermissionsList.get(i);
                             }
                             ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
-                        } else
-                            listener.onGranted();
+                        } else {
+                            List<String> deniedResults = new ArrayList<>();
+                            if ((requestSpec & grantedWS) == grantedWS && (grantedSpec & grantedWS) != grantedWS) {
+                                deniedResults.add("Manifest.permission.WRITE_SETTINGS");
+                            }
+
+                            if ((requestSpec & grantedSAW) == grantedSAW && (grantedSpec & grantedSAW) != grantedSAW) {
+                                deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
+                            }
+
+                            if (deniedResults.size() != 0) {
+                                listener.onDenied(deniedResults);
+                            } else {
+                                listener.onGranted();
+                            }
+                        }
                     }
                 }
                 break;
@@ -640,8 +664,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     if (listener != null && resultCode == RESULT_OK) {
                         if (defaultSmsApp.equals(defaultSysSmsApp))
                             listener.onDenied(null);
-                        else
+                        else {
                             listener.onGranted();
+                        }
                     }
                 }
                 break;
