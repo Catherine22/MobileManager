@@ -5,6 +5,9 @@ package com.itheima.mobilesafe.interfaces;
  * Soft-World Inc.
  * catherine919@soft-world.com.tw
  */
+
+import java.util.List;
+
 /**
  * 自定义传递的信息类型,作为接口
  */
@@ -17,5 +20,5 @@ public interface MyPermissionsResultListener {
     /**
      * 用户拒绝打开权限
      */
-    void onDenied();
+    void onDenied(List<String> deniedPermissions);
 }

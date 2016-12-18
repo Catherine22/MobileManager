@@ -22,6 +22,7 @@ import com.itheima.mobilesafe.utils.backup.SmsBackup;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by Catherine on 2016/8/25.
@@ -120,7 +121,7 @@ public class AToolsFragment extends Fragment {
                     }
 
                     @Override
-                    public void onDenied() {
+                    public void onDenied(List<String> deniedPermissions) {
                         Toast.makeText(getActivity(), "权限不足", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -146,7 +147,7 @@ public class AToolsFragment extends Fragment {
                     }
 
                     @Override
-                    public void onDenied() {
+                    public void onDenied(List<String> deniedPermissions) {
                         Toast.makeText(getActivity(), "获取权限失败", Toast.LENGTH_SHORT).show();
                         mainInterface.setDefaultSmsApp(false, null);
                     }

@@ -39,6 +39,8 @@ import com.itheima.mobilesafe.utils.SpNames;
 import com.itheima.mobilesafe.utils.login.AccountKitUtils;
 import com.itheima.mobilesafe.utils.objects.UserInfo;
 
+import java.util.List;
+
 import tw.com.softworld.messagescenter.Client;
 import tw.com.softworld.messagescenter.CustomReceiver;
 import tw.com.softworld.messagescenter.Result;
@@ -159,7 +161,7 @@ public class SettingsFragment extends Fragment {
                             }
 
                             @Override
-                            public void onDenied() {
+                            public void onDenied(List<String> deniedPermissions){
                                 CLog.d(TAG, "onDenied()");
                                 siv_show_address.setChecked(false);
                                 getActivity().stopService(addService);
@@ -231,7 +233,7 @@ public class SettingsFragment extends Fragment {
                             }
 
                             @Override
-                            public void onDenied() {
+                            public void onDenied(List<String> deniedPermissions) {
                                 CLog.d(TAG, "onDenied()");
                                 siv_show_address.setChecked(false);
                                 getActivity().stopService(addService);
