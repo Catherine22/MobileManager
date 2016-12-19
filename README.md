@@ -421,8 +421,8 @@ android:windowSoftInputMode="adjustPan">
 
 [HomeActivity]
 ```JAVA
-private final int grantedSAW = 0x0001;      //同意特殊权限(SYSTEM_ALERT_WINDOW)
-private final int grantedWS = 0x0010;       //同意特殊权限(WRITE_SETTINGS)
+private final int GRANTED_SAW = 0x0001;     //同意特殊权限(SYSTEM_ALERT_WINDOW)
+private final int GRANTED_WS = 0x0010;      //同意特殊权限(WRITE_SETTINGS)
 private int requestSpec = 0x0000;           //需要的特殊权限
 private int grantedSpec = 0x0000;           //已取得的特殊权限
 private int confirmedSpec = 0x0000;         //已询问的特殊权限
@@ -444,17 +444,17 @@ public void getPermissions(String[] permissions, OnRequestPermissionsListener li
 
     for (String p : permissions) {
         if (p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
-            requestSpec |= grantedSAW;
+            requestSpec |= GRANTED_SAW;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(HomeActivity.this)) {
-                grantedSpec &= grantedSAW;
+                grantedSpec &= GRANTED_SAW;
             } else
-                grantedSpec |= grantedSAW;
+                grantedSpec |= GRANTED_SAW;
         } else if (p.equals(Manifest.permission.WRITE_SETTINGS)) {
-            requestSpec |= grantedWS;
+            requestSpec |= GRANTED_WS;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(HomeActivity.this)) {
-                grantedSpec &= grantedWS;
+                grantedSpec &= GRANTED_WS;
             } else
-                grantedSpec |= grantedWS;
+                grantedSpec |= GRANTED_WS;
         } else if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
             deniedPermissionsList.add(p);
         }
@@ -477,12 +477,12 @@ public void getPermissions(String[] permissions, OnRequestPermissionsListener li
 }
 
 private void getASpecPermission(int permissions) {
-    if ((permissions & grantedSAW) == grantedSAW) {
+    if ((permissions & GRANTED_SAW) == GRANTED_SAW) {
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
-        startActivityForResult(intent, Constants.OVERLAY_PERMISSION_REQ_CODE);
+        startActivityForResult(intent, Constants.PERMISSION_OVERLAY);
     }
 
-    if ((permissions & grantedWS) == grantedWS) {
+    if ((permissions & GRANTED_WS) == GRANTED_WS) {
         Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + HomeActivity.this.getPackageName()));
         startActivityForResult(intent, Constants.PERMISSION_WRITE_SETTINGS);
     }
@@ -499,11 +499,11 @@ public void onRequestPermissionsResult(int requestCode, String[] permissions, in
         }
     }
 
-    if ((requestSpec & grantedWS) == grantedWS && (grantedSpec & grantedWS) != grantedWS) {
+    if ((requestSpec & GRANTED_WS) == GRANTED_WS && (grantedSpec & GRANTED_WS) != GRANTED_WS) {
         deniedResults.add("Manifest.permission.WRITE_SETTINGS");
     }
 
-    if ((requestSpec & grantedSAW) == grantedSAW && (grantedSpec & grantedSAW) != grantedSAW) {
+    if ((requestSpec & GRANTED_SAW) == GRANTED_SAW && (grantedSpec & GRANTED_SAW) != GRANTED_SAW) {
         deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
     }
 
@@ -524,15 +524,15 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     CLog.d(TAG, "request:" + requestCode + "/resultCode" + resultCode);
     super.onActivityResult(requestCode, resultCode, data);
     switch (requestCode) {
-        case Constants.OVERLAY_PERMISSION_REQ_CODE:
+        case Constants.PERMISSION_OVERLAY:
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                confirmedSpec |= grantedSAW;
+                confirmedSpec |= GRANTED_SAW;
 
                 if (!Settings.canDrawOverlays(this)) {
                     //denied
-                    grantedSpec &= grantedSAW;
+                    grantedSpec &= GRANTED_SAW;
                 } else {
-                    grantedSpec |= grantedSAW;
+                    grantedSpec |= GRANTED_SAW;
                 }
                 if (confirmedSpec == requestSpec) {
                     if (deniedPermissionsList.size() != 0) {
@@ -544,11 +544,11 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
                         ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
                     } else {
                         List<String> deniedResults = new ArrayList<>();
-                        if ((requestSpec & grantedWS) == grantedWS && (grantedSpec & grantedWS) != grantedWS) {
+                        if ((requestSpec & GRANTED_WS) == GRANTED_WS && (grantedSpec & GRANTED_WS) != GRANTED_WS) {
                             deniedResults.add("Manifest.permission.WRITE_SETTINGS");
                         }
 
-                        if ((requestSpec & grantedSAW) == grantedSAW && (grantedSpec & grantedSAW) != grantedSAW) {
+                        if ((requestSpec & GRANTED_SAW) == GRANTED_SAW && (grantedSpec & GRANTED_SAW) != GRANTED_SAW) {
                             deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
                         }
 			    
@@ -563,12 +563,12 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
             break;
         case Constants.PERMISSION_WRITE_SETTINGS:
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                confirmedSpec |= grantedWS;
+                confirmedSpec |= GRANTED_WS;
                 if (!Settings.System.canWrite(this)) {
                     //denied
-                    grantedSpec &= grantedWS;
+                    grantedSpec &= GRANTED_WS;
                 } else {
-                    grantedSpec |= grantedWS;
+                    grantedSpec |= GRANTED_WS;
                 }
                 if (confirmedSpec == requestSpec) {
                     if (deniedPermissionsList.size() != 0) {
@@ -580,11 +580,11 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
                         ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
                     } else {
                          List<String> deniedResults = new ArrayList<>();
-                        if ((requestSpec & grantedWS) == grantedWS && (grantedSpec & grantedWS) != grantedWS) {
+                        if ((requestSpec & GRANTED_WS) == GRANTED_WS && (grantedSpec & GRANTED_WS) != GRANTED_WS) {
                             deniedResults.add("Manifest.permission.WRITE_SETTINGS");
                         }
 			
-			if ((requestSpec & grantedSAW) == grantedSAW && (grantedSpec & grantedSAW) != grantedSAW) {
+			if ((requestSpec & GRANTED_SAW) == GRANTED_SAW && (grantedSpec & GRANTED_SAW) != GRANTED_SAW) {
                             deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
                         }
 			
