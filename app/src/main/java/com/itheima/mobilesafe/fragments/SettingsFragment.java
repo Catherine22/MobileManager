@@ -24,7 +24,7 @@ import com.facebook.accountkit.ui.LoginType;
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.LoginTypeListener;
 import com.itheima.mobilesafe.interfaces.MainInterface;
-import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
+import com.itheima.mobilesafe.interfaces.OnRequestPermissionsListener;
 import com.itheima.mobilesafe.services.AddressService;
 import com.itheima.mobilesafe.services.BlockCallsSmsService;
 import com.itheima.mobilesafe.services.WatchDogService;
@@ -147,7 +147,7 @@ public class SettingsFragment extends Fragment {
             public void onClick(View v) {
                 mainInterface.getPermissions(new String[]{
                                 Manifest.permission.SYSTEM_ALERT_WINDOW},
-                        new MyPermissionsResultListener() {
+                        new OnRequestPermissionsListener() {
                             @Override
                             public void onGranted() {
                                 CLog.d(TAG, "onGranted()");
@@ -219,7 +219,7 @@ public class SettingsFragment extends Fragment {
                                 Manifest.permission.RECEIVE_SMS,
                                 Manifest.permission.READ_CONTACTS,
                                 Manifest.permission.WRITE_CONTACTS},
-                        new MyPermissionsResultListener() {
+                        new OnRequestPermissionsListener() {
                             @Override
                             public void onGranted() {
                                 CLog.d(TAG, "onGranted()");

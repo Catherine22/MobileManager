@@ -12,9 +12,9 @@ public interface MainInterface {
 
     void backToPreviousPage();
 
-    void getPermissions(String[] permissions, MyPermissionsResultListener listener);
+    void getPermissions(String[] permissions, OnRequestPermissionsListener listener);
 
-    void setDefaultSmsApp(boolean isDefault, MyPermissionsResultListener listener);
+    void setDefaultSmsApp(boolean isDefault, OnRequestPermissionsListener listener);
 
     void getLoginType(LoginTypeListener listener);
     void setLoginType(int type);

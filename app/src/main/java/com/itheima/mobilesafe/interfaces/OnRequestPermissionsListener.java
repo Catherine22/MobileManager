@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * 自定义传递的信息类型,作为接口
  */
-public interface MyPermissionsResultListener {
+public interface OnRequestPermissionsListener {
     /**
      * 用户开启权限
      */

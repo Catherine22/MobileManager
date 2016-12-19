@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.MainInterface;
-import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
+import com.itheima.mobilesafe.interfaces.OnRequestPermissionsListener;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.backup.BackupConstants;
 import com.itheima.mobilesafe.utils.backup.BackupFactory;
@@ -62,7 +62,7 @@ public class AToolsFragment extends Fragment {
         tv_sms_backup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.getPermissions(new String[]{Manifest.permission.READ_SMS}, new MyPermissionsResultListener() {
+                mainInterface.getPermissions(new String[]{Manifest.permission.READ_SMS}, new OnRequestPermissionsListener() {
                     @Override
                     public void onGranted() {
 
@@ -132,7 +132,7 @@ public class AToolsFragment extends Fragment {
         tv_sms_recovery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.setDefaultSmsApp(true, new MyPermissionsResultListener() {
+                mainInterface.setDefaultSmsApp(true, new OnRequestPermissionsListener() {
                     @Override
                     public void onGranted() {
                         sb = (SmsBackup) backupFactory.createBackup(getActivity(), BackupConstants.SMS_BACKUP);

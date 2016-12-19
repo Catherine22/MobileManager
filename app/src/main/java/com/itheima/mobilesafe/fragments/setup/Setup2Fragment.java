@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.interfaces.MainInterface;
-import com.itheima.mobilesafe.interfaces.MyPermissionsResultListener;
+import com.itheima.mobilesafe.interfaces.OnRequestPermissionsListener;
 import com.itheima.mobilesafe.ui.SettingItemView;
 import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
@@ -72,7 +72,7 @@ public class Setup2Fragment extends Fragment {
                                     Manifest.permission.RECEIVE_SMS,
                                     Manifest.permission.ACCESS_COARSE_LOCATION,
                                     Manifest.permission.ACCESS_FINE_LOCATION},
-                            new MyPermissionsResultListener() {
+                            new OnRequestPermissionsListener() {
                                 @Override
                                 public void onGranted() {
                                     CLog.d(TAG, "onGranted");
