@@ -499,11 +499,11 @@ public void onRequestPermissionsResult(int requestCode, String[] permissions, in
         }
     }
 
-    if ((requestSpec & GRANTED_WS) == GRANTED_WS && (grantedSpec & GRANTED_WS) != GRANTED_WS) {
+    if ((requestSpec ^ grantedSpec) == GRANTED_WS) {
         deniedResults.add("Manifest.permission.WRITE_SETTINGS");
     }
 
-    if ((requestSpec & GRANTED_SAW) == GRANTED_SAW && (grantedSpec & GRANTED_SAW) != GRANTED_SAW) {
+    if ((requestSpec ^ grantedSpec) == GRANTED_SAW) {
         deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
     }
 
