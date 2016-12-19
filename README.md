@@ -472,11 +472,11 @@ public void getPermissions(String[] permissions, OnRequestPermissionsListener li
             ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
         } else {
             listener.onGranted();
-	    
-	    requestSpec = 0x0000;
-	    grantedSpec = 0x0000;
-	    confirmedSpec = 0x0000;
-	    deniedPermissionsList = null;
+
+            requestSpec = 0x0000;
+            grantedSpec = 0x0000;
+            confirmedSpec = 0x0000;
+            deniedPermissionsList = null;
         }
     }
 }
@@ -523,7 +523,7 @@ public void onRequestPermissionsResult(int requestCode, String[] permissions, in
     confirmedSpec = 0x0000;
     deniedPermissionsList = null;
 }
-    
+
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     CLog.d(TAG, "request:" + requestCode + "/resultCode" + resultCode);
@@ -556,17 +556,17 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
                         if ((requestSpec & GRANTED_SAW) == GRANTED_SAW && (grantedSpec & GRANTED_SAW) != GRANTED_SAW) {
                             deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
                         }
-			    
+
 			if (deniedResults.size() != 0) {
                             listener.onDenied(deniedResults);
                         } else {
                             listener.onGranted();
                         }
-			
-	    		requestSpec = 0x0000;
-	    		grantedSpec = 0x0000;
-	    		confirmedSpec = 0x0000;
-	    		deniedPermissionsList = null;
+
+                        requestSpec = 0x0000;
+                        grantedSpec = 0x0000;
+                        confirmedSpec = 0x0000;
+                        deniedPermissionsList = null;
                     }
                 }
             }
@@ -593,21 +593,21 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
                         if ((requestSpec & GRANTED_WS) == GRANTED_WS && (grantedSpec & GRANTED_WS) != GRANTED_WS) {
                             deniedResults.add("Manifest.permission.WRITE_SETTINGS");
                         }
-			
+
 			if ((requestSpec & GRANTED_SAW) == GRANTED_SAW && (grantedSpec & GRANTED_SAW) != GRANTED_SAW) {
                             deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
                         }
-			
+
 			if (deniedResults.size() != 0) {
                             listener.onDenied(deniedResults);
                         } else {
                             listener.onGranted();
                         }
-			
-	    		requestSpec = 0x0000;
-	    		grantedSpec = 0x0000;
-	    		confirmedSpec = 0x0000;
-	    		deniedPermissionsList = null;
+
+                        requestSpec = 0x0000;
+                        grantedSpec = 0x0000;
+                        confirmedSpec = 0x0000;
+                        deniedPermissionsList = null;
                     }
                 }
             }

@@ -465,6 +465,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
             } else {
                 listener.onGranted();
+
+                requestSpec = 0x0000;
+                grantedSpec = 0x0000;
+                confirmedSpec = 0x0000;
+                deniedPermissionsList = null;
             }
         }
     }
@@ -625,8 +630,27 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                                 deniedPermissions[i] = deniedPermissionsList.get(i);
                             }
                             ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
-                        } else
-                            listener.onGranted();
+                        }  else {
+                            List<String> deniedResults = new ArrayList<>();
+                            if ((requestSpec & GRANTED_WS) == GRANTED_WS && (grantedSpec & GRANTED_WS) != GRANTED_WS) {
+                                deniedResults.add("Manifest.permission.WRITE_SETTINGS");
+                            }
+
+                            if ((requestSpec & GRANTED_SAW) == GRANTED_SAW && (grantedSpec & GRANTED_SAW) != GRANTED_SAW) {
+                                deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
+                            }
+
+                            if (deniedResults.size() != 0) {
+                                listener.onDenied(deniedResults);
+                            } else {
+                                listener.onGranted();
+                            }
+
+                            requestSpec = 0x0000;
+                            grantedSpec = 0x0000;
+                            confirmedSpec = 0x0000;
+                            deniedPermissionsList = null;
+                        }
                     }
                 }
                 break;
@@ -647,8 +671,27 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                                 deniedPermissions[i] = deniedPermissionsList.get(i);
                             }
                             ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
-                        } else
-                            listener.onGranted();
+                        }   else {
+                            List<String> deniedResults = new ArrayList<>();
+                            if ((requestSpec & GRANTED_WS) == GRANTED_WS && (grantedSpec & GRANTED_WS) != GRANTED_WS) {
+                                deniedResults.add("Manifest.permission.WRITE_SETTINGS");
+                            }
+
+                            if ((requestSpec & GRANTED_SAW) == GRANTED_SAW && (grantedSpec & GRANTED_SAW) != GRANTED_SAW) {
+                                deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
+                            }
+
+                            if (deniedResults.size() != 0) {
+                                listener.onDenied(deniedResults);
+                            } else {
+                                listener.onGranted();
+                            }
+
+                            requestSpec = 0x0000;
+                            grantedSpec = 0x0000;
+                            confirmedSpec = 0x0000;
+                            deniedPermissionsList = null;
+                        }
                     }
                 }
                 break;
