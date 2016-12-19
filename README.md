@@ -472,6 +472,11 @@ public void getPermissions(String[] permissions, OnRequestPermissionsListener li
             ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
         } else {
             listener.onGranted();
+	    
+	    requestSpec = 0x0000;
+	    grantedSpec = 0x0000;
+	    confirmedSpec = 0x0000;
+	    deniedPermissionsList = null;
         }
     }
 }
@@ -557,6 +562,11 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
                         } else {
                             listener.onGranted();
                         }
+			
+	    		requestSpec = 0x0000;
+	    		grantedSpec = 0x0000;
+	    		confirmedSpec = 0x0000;
+	    		deniedPermissionsList = null;
                     }
                 }
             }
@@ -593,6 +603,11 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
                         } else {
                             listener.onGranted();
                         }
+			
+	    		requestSpec = 0x0000;
+	    		grantedSpec = 0x0000;
+	    		confirmedSpec = 0x0000;
+	    		deniedPermissionsList = null;
                     }
                 }
             }
