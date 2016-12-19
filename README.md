@@ -438,7 +438,7 @@ private List<String> deniedPermissionsList; //需要的一般權限
  * @param listener    此变量implements事件的接口,负责传递信息
  */
 @Override
-public void getPermissions(String[] permissions, MyPermissionsResultListener listener) {
+public void getPermissions(String[] permissions, OnRequestPermissionsListener listener) {
     this.listener = listener;
     deniedPermissionsList = new LinkedList<>();
 
@@ -619,7 +619,7 @@ private void doSomethingWithPermissions(){
                 Manifest.permission.WRITE_CONTACTS,
                 Manifest.permission.SEND_SMS,
                 Manifest.permission.RECEIVE_SMS},
-        new MyPermissionsResultListener() {
+        new OnRequestPermissionsListener() {
             @Override
             public void onGranted() {
             //You've got all permissions you need
@@ -632,9 +632,9 @@ private void doSomethingWithPermissions(){
     );
 }
 ```
-[MyPermissionsResultListener]
+[OnRequestPermissionsListener]
 ```JAVA
-public interface MyPermissionsResultListener {
+public interface OnRequestPermissionsListener {
     /**
      * 用户开启权限
      */
@@ -673,7 +673,7 @@ public interface MyPermissionsResultListener {
    [XMLPullParserHandler]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/XMLPullParserHandler.java>
    [权限无法获取问题]:<http://www.jianshu.com/p/2746a627c6d2>
    [自定义Toast]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/MyToast.java>
-   [MyPermissionsResultListener]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/interfaces/MyPermissionsResultListener.java>
+   [OnRequestPermissionsListener]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/interfaces/OnRequestPermissionsListener.java>
    [BlacklistFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/BlacklistFragment.java>
    [BlacklistAdapter]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/adapter/BlacklistAdapter.java>
    [Singleton]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/designpattern/singleton>
