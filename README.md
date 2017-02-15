@@ -416,23 +416,23 @@ android:windowSoftInputMode="adjustPan">
 
 ## Android6.0或以上权限设置
 
-> 一般流程为：
-> 要求用户授权 - 用户同意 - 进入程序 - 下次打开直接進入
-> 要求用户授权 - 用户拒绝 - 关闭程序 - 下次打开再重新询问
-
-> 特殊情况：
-> 要求用户授权 - 用户勾选“不再提示”并强制选择拒绝 - 关闭程序 - ？
+> 一般流程为：<br>
+> 要求用户授权 - 用户同意 - 进入程序 - 下次打开直接進入<br>
+> 要求用户授权 - 用户拒绝 - 关闭程序 - 下次打开再重新询问<br>
+<br>
+> 特殊情况：<br>
+> 要求用户授权 - 用户勾选“不再提示”并强制选择拒绝 - 关闭程序 - ？<br>
 
 特殊情况时，那些被勾选不再提示的权限以后都无法获取权限（再也不会弹出授权对话框询问），用户若想获取，必须自己手动到系统设置页开启。
 
 此处做了些调整：
-> 要求用户授权 - 用户同意 - 进入程序 - 下次打开直接進入
-> 要求用户授权 - 用户拒绝 - 弹出自定义提示对话窗，询问用户选择关闭或重新授权 - 同意 - 进入程序
-> 要求用户授权 - 用户拒绝 - 弹出自定义提示对话窗，询问用户选择关闭或重新授权 - 拒绝 - 关闭程序 - 下次打开再重新询问
-> 
-> 要求用户授权 - 用户勾选“不再提示”并强制选择拒绝 - 关闭程序 - 
-> 下次开启时会检查被用户勾选“不再提示的列表”，如果列表为空就回到一般流程检测权限。
-> 但是如果列表不为空 - 弹出自定义提示对话窗，询问用户是否授权 - 用户同意 - 导向设置页面让用户手动开启。
+> 要求用户授权 - 用户同意 - 进入程序 - 下次打开直接進入<br>
+> 要求用户授权 - 用户拒绝 - 弹出自定义提示对话窗，询问用户选择关闭或重新授权 - 同意 - 进入程序<br>
+> 要求用户授权 - 用户拒绝 - 弹出自定义提示对话窗，询问用户选择关闭或重新授权 - 拒绝 - 关闭程序 - 下次打开再重新询问<br>
+> <br>
+> 要求用户授权 - 用户勾选“不再提示”并强制选择拒绝 - 关闭程序 - <br>
+> 下次开启时会检查被用户勾选“不再提示的列表”，如果列表为空就回到一般流程检测权限。<br>
+> 但是如果列表不为空 - 弹出自定义提示对话窗，询问用户是否授权 - 用户同意 - 导向设置页面让用户手动开启。<br>
 
 
   - 如果gradle中设定compileSdkVersion与targetSdkVersion低于23，在Android M后的手机就会预设没有获取权限。
@@ -666,8 +666,7 @@ private void init(){
         mainInterface.getPermissions(new String[]{Manifest.permission.INTERNET, Manifest.permission.READ_PHONE_STATE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new OnRequestPermissionsListener() {
             @Override
             public void onGranted() {
-			//以上是给App首次开启用的，建议放在Activity进入
-                SharedPreferences.Editor ed = isFirstTime.edit();
+                SharedPreferences.Editor ed = isFirstTime.edit();
                 ed.putBoolean("isFirstTimeRun", false);
                 ed.apply();
                 isFirstTimeRun = false;
