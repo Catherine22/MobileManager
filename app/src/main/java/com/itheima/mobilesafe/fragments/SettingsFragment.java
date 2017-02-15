@@ -161,7 +161,7 @@ public class SettingsFragment extends Fragment {
                             }
 
                             @Override
-                            public void onDenied(List<String> deniedPermissions){
+                            public void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions){
                                 CLog.d(TAG, "onDenied()");
                                 siv_show_address.setChecked(false);
                                 getActivity().stopService(addService);
@@ -233,7 +233,7 @@ public class SettingsFragment extends Fragment {
                             }
 
                             @Override
-                            public void onDenied(List<String> deniedPermissions) {
+                            public void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions) {
                                 CLog.d(TAG, "onDenied()");
                                 siv_show_address.setChecked(false);
                                 getActivity().stopService(addService);

@@ -6,6 +6,8 @@ package com.itheima.mobilesafe.interfaces;
  * catherine919@soft-world.com.tw
  */
 
+import android.support.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -20,5 +22,6 @@ public interface OnRequestPermissionsListener {
     /**
      * 用户拒绝打开权限
      */
-    void onDenied(List<String> deniedPermissions);
+    void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions);
+
 }

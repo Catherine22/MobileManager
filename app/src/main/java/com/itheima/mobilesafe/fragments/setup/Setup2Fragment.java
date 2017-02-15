@@ -84,7 +84,7 @@ public class Setup2Fragment extends Fragment {
                                 }
 
                                 @Override
-                                public void onDenied(List<String> deniedPermissions) {
+                                public void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions) {
                                     CLog.d(TAG, "onDenied");
                                     getActivity().finish();
                                 }

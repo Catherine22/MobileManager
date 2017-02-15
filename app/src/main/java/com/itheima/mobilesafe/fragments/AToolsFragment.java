@@ -121,7 +121,7 @@ public class AToolsFragment extends Fragment {
                     }
 
                     @Override
-                    public void onDenied(List<String> deniedPermissions) {
+                    public void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions) {
                         Toast.makeText(getActivity(), "权限不足", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -147,7 +147,7 @@ public class AToolsFragment extends Fragment {
                     }
 
                     @Override
-                    public void onDenied(List<String> deniedPermissions) {
+                    public void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions) {
                         Toast.makeText(getActivity(), "获取权限失败", Toast.LENGTH_SHORT).show();
                         mainInterface.setDefaultSmsApp(false, null);
                     }
