@@ -439,8 +439,17 @@ android:windowSoftInputMode="adjustPan">
   - 所以如果不想每次打开App都要逐一检查权限，就直接设compileSdkVersion与targetSdkVersion为22（或以下），预设一开始就取得Manifest所有权限。
   - 通过此方法获取的权限仅限于manifest有注册的权限，如果没注册这边也无法获取。
   - 需要在用到权限的地方，自定义是否检查权限，处理SYSTEM_ALERT_WINDOW和WRITE_SETTINGS例外
-  - 参考[Android 6.0 运行时权限处理]、[权限无法获取问题]，改成以注册listener的方式支援批次处理，在Activity接收用户事件，需要权限的fragment或activity则注册listener监听结果，主要代码如下：
+  - **Manifest设置allowBackup = false**，避免SharedPreference未清楚导致 (ActivityCompat.shouldShowRequestPermissionRationale(this, p) || isFirstTimeRun)逻辑错误。
+  - 参考[Android 6.0 运行时权限处理]、[权限无法获取问题]，改成以注册listener的方式支援批次处理，在Activity接收用户事件，需要权限的fragment或activity则注册listener监听结果，主要代码如下：
 
+
+[AndroidManifest]
+ ```XML
+ <application android:allowBackup="false">
+
+ </application>
+ }
+ ```  
 
 [HomeActivity]
 ```JAVA
@@ -513,7 +522,7 @@ android:windowSoftInputMode="adjustPan">
             }
         }
     }
-	
+
     private void getASpecPermission(int permissions) {
         CLog.d(TAG, "getSpec " + permissions);
         if ((permissions & GRANTED_SAW) == GRANTED_SAW) {
@@ -558,8 +567,8 @@ android:windowSoftInputMode="adjustPan">
         confirmedSpec = 0x0000;
         deniedPermissionsList = null;
     }
-	
-	
+
+
 @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         CLog.d(TAG, "request:" + requestCode + "/resultCode" + resultCode);
@@ -751,9 +760,302 @@ public interface OnRequestPermissionsListener {
     void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions);
 }
 ```
+
+**特别注意在Android 6.0 以上有自动备份功能，SharedPreference的值不会被清除！
+也就是通過SharedPreference來判別是否為应用安装后第一次启动会失效。**
+
+  - 解决方案1
+```XML
+<application android:allowBackup="false">
+
+</application>
+}
+```  
+
+  - 解决方案2
+ 获取权限时不考虑用户是否勾选“不再提示”，只判断是否同意。
+ 新的流程为：
+ > 要求用户授权 - 用户同意 - 进入程序 - 下次打开直接進入<br>
+ > 要求用户授权 - 用户拒绝 - 弹出自定义提示对话窗，询问用户选择关闭或重新授权 - 同意 - 导向设置页面让用户手动开启<br>
+ > 要求用户授权 - 用户拒绝 - 弹出自定义提示对话窗，询问用户选择关闭或重新授权 - 拒绝 - 关闭程序 - 下次打开再重新询问
+
+[GetPermissionsSample]
+```JAVA
+public class GetPermissionsSample extends FragmentActivity {
+    private final static String TAG = "GetPermissionsSample";
+    private OnRequestPermissionsListener listener;
+
+    private interface OnRequestPermissionsListener {
+        /**
+         * 用户开启权限
+         */
+        void onGranted();
+
+        /**
+         * 用户拒绝打开权限
+         */
+        void onDenied(@Nullable List<String> deniedPermissions);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getPermissions(new String[]{Manifest.permission.INTERNET, Manifest.permission.READ_PHONE_STATE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new OnRequestPermissionsListener() {
+            @Override
+            public void onGranted() {
+                CLog.d(TAG, "onGranted");
+            }
+
+            @Override
+            public void onDenied(@Nullable List<String> deniedPermissions) {
+                CLog.d(TAG, "onDenied");
+                StringBuilder context = new StringBuilder();
+                if (deniedPermissions != null) {
+                    for (String p : deniedPermissions) {
+                        if (Manifest.permission.INTERNET.equals(p)) {
+                            context.append("网络、");
+                        } else if (Manifest.permission.READ_PHONE_STATE.equals(p)) {
+                            context.append("电话、");
+                        } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(p)) {
+                            context.append("存储、");
+                        }
+                    }
+                }
+                context.deleteCharAt(context.length() - 1);
+
+
+                AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(GetPermissionsSample.this);
+                myAlertDialog.setIcon(android.R.drawable.ic_dialog_alert)
+                        .setCancelable(false)
+                        .setTitle("注意")
+                        .setMessage(String.format("您目前未授权%1$s存取权限，未授权将造成程式无法执行，是否开启权限？", context.toString()))
+                        .setNegativeButton("继续关闭", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        }).setPositiveButton("确定开启", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.fromParts("package", getPackageName(), null));
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                myAlertDialog.show();
+            }
+        });
+    }
+
+    private final int GRANTED_SAW = 0x0001;     //同意特殊权限(SYSTEM_ALERT_WINDOW)
+    private final int GRANTED_WS = 0x0010;      //同意特殊权限(WRITE_SETTINGS)
+    private int requestSpec = 0x0000;           //需要的特殊权限
+    private int grantedSpec = 0x0000;           //已取得的特殊权限
+    private int confirmedSpec = 0x0000;         //已询问的特殊权限
+    private List<String> deniedPermissionsList; //被拒绝的权限
+    private final int ACCESS_PERMISSION = 1001;
+
+    /**
+     * 要求用户打开权限,仅限android 6.0 以上
+     * <p/>
+     * SYSTEM_ALERT_WINDOW 和 WRITE_SETTINGS, 这两个权限比较特殊，
+     * 不能通过代码申请方式获取，必须得用户打开软件设置页手动打开，才能授权。
+     *
+     * @param permissions 手机权限 e.g. Manifest.permission.ACCESS_FINE_LOCATION
+     * @param listener    此变量implements事件的接口,负责传递信息
+     */
+    public void getPermissions(String[] permissions, OnRequestPermissionsListener listener) {
+        this.listener = listener;
+        deniedPermissionsList = new LinkedList<>();
+
+        for (String p : permissions) {
+            if (p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
+                requestSpec |= GRANTED_SAW;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(GetPermissionsSample.this)) {
+                    grantedSpec &= GRANTED_SAW;
+                } else
+                    grantedSpec |= GRANTED_SAW;
+            } else if (p.equals(Manifest.permission.WRITE_SETTINGS)) {
+                requestSpec |= GRANTED_WS;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(GetPermissionsSample.this)) {
+                    grantedSpec &= GRANTED_WS;
+                } else
+                    grantedSpec |= GRANTED_WS;
+            } else if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
+                deniedPermissionsList.add(p);
+            }
+        }
+
+        if (requestSpec != grantedSpec) {
+            getASpecPermission(requestSpec | grantedSpec);
+        } else {// Granted all of the special permissions
+            if (deniedPermissionsList.size() != 0) {
+                //Ask for the permissions
+                String[] deniedPermissions = new String[deniedPermissionsList.size()];
+                for (int i = 0; i < deniedPermissionsList.size(); i++) {
+                    deniedPermissions[i] = deniedPermissionsList.get(i);
+                }
+                ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+            } else {
+                listener.onGranted();
+
+                requestSpec = 0x0000;
+                grantedSpec = 0x0000;
+                confirmedSpec = 0x0000;
+                deniedPermissionsList = null;
+            }
+        }
+    }
+
+    private void getASpecPermission(int permissions) {
+        CLog.d(TAG, "getSpec " + permissions);
+        if ((permissions & GRANTED_SAW) == GRANTED_SAW) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + GetPermissionsSample.this.getPackageName()));
+            startActivityForResult(intent, Constants.PERMISSION_OVERLAY);
+        }
+
+        if ((permissions & GRANTED_WS) == GRANTED_WS) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + GetPermissionsSample.this.getPackageName()));
+            startActivityForResult(intent, Constants.PERMISSION_WRITE_SETTINGS);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        CLog.d(TAG, "onRequestPermissionsResult");
+
+        List<String> deniedResults = new ArrayList<>();
+        for (int i = 0; i < grantResults.length; i++) {
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                deniedResults.add(permissions[i]);
+            }
+        }
+
+        if ((requestSpec ^ grantedSpec) == GRANTED_WS) {
+            deniedResults.add("Manifest.permission.WRITE_SETTINGS");
+        }
+
+        if ((requestSpec ^ grantedSpec) == GRANTED_SAW) {
+            deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
+        }
+
+        if (deniedResults.size() != 0) {
+            listener.onDenied(deniedResults);
+        } else {
+            listener.onGranted();
+        }
+
+        requestSpec = 0x0000;
+        grantedSpec = 0x0000;
+        confirmedSpec = 0x0000;
+        deniedPermissionsList = null;
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        CLog.d(TAG, "request:" + requestCode + "/resultCode" + resultCode);
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case Constants.PERMISSION_OVERLAY:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    confirmedSpec |= GRANTED_SAW;
+
+                    if (!android.provider.Settings.canDrawOverlays(this)) {
+                        //denied
+                        grantedSpec &= GRANTED_SAW;
+                    } else {
+                        grantedSpec |= GRANTED_SAW;
+                    }
+                    if (confirmedSpec == requestSpec) {
+                        if (deniedPermissionsList.size() != 0) {
+                            //Ask for the permissions
+                            String[] deniedPermissions = new String[deniedPermissionsList.size()];
+                            for (int i = 0; i < deniedPermissionsList.size(); i++) {
+                                deniedPermissions[i] = deniedPermissionsList.get(i);
+                            }
+                            ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+                        } else {
+                            List<String> deniedResults = new ArrayList<>();
+                            if ((requestSpec ^ grantedSpec) == GRANTED_WS) {
+                                deniedResults.add("Manifest.permission.WRITE_SETTINGS");
+                            }
+
+                            if ((requestSpec ^ grantedSpec) == GRANTED_SAW) {
+                                deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
+                            }
+
+                            if (deniedResults.size() != 0) {
+                                listener.onDenied(deniedResults);
+                            } else {
+                                listener.onGranted();
+                            }
+
+                            requestSpec = 0x0000;
+                            grantedSpec = 0x0000;
+                            confirmedSpec = 0x0000;
+                            deniedPermissionsList = null;
+                        }
+                    }
+                }
+                break;
+            case Constants.PERMISSION_WRITE_SETTINGS:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    confirmedSpec |= GRANTED_WS;
+                    if (!android.provider.Settings.System.canWrite(this)) {
+                        //denied
+                        grantedSpec &= GRANTED_WS;
+                    } else {
+                        grantedSpec |= GRANTED_WS;
+                    }
+                    if (confirmedSpec == requestSpec) {
+                        if (deniedPermissionsList.size() != 0) {
+                            //Ask for the permissions
+                            String[] deniedPermissions = new String[deniedPermissionsList.size()];
+                            for (int i = 0; i < deniedPermissionsList.size(); i++) {
+                                deniedPermissions[i] = deniedPermissionsList.get(i);
+                            }
+                            ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+                        } else {
+                            List<String> deniedResults = new ArrayList<>();
+                            if ((requestSpec ^ grantedSpec) == GRANTED_WS) {
+                                deniedResults.add("Manifest.permission.WRITE_SETTINGS");
+                            }
+
+                            if ((requestSpec ^ grantedSpec) == GRANTED_SAW) {
+                                deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
+                            }
+
+                            if (deniedResults.size() != 0) {
+                                listener.onDenied(deniedResults);
+                            } else {
+                                listener.onGranted();
+                            }
+
+                            requestSpec = 0x0000;
+                            grantedSpec = 0x0000;
+                            confirmedSpec = 0x0000;
+                            deniedPermissionsList = null;
+                        }
+                    }
+                }
+                break;
+        }
+    }
+}
+```
+
+
 # License
 
-``` 
+```
 Copyright 2017 Catherine Chen (https://github.com/Catherine22)
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -774,6 +1076,7 @@ the License.
    [fragment_settings]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/layout/fragment_settings.xml>
    [attrs]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/values/attrs.xml>
    [HomeActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/HomeActivity.java>
+   [GetPermissionsSample]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/GetPermissionsSample.java>
    [TypePwdActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/TypePwdActivity.java>
    [Encryption]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/Encryption.java>
    [build.gradle]:<https://github.com/Catherine22/MobileManager/blob/master/app/build.gradle>
