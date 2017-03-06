@@ -445,10 +445,10 @@ android:windowSoftInputMode="adjustPan">
 
 [AndroidManifest]
  ```XML
- <application android:allowBackup="false">
+ <application
+   android:allowBackup="false">
 
  </application>
- }
  ```  
 
 [HomeActivity]
