@@ -401,6 +401,8 @@ ActivityManager am = (ActivityManager)cons.newInstance(this, new Handler());
 #### branch.io 实作
  - 特别注意条码扫描器app会呼叫链接两次，造成第二次开启app时不用扫QR code也能导入链接，所以在onInitFinished中加上+match_guaranteed必须为true的判断，详见[HomeActivity]
  - Activity在Manifest的scheme配置应避免http或https，会导致系统开启链接时出现浏览器的选项（应直接导向该app而非交由浏览器拦截）
+ - 在设置scheme时，若装置上同时安装两个相同scheme的应用，在branch io导向时，会出现两边都能开启的情况，但只有在branch io后台设置的包名可以正确的收到branch io带入的值。
+ 
 ```xml
 <activity android:name="com.itheima.mobilesafe.HomeActivity"
 android:windowSoftInputMode="adjustPan">
