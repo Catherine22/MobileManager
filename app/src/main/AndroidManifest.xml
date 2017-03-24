@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
@@ -150,6 +151,7 @@
         <service android:name=".services.BlockCallsSmsService" />
         <service android:name=".services.WatchDogService" />
         <service android:name=".services.UpdateWidgetService" />
+        <service android:name=".services.NetworkHealthService"/>
 
         <receiver android:name=".receivers.BootCompletedReceiver">
             <intent-filter>
@@ -250,6 +252,7 @@
                 <data android:scheme="mmsto" />
             </intent-filter>
         </service>
+
 
         <!-- Facebook Account kit-->
         <meta-data

@@ -243,6 +243,86 @@ if(phone.matches("^1[3456]\\d{9}$")){
 #### 任务栈
   - [TypePwdActivity]
 
+#### 网络状态监听
+  - 建立常驻service并通过自定义的BroadcastReceiver内部类获取网络状态
+
+注册与释放service
+```JAVA
+private Intent nhs;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    nhs = new Intent(HomeActivity.this, NetworkHealthService.class);
+    startService(nhs);
+}
+
+@Override
+protected void onDestroy() {
+    stopService(nhs);
+}
+```
+
+service源码
+
+```JAVA
+public class NetworkHealthService extends Service {
+    private final static String TAG = "NetworkHealthService";
+    private InternetConnectivityReceiver internetReceiver;
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        internetReceiver = new InternetConnectivityReceiver();
+        IntentFilter internetIntentFilter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+        internetReceiver = new InternetConnectivityReceiver();
+        registerReceiver(internetReceiver, internetIntentFilter);
+    }
+
+    public class InternetConnectivityReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                if (intent.getExtras() != null) {
+                    final ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                    final NetworkInfo ni = connectivityManager.getActiveNetworkInfo();
+                    if (ni != null && ni.isConnectedOrConnecting()) {
+                        Toast.makeText(NetworkHealthService.this, "Network " + ni.getTypeName() + " connected", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(NetworkHealthService.this, "Network disabled", Toast.LENGTH_LONG).show();
+                    }
+                }
+            } catch (Exception e) {
+                unregisterReceiver(internetReceiver);
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        try {
+            unregisterReceiver(internetReceiver);
+        } catch (Exception e) {
+            unregisterReceiver(internetReceiver);
+            e.printStackTrace();
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return super.onUnbind(intent);
+    }
+}
+```
+到Manifest注册service。
+
 #### 建立桌面快捷图标
 ```JAVA
 /**
@@ -402,7 +482,7 @@ ActivityManager am = (ActivityManager)cons.newInstance(this, new Handler());
  - 特别注意条码扫描器app会呼叫链接两次，造成第二次开启app时不用扫QR code也能导入链接，所以在onInitFinished中加上+match_guaranteed必须为true的判断，详见[HomeActivity]
  - Activity在Manifest的scheme配置应避免http或https，会导致系统开启链接时出现浏览器的选项（应直接导向该app而非交由浏览器拦截）
  - 在设置scheme时，若装置上同时安装两个相同scheme的应用，在branch io导向时，会出现两边都能开启的情况，但只有在branch io后台设置的包名可以正确的收到branch io带入的值。
- 
+
 ```xml
 <activity android:name="com.itheima.mobilesafe.HomeActivity"
 android:windowSoftInputMode="adjustPan">

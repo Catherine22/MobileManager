@@ -60,6 +60,7 @@ import com.itheima.mobilesafe.fragments.setup.SetupFragment;
 import com.itheima.mobilesafe.interfaces.LoginTypeListener;
 import com.itheima.mobilesafe.interfaces.MainInterface;
 import com.itheima.mobilesafe.interfaces.OnRequestPermissionsListener;
+import com.itheima.mobilesafe.services.NetworkHealthService;
 import com.itheima.mobilesafe.utils.BroadcastActions;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
@@ -95,6 +96,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private MyAdminManager myAdminManager;
     private Server sv;
     private Client client;
+    private Intent nhs;
     private final int ACCESS_PERMISSION = 1001;
     private final static String[] names = {
             "手机防盗", "通讯卫士", "软件管理",
@@ -179,6 +181,16 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             }
         });
         client.gotMessages(BroadcastActions.ADMIN_PERMISSION);
+
+        // 监听网络状态
+        nhs = new Intent(HomeActivity.this, NetworkHealthService.class);
+        startService(nhs);
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopService(nhs);
+        super.onDestroy();
     }
 
     private void init() {
@@ -209,7 +221,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 //持久化到内存中，避免无法还原
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(HomeActivity.this);
-                    if (!defaultSmsApp.equals(getPackageName())) {
+                    if (!getPackageName().equals(defaultSmsApp)) {
                         defaultSysSmsApp = defaultSmsApp;
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putString(SpNames.default_sms_app, defaultSysSmsApp);
