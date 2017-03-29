@@ -69,17 +69,21 @@ import com.itheima.mobilesafe.utils.MyAdminManager;
 import com.itheima.mobilesafe.utils.SpNames;
 import com.itheima.mobilesafe.utils.objects.UserInfo;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
+import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
 import io.branch.referral.util.BranchEvent;
+import io.branch.referral.util.LinkProperties;
 import tw.com.softworld.messagescenter.AsyncResponse;
 import tw.com.softworld.messagescenter.Client;
 import tw.com.softworld.messagescenter.CustomReceiver;
@@ -116,27 +120,84 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     public void onStart() {
         super.onStart();
         Branch branch = Branch.getInstance();
-        branch.initSession(new Branch.BranchReferralInitListener() {
+//        branch.initSession(new Branch.BranchReferralInitListener() {
+//            @Override
+//            public void onInitFinished(JSONObject referringParams, BranchError error) {
+//                if (error == null) {
+//                    CLog.d(TAG, referringParams.toString());
+//                    try {
+//                        String eventid = referringParams.optString("eventid");
+//                        boolean matchGuaranteed = referringParams.optBoolean("+match_guaranteed", false);
+//                        if (matchGuaranteed) {//避免呼叫两次
+//                            if (eventid.equals("ASDF1100"))//在branch.io marketing里设置
+//                                callFragment(Constants.BLACKLIST_FRAG);
+//
+//                            //其他处理...
+//                        }
+//                    } catch (Exception e) {
+////                        e.printStackTrace();
+//                    }
+//
+//                } else
+//                    CLog.i(TAG, error.getMessage());
+//
+//            }
+//        }, this.getIntent().getData(), this);.start();
+        branch.initSession(new Branch.BranchUniversalReferralInitListener() {
             @Override
-            public void onInitFinished(JSONObject referringParams, BranchError error) {
+            public void onInitFinished(BranchUniversalObject branchUniversalObject, LinkProperties linkProperties, BranchError error) {
                 if (error == null) {
-                    CLog.d(TAG, referringParams.toString());
                     try {
-                        String eventid = referringParams.optString("eventid");
-                        boolean matchGuaranteed = referringParams.getBoolean("+match_guaranteed");
-                        if (matchGuaranteed) {//避免呼叫两次
+                        HashMap<String, String> metadata = branchUniversalObject.getMetadata();
+                        CLog.i(TAG, "getMetadata:" + branchUniversalObject.getMetadata());
+                        CLog.i(TAG, "getControlParams:" + linkProperties.getControlParams());
+                        CLog.i(TAG, "getMatchDuration:" + linkProperties.getMatchDuration());
+                        CLog.i(TAG, "getTags:" + linkProperties.getTags());
+                        CLog.i(TAG, "getAlias:" + linkProperties.getAlias());
+                        CLog.i(TAG, "getChannel:" + linkProperties.getChannel());
+                        CLog.i(TAG, "getCampaign:" + linkProperties.getCampaign());
+                        CLog.i(TAG, "getStage:" + linkProperties.getStage());
+
+                        //自定义上传参数
+                        Branch.getInstance().setIdentity("AA0001");
+                        JSONObject jo = new JSONObject();
+                        jo.put("timestamp", System.currentTimeMillis() / 1000 + "");
+                        Branch.getInstance().userCompletedAction("log event", jo);
+
+//                        Branch.getInstance().getCreditHistory(new Branch.BranchListResponseListener() {
+//                            @Override
+//                            public void onReceivingResponse(JSONArray list, BranchError error) {
+//                                CLog.i(TAG, "CreditHistory:"+list.toString());
+//                            }
+//                        });
+//                        branchUniversalObject.setCanonicalIdentifier("YO");
+//                        branchUniversalObject.generateShortUrl(HomeActivity.this, linkProperties, new Branch.BranchLinkCreateListener() {
+//                            @Override
+//                            public void onLinkCreate(String url, BranchError error) {
+//                                if (error == null) {
+//                                    //神奇的功能，生成新链接
+//                                    CLog.i(TAG, "got my Branch link to share: " + url);
+//                                }
+//                            }
+//                        });
+
+
+                        if (metadata.containsKey("eventid")) {
+                            String eventid = metadata.get("eventid");
                             if (eventid.equals("ASDF1100"))//在branch.io marketing里设置
                                 callFragment(Constants.BLACKLIST_FRAG);
-
-                            //其他处理...
                         }
-                    } catch (JSONException e) {
-//                        e.printStackTrace();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
 
-                } else
+                    // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
+                    // params will be empty if no data found
+                    // ... insert custom logic here ...
+                } else {
                     CLog.i(TAG, error.getMessage());
-
+                }
             }
         }, this.getIntent().getData(), this);
     }
@@ -213,7 +274,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 }
 //        Settings.simSerialNumber = "65123576";
 
-                Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
 //        BlacklistDao dao = new BlacklistDao(this);
 //        for (int i = 0; i < 100; i++)
 //            dao.add("Lisi", "1351234567" + i, BlacklistDao.MODE_CALLS_BLOCKED);

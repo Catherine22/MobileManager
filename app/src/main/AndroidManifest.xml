@@ -101,6 +101,7 @@
         </activity>
         <activity
             android:name="com.itheima.mobilesafe.HomeActivity"
+            android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustPan">
             <!--建立桌面快捷图标时使用此intent filter可以在开启时直接导向HomeActivity-->
@@ -108,22 +109,20 @@
                 <action android:name="com.itheima.home" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <intent-filter android:autoVerify="true">
-                <data android:scheme="@string/branch_scheme" />
-                <!-- Accepts URIs that begin with "http://itheima.com/mobilesafe" -->
-                <data
-                    android:host="itheima.com"
-                    android:pathPrefix="/mobilesafe"
-                    android:scheme="http" /><!--pathPrefix必须有／前缀-->
-                <data
-                    android:host="itheima.com"
-                    android:pathPrefix="/mobilesafe"
-                    android:scheme="https" />
-
+            <!-- Branch URI scheme -->
+            <intent-filter>
+                <data android:scheme="itheima.mobilesafe" android:host="open" />
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+
+            <!-- Branch App Links -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="zhz9.app.link" />
             </intent-filter>
 
             <intent-filter>
@@ -191,14 +190,17 @@
         </receiver>
 
 
-        <!--branch io-->
-        <meta-data
-            android:name="io.branch.sdk.BranchKey"
-            android:value="key_live_jeDevkbP2uFcawhsfVuW6gbdBriBvxMg" />
+
+        <!-- Branch init -->
+        <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_jeDevkbP2uFcawhsfVuW6gbdBriBvxMg" />
+        <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="key_live_ciumru4IWKbRuY5ONz4llmpbwyhmhDmw" />
+
+        <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->
+        <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
         <!--Register for google play referrer-->
-        <receiver
-            android:name="io.branch.referral.InstallListener"
-            android:exported="true">
+
+        <!-- Branch install referrer tracking -->
+        <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>

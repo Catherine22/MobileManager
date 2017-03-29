@@ -479,7 +479,13 @@ ActivityManager am = (ActivityManager)cons.newInstance(this, new Handler());
     <category android:name="android.intent.category.BROWSABLE" />    </intent-filter>
 ```
 #### branch.io 实作
- - 特别注意条码扫描器app会呼叫链接两次，造成第二次开启app时不用扫QR code也能导入链接，所以在onInitFinished中加上+match_guaranteed必须为true的判断，详见[HomeActivity]
+
+几个坑：
+ - 特别注意条码扫描器app会呼叫链接两次，由于branch.io后台有做堆或栈的记录（它认为用户是扫两次条码而不是条码扫描器app的bug），造成关闭重启app时不用扫QR code也能导入链接，所以在onInitFinished中加上+match_guaranteed必须为true的判断，详见[HomeActivity]
+ - 部分浏览器无法直接开启App（比如LG系统自带），会导向用户自定链接（比如google play），一旦通过google play开启app，+match_guaranteed就一定是false，也就是这类用户会因为上述的过滤机制被认为是无效的链接。
+ - 部分浏览器无法直接开启App（比如LG系统自带），onResume时有可能点击链接后不处理。
+
+ 
  - Activity在Manifest的scheme配置应避免http或https，会导致系统开启链接时出现浏览器的选项（应直接导向该app而非交由浏览器拦截）
  - 在设置scheme时，若装置上同时安装两个相同scheme的应用，在branch io导向时，会出现两边都能开启的情况，但只有在branch io后台设置的包名可以正确的收到branch io带入的值。
 
