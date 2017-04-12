@@ -101,6 +101,8 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private Server sv;
     private Client client;
     private Intent nhs;
+    //由其它应用通过intent开启（比如google play），还是用户手动开启。
+    private boolean launchFromIntent;
     private final int ACCESS_PERMISSION = 1001;
     private final static String[] names = {
             "手机防盗", "通讯卫士", "软件管理",
@@ -119,87 +121,102 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     @Override
     public void onStart() {
         super.onStart();
+        Intent intent = getIntent();
+        launchFromIntent = intent.getBooleanExtra("launchFromIntent", false);
+        CLog.i(TAG, "launchFromIntent:" + launchFromIntent);
         Branch branch = Branch.getInstance();
-//        branch.initSession(new Branch.BranchReferralInitListener() {
-//            @Override
-//            public void onInitFinished(JSONObject referringParams, BranchError error) {
-//                if (error == null) {
-//                    CLog.d(TAG, referringParams.toString());
-//                    try {
-//                        String eventid = referringParams.optString("eventid");
-//                        boolean matchGuaranteed = referringParams.optBoolean("+match_guaranteed", false);
-//                        if (matchGuaranteed) {//避免呼叫两次
-//                            if (eventid.equals("ASDF1100"))//在branch.io marketing里设置
-//                                callFragment(Constants.BLACKLIST_FRAG);
-//
-//                            //其他处理...
-//                        }
-//                    } catch (Exception e) {
-////                        e.printStackTrace();
-//                    }
-//
-//                } else
-//                    CLog.i(TAG, error.getMessage());
-//
-//            }
-//        }, this.getIntent().getData(), this);.start();
-        branch.initSession(new Branch.BranchUniversalReferralInitListener() {
+        branch.initSession(new Branch.BranchReferralInitListener() {
             @Override
-            public void onInitFinished(BranchUniversalObject branchUniversalObject, LinkProperties linkProperties, BranchError error) {
+            public void onInitFinished(JSONObject referringParams, BranchError error) {
                 if (error == null) {
+                    CLog.d(TAG, referringParams.toString());
                     try {
-                        HashMap<String, String> metadata = branchUniversalObject.getMetadata();
-                        CLog.i(TAG, "getMetadata:" + branchUniversalObject.getMetadata());
-                        CLog.i(TAG, "getControlParams:" + linkProperties.getControlParams());
-                        CLog.i(TAG, "getMatchDuration:" + linkProperties.getMatchDuration());
-                        CLog.i(TAG, "getTags:" + linkProperties.getTags());
-                        CLog.i(TAG, "getAlias:" + linkProperties.getAlias());
-                        CLog.i(TAG, "getChannel:" + linkProperties.getChannel());
-                        CLog.i(TAG, "getCampaign:" + linkProperties.getCampaign());
-                        CLog.i(TAG, "getStage:" + linkProperties.getStage());
-
-                        //自定义上传参数
-                        Branch.getInstance().setIdentity("AA0001");
-                        JSONObject jo = new JSONObject();
-                        jo.put("timestamp", System.currentTimeMillis() / 1000 + "");
-                        Branch.getInstance().userCompletedAction("log event", jo);
-
-//                        Branch.getInstance().getCreditHistory(new Branch.BranchListResponseListener() {
-//                            @Override
-//                            public void onReceivingResponse(JSONArray list, BranchError error) {
-//                                CLog.i(TAG, "CreditHistory:"+list.toString());
-//                            }
-//                        });
-//                        branchUniversalObject.setCanonicalIdentifier("YO");
-//                        branchUniversalObject.generateShortUrl(HomeActivity.this, linkProperties, new Branch.BranchLinkCreateListener() {
-//                            @Override
-//                            public void onLinkCreate(String url, BranchError error) {
-//                                if (error == null) {
-//                                    //神奇的功能，生成新链接
-//                                    CLog.i(TAG, "got my Branch link to share: " + url);
-//                                }
-//                            }
-//                        });
-
-
-                        if (metadata.containsKey("eventid")) {
-                            String eventid = metadata.get("eventid");
+                        String eventid = referringParams.optString("eventid");
+                        boolean matchGuaranteed = referringParams.optBoolean("+match_guaranteed", false);
+                        if (matchGuaranteed) {//避免呼叫两次
                             if (eventid.equals("ASDF1100"))//在branch.io marketing里设置
                                 callFragment(Constants.BLACKLIST_FRAG);
-                        }
+                            else if (eventid.equals("ASDF1200"))//在branch.io marketing里设置
+                                callFragment(Constants.ANTI_VIRUS_FRAG);
+                            //其他处理...
+                        } else {
+                            //检查intent是否带有包名（google play通过intent开启activity，一旦通过intent开启其它应用就必须带包名，用户直接开启app则不会有包名），有带包名表示用户是因为浏览器不给力，找不到应用因而导向google play而非直接开启，这时候我们就当成合法的branch.io请求。
+                            if (launchFromIntent) {
+                                if (eventid.equals("ASDF1100"))//在branch.io marketing里设置
+                                    callFragment(Constants.BLACKLIST_FRAG);
+                                else if (eventid.equals("ASDF1200"))//在branch.io marketing里设置
+                                    callFragment(Constants.ANTI_VIRUS_FRAG);
+                                //其他处理...
 
+                                launchFromIntent = false;
+                            }
+                        }
                     } catch (Exception e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
                     }
 
-                    // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
-                    // params will be empty if no data found
-                    // ... insert custom logic here ...
-                } else {
+                } else
                     CLog.i(TAG, error.getMessage());
-                }
+
             }
         }, this.getIntent().getData(), this);
+//        branch.initSession(new Branch.BranchUniversalReferralInitListener() {
+//            @Override
+//            public void onInitFinished(BranchUniversalObject branchUniversalObject, LinkProperties linkProperties, BranchError error) {
+//                if (error == null) {
+//                    try {
+//                        HashMap<String, String> metadata = branchUniversalObject.getMetadata();
+//                        CLog.i(TAG, "getMetadata:" + branchUniversalObject.getMetadata());
+//                        CLog.i(TAG, "getControlParams:" + linkProperties.getControlParams());
+//                        CLog.i(TAG, "getMatchDuration:" + linkProperties.getMatchDuration());
+//                        CLog.i(TAG, "getTags:" + linkProperties.getTags());
+//                        CLog.i(TAG, "getAlias:" + linkProperties.getAlias());
+//                        CLog.i(TAG, "getChannel:" + linkProperties.getChannel());
+//                        CLog.i(TAG, "getCampaign:" + linkProperties.getCampaign());
+//                        CLog.i(TAG, "getStage:" + linkProperties.getStage());
+//
+//                        //自定义上传参数
+//                        Branch.getInstance().setIdentity("AA0001");
+//                        JSONObject jo = new JSONObject();
+//                        jo.put("timestamp", System.currentTimeMillis() / 1000 + "");
+//                        Branch.getInstance().userCompletedAction("log event", jo);
+//
+////                        Branch.getInstance().getCreditHistory(new Branch.BranchListResponseListener() {
+////                            @Override
+////                            public void onReceivingResponse(JSONArray list, BranchError error) {
+////                                CLog.i(TAG, "CreditHistory:"+list.toString());
+////                            }
+////                        });
+////                        branchUniversalObject.setCanonicalIdentifier("YO");
+////                        branchUniversalObject.generateShortUrl(HomeActivity.this, linkProperties, new Branch.BranchLinkCreateListener() {
+////                            @Override
+////                            public void onLinkCreate(String url, BranchError error) {
+////                                if (error == null) {
+////                                    //神奇的功能，生成新链接
+////                                    CLog.i(TAG, "got my Branch link to share: " + url);
+////                                }
+////                            }
+////                        });
+//
+//
+//                        if (metadata.containsKey("eventid")) {
+//                            String eventid = metadata.get("eventid");
+//                            if (eventid.equals("ASDF1100"))//在branch.io marketing里设置
+//                                callFragment(Constants.BLACKLIST_FRAG);
+//                        }
+//
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
+//                    // params will be empty if no data found
+//                    // ... insert custom logic here ...
+//                } else {
+//                    CLog.i(TAG, error.getMessage());
+//                }
+//            }
+//        }, this.getIntent().getData(), this);
     }
 
     //Branch.io
@@ -212,8 +229,8 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        sp = getSharedPreferences("config", MODE_PRIVATE);
 
+        sp = getSharedPreferences("config", MODE_PRIVATE);
         //记录是否为初次启动，getPermission会用到
         isFirstTime = getSharedPreferences("isFirstTime", MODE_PRIVATE);
         isFirstTimeRun = isFirstTime.getBoolean("isFirstTimeRun", true);

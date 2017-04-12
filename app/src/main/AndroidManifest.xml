@@ -111,7 +111,7 @@
             </intent-filter>
             <!-- Branch URI scheme -->
             <intent-filter>
-                <data android:scheme="itheima.mobilesafe" android:host="open" />
+                <data android:scheme="@string/branch_scheme" android:host="open" />
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -192,8 +192,8 @@
 
 
         <!-- Branch init -->
-        <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_jeDevkbP2uFcawhsfVuW6gbdBriBvxMg" />
-        <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="key_live_ciumru4IWKbRuY5ONz4llmpbwyhmhDmw" />
+        <meta-data android:name="io.branch.sdk.BranchKey" android:value="@string/branch_key" />
+        <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="@string/branch_key" />
 
         <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->
         <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />

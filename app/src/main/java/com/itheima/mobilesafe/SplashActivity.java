@@ -57,6 +57,8 @@ public class SplashActivity extends Activity {
     protected static final int NETWORK_ERROR = 3;
     protected static final int JSON_ERROR = 4;
     private String description;
+    //由其它应用通过intent开启（比如google play），还是用户手动开启。
+    private boolean launchFromIntent;
     private TextView tv_update_info;
     /**
      * 新版本的下载地址
@@ -67,6 +69,10 @@ public class SplashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        Intent intent = getIntent();
+        launchFromIntent = intent.getPackage() != null;
+
         SharedPreferences sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
         initComponents();
         initSettings();
@@ -453,6 +459,7 @@ public class SplashActivity extends Activity {
 
     protected void enterHome() {
         Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra("launchFromIntent", launchFromIntent);
         startActivity(intent);
         // 关闭当前页面
         finish();
@@ -501,6 +508,7 @@ public class SplashActivity extends Activity {
 
     /**
      * 拷贝数据库到/data/data/包名/files目录下
+     *
      * @param fileName
      */
     private void copyDb(String fileName) {
