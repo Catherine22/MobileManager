@@ -122,6 +122,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     public void onStart() {
         super.onStart();
         Intent intent = getIntent();
+        //app自然启动时launcher页面是SplashActivity，所以检查intent是否带包名在SplashActivity执行
         launchFromIntent = intent.getBooleanExtra("launchFromIntent", false);
         CLog.i(TAG, "launchFromIntent:" + launchFromIntent);
         Branch branch = Branch.getInstance();
