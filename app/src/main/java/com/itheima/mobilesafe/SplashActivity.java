@@ -20,17 +20,6 @@ import android.util.DisplayMetrics;
 import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.itheima.mobilesafe.designpattern.abstract_factory.CarFactory;
-import com.itheima.mobilesafe.designpattern.builder.OldStyleRobotBuilder;
-import com.itheima.mobilesafe.designpattern.builder.Robot;
-import com.itheima.mobilesafe.designpattern.builder.RobotDirector;
-import com.itheima.mobilesafe.designpattern.factory.ColorFactory;
-import com.itheima.mobilesafe.designpattern.singleton.BillPughSingleton;
-import com.itheima.mobilesafe.designpattern.singleton.EagerInitializingSingleton;
-import com.itheima.mobilesafe.designpattern.singleton.EnumSingleton;
-import com.itheima.mobilesafe.designpattern.singleton.LazyInitializingSingleton;
-import com.itheima.mobilesafe.designpattern.singleton.SafeLazyInitializingSingleton;
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
 import com.itheima.mobilesafe.utils.Settings;
@@ -77,12 +66,6 @@ public class SplashActivity extends Activity {
         initComponents();
         initSettings();
 
-//        testSingleton();
-//        testFactory();
-//        testAbstractFactory();
-        testBuilder();
-
-
         boolean update = sp.getBoolean(SpNames.update, false);
         if (update) {
             // 检查升级
@@ -104,92 +87,6 @@ public class SplashActivity extends Activity {
         createShortcut();
     }
 
-    //————————————————————————Design Pattern start————————————————————————
-    private BillPughSingleton bInstance1, bInstance2;
-    private EagerInitializingSingleton eInstance1, eInstance2;
-    private EnumSingleton eunm1, eunm2;
-    private LazyInitializingSingleton lInstance1, lInstance2;
-    private SafeLazyInitializingSingleton sInstance1, sInstance2;
-
-    private void testSingleton() {
-        bInstance1 = BillPughSingleton.getInstance();
-        bInstance1.print();
-
-        eInstance1 = EagerInitializingSingleton.getInstance();
-        eInstance1.print();
-
-        eunm1 = EnumSingleton.INSTANCE;
-        eInstance1.print();
-
-        lInstance1 = LazyInitializingSingleton.getInstance();
-        lInstance1.print();
-
-        sInstance1 = SafeLazyInitializingSingleton.getInstance();
-        sInstance1.print();
-
-        Thread t = new Thread(r);
-        t.start();
-    }
-
-    private Runnable r = new Runnable() {
-        @Override
-        public void run() {
-            bInstance2 = BillPughSingleton.getInstance();
-            eInstance2 = EagerInitializingSingleton.getInstance();
-            eunm2 = EnumSingleton.INSTANCE;
-            lInstance2 = LazyInitializingSingleton.getInstance();
-            sInstance2 = SafeLazyInitializingSingleton.getInstance();
-
-            if (bInstance1 == bInstance2)
-                CLog.d("Singleton", "BillPughSingleton 同一个实例");
-            else
-                CLog.e("Singleton", "BillPughSingleton 不同实例");
-
-            if (eInstance1 == eInstance2)
-                CLog.d("Singleton", "EagerInitializingSingleton 同一个实例");
-            else
-                CLog.e("Singleton", "EagerInitializingSingleton 不同实例");
-
-            if (eunm1 == eunm2)
-                CLog.d("Singleton", "EnumSingleton 同一个实例");
-            else
-                CLog.e("Singleton", "EnumSingleton 不同实例");
-
-            if (lInstance1 == lInstance2)
-                CLog.d("Singleton", "LazyInitializingSingleton 同一个实例");
-            else
-                CLog.e("Singleton", "LazyInitializingSingleton 不同实例");
-
-            if (sInstance1 == sInstance2)
-                CLog.d("Singleton", "SafeLazyInitializingSingleton 同一个实例");
-            else
-                CLog.e("Singleton", "SafeLazyInitializingSingleton 不同实例");
-        }
-    };
-
-    private void testFactory() {
-        ColorFactory cf = new ColorFactory();
-        cf.getColor(ColorFactory.BLUE).onDraw();
-        cf.getColor(ColorFactory.RED).onDraw();
-    }
-
-    private void testAbstractFactory() {
-        CarFactory cf = new CarFactory();
-        cf.getColor(CarFactory.RED).onDraw();
-        cf.getBrand(CarFactory.BENTLEY).show();
-    }
-
-    private void testBuilder() {
-        RobotDirector rd = new RobotDirector(new OldStyleRobotBuilder());
-        rd.makeRobot();
-        Robot robot = rd.getRobot();
-        CLog.d("Builder", robot.getArms());
-        CLog.d("Builder", robot.getHead());
-        CLog.d("Builder", robot.getLegs());
-        CLog.d("Builder", robot.getTorso());
-    }
-
-    //————————————————————————Design Pattern end————————————————————————
     private void initComponents() {
         TextView tv_splash_version = (TextView) findViewById(R.id.tv_splash_version);
         tv_splash_version.setText("版本号" + getVersionName());
