@@ -462,7 +462,7 @@ ActivityManager am = (ActivityManager)cons.newInstance(this, new Handler());
  - 两种方法配置JNI——CmakeLists.txt和Android.mk，这边用Android.mk示范
  - 在main目录底下建立JNI目录 —— 建立[Android.mk]和[Application.mk]，进行相关配置 —— 建立C/C++文件（[Config.cpp]）
 
-![JNI 1][1]
+![JNI 1][NDK1]
 
  - 在模块的build.gradle内添加：
 
@@ -1172,11 +1172,11 @@ License for the specific language governing permissions and limitations under
 the License.
 ```
 
-
-   [SettingItemView]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/SettingItemView.java>
+[SettingItemView]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/SettingItemView.java>
    [fragment_settings]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/layout/fragment_settings.xml>
    [attrs]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/values/attrs.xml>
-   [HomeActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/HomeActivity.java>   [SplashActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/SplashActivity.java>
+   [HomeActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/HomeActivity.java>  
+   [SplashActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/SplashActivity.java>
    [GetPermissionsSample]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/GetPermissionsSample.java>
    [TypePwdActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/TypePwdActivity.java>
    [Encryption]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/Encryption.java>
@@ -1225,8 +1225,9 @@ the License.
    [TrafficManagerFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/TrafficManagerFragment.java>
    [AntiVirusFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/AntiVirusFragment.java>
    [ClearCacheFragment]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/fragments/ClearCacheFragment.java>
-   [WatchDogService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/WatchDogService.java>   
-   [NDK1]: https://github.com/Catherine22/MobileManager/blob/master/jni1.png
-   [Config.cpp]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/jni/Config.cpp>      [SecurityUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/SecurityUtils.java>
+   [WatchDogService]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/services/WatchDogService.java>
+   [Config.cpp]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/jni/Config.cpp>
+   [SecurityUtils]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/SecurityUtils.java>
    [Android.mk]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/jni/Android.mk>     
-   [Application.mk]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/jni/Application.mk>     
+   [Application.mk]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/jni/Application.mk>
+   [NDK1]: https://github.com/Catherine22/MobileManager/blob/master/jni1.png  
