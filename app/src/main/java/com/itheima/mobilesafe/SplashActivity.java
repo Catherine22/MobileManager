@@ -20,8 +20,10 @@ import android.util.DisplayMetrics;
 import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.itheima.mobilesafe.utils.CLog;
 import com.itheima.mobilesafe.utils.Constants;
+import com.itheima.mobilesafe.utils.SecurityUtils;
 import com.itheima.mobilesafe.utils.Settings;
 import com.itheima.mobilesafe.utils.SpNames;
 import com.itheima.mobilesafe.utils.StreamUtils;
@@ -65,6 +67,7 @@ public class SplashActivity extends Activity {
         SharedPreferences sp = getSharedPreferences(SpNames.FILE_CONFIG, MODE_PRIVATE);
         initComponents();
         initSettings();
+        initVerifyApp();
 
         boolean update = sp.getBoolean(SpNames.update, false);
         if (update) {
@@ -138,6 +141,13 @@ public class SplashActivity extends Activity {
             intent2.putExtra(Intent.EXTRA_SHORTCUT_ICON, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
             sendBroadcast(intent2);
         }
+    }
+
+    private void initVerifyApp() {
+        CLog.d(TAG, "verify app");
+        SecurityUtils securityUtils = new SecurityUtils();
+        String auth = securityUtils.getAuthentication();
+        CLog.d(TAG, "auth=" + auth);
     }
 
     private Handler handler = new Handler() {

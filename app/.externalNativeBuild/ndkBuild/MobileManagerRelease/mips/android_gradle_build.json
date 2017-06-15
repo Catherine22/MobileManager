@@ -1,0 +1,33 @@
+{
+  "buildFiles": [
+    "/Users/Nexton/AndroidStudioProjects/MobileManager/app/src/main/jni/Android.mk",
+    "/Users/Nexton/AndroidStudioProjects/MobileManager/app/src/main/jni/Application.mk"
+  ],
+  "cleanCommands": [
+    "/Users/Nexton/Documents/dev/android-sdk-macosx/ndk-bundle/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/Nexton/AndroidStudioProjects/MobileManager/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/Nexton/AndroidStudioProjects/MobileManager/app/src/main/jni/Application.mk APP_ABI\u003dmips NDK_ALL_ABIS\u003dmips NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-15 NDK_OUT\u003d/Users/Nexton/AndroidStudioProjects/MobileManager/app/build/intermediates/ndkBuild/MobileManager/release/obj NDK_LIBS_OUT\u003d/Users/Nexton/AndroidStudioProjects/MobileManager/app/build/intermediates/ndkBuild/MobileManager/release/lib clean"
+  ],
+  "libraries": {
+    "keys-MobileManagerRelease-mips": {
+      "buildCommand": "/Users/Nexton/Documents/dev/android-sdk-macosx/ndk-bundle/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/Nexton/AndroidStudioProjects/MobileManager/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/Nexton/AndroidStudioProjects/MobileManager/app/src/main/jni/Application.mk APP_ABI\u003dmips NDK_ALL_ABIS\u003dmips NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-15 NDK_OUT\u003d/Users/Nexton/AndroidStudioProjects/MobileManager/app/build/intermediates/ndkBuild/MobileManager/release/obj NDK_LIBS_OUT\u003d/Users/Nexton/AndroidStudioProjects/MobileManager/app/build/intermediates/ndkBuild/MobileManager/release/lib /Users/Nexton/AndroidStudioProjects/MobileManager/app/build/intermediates/ndkBuild/MobileManager/release/obj/local/mips/libkeys.so",
+      "toolchain": "toolchain-mips",
+      "abi": "mips",
+      "artifactName": "keys",
+      "files": [
+        {
+          "src": "/Users/Nexton/AndroidStudioProjects/MobileManager/app/src/main/jni/Config.cpp",
+          "flags": "\"-gcc-toolchain\" \"/Users/Nexton/Documents/dev/android-sdk-macosx/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/darwin-x86_64\" \"-target\" \"mipsel-none-linux-android\" \"-fpic\" \"-ffunction-sections\" \"-funwind-tables\" \"-fstack-protector-strong\" \"-fmessage-length\u003d0\" \"-Wno-invalid-command-line-argument\" \"-Wno-unused-command-line-argument\" \"-no-canonical-prefixes\" \"-g\" \"-mips32\" \"-fno-exceptions\" \"-fno-rtti\" \"-O2\" \"-DNDEBUG\" \"-I/Users/Nexton/Documents/dev/android-sdk-macosx/ndk-bundle/sources/cxx-stl/system/include\" \"-I/Users/Nexton/AndroidStudioProjects/MobileManager/app/src/main/jni\" \"-DANDROID\" \"-Wa,--noexecstack\" \"-Wformat\" \"-Werror\u003dformat-security\" \"--sysroot\" \"/Users/Nexton/Documents/dev/android-sdk-macosx/ndk-bundle/platforms/android-15/arch-mips\""
+        }
+      ],
+      "output": "/Users/Nexton/AndroidStudioProjects/MobileManager/app/build/intermediates/ndkBuild/MobileManager/release/obj/local/mips/libkeys.so"
+    }
+  },
+  "toolchains": {
+    "toolchain-mips": {
+      "cppCompilerExecutable": "/Users/Nexton/Documents/dev/android-sdk-macosx/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

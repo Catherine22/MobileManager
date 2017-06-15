@@ -18,6 +18,7 @@
 | 应用上传、下载流量统计 | [TrafficManagerFragment] |
 | Facebook Account kit 登入 |[SettingsFragment], [AccountKitUtils]|
 | Deep linking（以branch.io实现） |[HomeActivity]|
+| 利用NDK存取authentication key |[SplashActivity]|
 
 ## 自定义控件
 #### 自定义控件属性      
@@ -456,6 +457,10 @@ ActivityManager am = (ActivityManager)cons.newInstance(this, new Handler());
   - [ClearCacheFragment]  search Reflection
 
 #### [SQLite operation]
+
+## 利用NDK存取authentication key
+
+
 
 ## App links几个要点
  - android M 及其新版支援以http/https为scheme的Url开启app（之前的版本导向浏览器）
@@ -1157,7 +1162,7 @@ the License.
    [SettingItemView]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/ui/SettingItemView.java>
    [fragment_settings]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/layout/fragment_settings.xml>
    [attrs]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/res/values/attrs.xml>
-   [HomeActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/HomeActivity.java>
+   [HomeActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/HomeActivity.java>   [SplashActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/SplashActivity.java>
    [GetPermissionsSample]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/GetPermissionsSample.java>
    [TypePwdActivity]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/TypePwdActivity.java>
    [Encryption]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/java/com/itheima/mobilesafe/utils/Encryption.java>
