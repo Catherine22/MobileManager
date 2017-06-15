@@ -12,5 +12,7 @@ public class SecurityUtils {
         System.loadLibrary("keys");
     }
 
+    public native String[] getAuthChain(String key);
     public native String getAuthentication();
+    public native int getdynamicID(int timestamp);
 }

@@ -143,11 +143,32 @@ public class SplashActivity extends Activity {
         }
     }
 
+    /**
+     * C++传到Java
+     */
     private void initVerifyApp() {
         CLog.d(TAG, "verify app");
         SecurityUtils securityUtils = new SecurityUtils();
+
+        //String
         String auth = securityUtils.getAuthentication();
         CLog.d(TAG, "auth=" + auth);
+
+        //int
+        int t = (int) System.currentTimeMillis() / 1000;
+        int id = securityUtils.getdynamicID(t);
+        CLog.d(TAG, "id=" + id);
+
+        //String[]
+        String[] authChain = securityUtils.getAuthChain("LOGIN");
+        StringBuilder sb = new StringBuilder();
+        sb.append("[ ");
+        for (int i = 0; i < authChain.length; i++) {
+            sb.append(authChain[i]);
+            sb.append(" ");
+        }
+        sb.append("]");
+        CLog.d(TAG, "authChain=" + sb.toString());
     }
 
     private Handler handler = new Handler() {
