@@ -142,7 +142,8 @@ public class SecurityUtils {
             }
             CLog.d(TAG, "decodeKey:" + decodeKey);
 
-            // 根据定义secret的规则调整
+            //private key = "Catherine"
+            // 根据定义secret key的规则调整(目前是base64编码(yyyyMMdd + "Catherine" + (yyyyMMdd%2)))，所以还原private key时要判断前面的逻辑。
             String privateKey;
             try {
                 String rawF = decodeKey.substring(0, 8);

@@ -500,8 +500,8 @@ public boolean verifyApk(Context ctx) throws PackageManager.NameNotFoundExceptio
 ```
 
  2. 但如果用户反编译apk，并且置换FINGERPRINT_SHA1的值对应自己keystore的值就能破解，所以这边增加验证的复杂度。
-    (1) 定义一组secret key，做base64编码(encode)，把这种key存在AndroidManifest的<meta-data>标签内。
-    (2) 把先前取得的SHA-1签名和secret key拿来做MD5再做比较。
+        (1) 定义一组private key，做base64编码(encode)，把这种key存在AndroidManifest的<meta-data>标签内。
+        (2) 把先前取得的SHA-1签名和base64解码后的private key拿来做MD5再做比较。
 
 ```xml
 <application
@@ -556,7 +556,7 @@ public boolean verifyApk(Context ctx) throws PackageManager.NameNotFoundExceptio
 }
 ```
 
- 3. 再更进一步，让Manifest里secret key的值每次添加时都会变动，参考[SecurityUtils]里的verifyApk(Context)方法。
+ 3. 再更进一步，让Manifest里private key的值进行加盐成为secret key，参考[SecurityUtils]里的verifyApk(Context)方法，每次打包apk前都要先从secret key还原出private key。
 
 
 ## App links几个要点
