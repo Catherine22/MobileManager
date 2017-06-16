@@ -475,6 +475,89 @@ ActivityManager am = (ActivityManager)cons.newInstance(this, new Handler());
  ```
  - 详见[SecurityUtils]和[SplashActivity]
 
+### 验证应用是否为正版（由相同keystore打包）
+ 1. 首先原理是每个keystore都能获取一个唯一的、固定的signature，把这个signature作为识别符判断该应用是否为指定keystore打包。
+
+```Java
+//要先用正确的keystore打包执行过一次，得到的strResult值就是FINGERPRINT_SHA1的值，之后执行如果换了apk就会返回false。
+private final static String FINGERPRINT_SHA1 = "xxxxxxx";
+public boolean verifyApk(Context ctx) throws PackageManager.NameNotFoundException, NoSuchAlgorithmException {
+    PackageInfo pkgInfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), PackageManager.GET_SIGNATURES);
+    String strResult = "";
+    for (Signature signature : pkgInfo.signatures) {
+        MessageDigest md = MessageDigest.getInstance("SHA1");
+        md.update(signature.toByteArray());
+        for (byte b : md.digest()) {
+            String strAppend = Integer.toString(b & 0xff, 16);
+            if (strAppend.length() == 1)
+                strResult += "0";
+            strResult += strAppend;
+        }
+        strResult = strResult.toUpperCase();
+    }
+    return FINGERPRINT_SHA1.equals(strResult);
+}
+```
+
+ 2. 但如果用户反编译apk，并且置换FINGERPRINT_SHA1的值对应自己keystore的值就能破解，所以这边增加验证的复杂度。
+    (1) 定义一组secret key，做base64编码(encode)，把这种key存在AndroidManifest的<meta-data>标签内。
+    (2) 把先前取得的SHA-1签名和secret key拿来做MD5再做比较。
+
+```xml
+<application
+    android:name=".utils.MyApplication"
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:theme="@style/AppTheme">
+
+    <meta-data
+        android:name="Catherine.secret.key"
+        android:value="MjAxNzA2MTdDYXRoZXJpbmUx" />
+
+</application>
+```
+
+```Java
+//要先用正确的keystore打包执行过一次，得到的apkKey值就是FINGERPRINT_SHA1的值，之后执行如果换了apk就会返回false。
+private final static String FINGERPRINT_SHA1 = "xxxxxxx";
+public boolean verifyApk(Context ctx) throws PackageManager.NameNotFoundException, NoSuchAlgorithmException {
+    PackageInfo pkgInfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), PackageManager.GET_META_DATA | PackageManager.GET_SIGNATURES);
+    Bundle bundle = pkgInfo.applicationInfo.metaData;
+    if (!bundle.containsKey("Catherine.secret.key")) {
+        CLog.e(TAG, "Error meta-data");
+        return false;
+    } else {
+        String SDKKey = bundle.getString("Catherine.secret.key");
+        //SHA1 fingerprint
+        String strResult = "";
+        for (Signature signature : pkgInfo.signatures) {
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            md.update(signature.toByteArray());
+            for (byte b : md.digest()) {
+                String strAppend = Integer.toString(b & 0xff, 16);
+                if (strAppend.length() == 1)
+                    strResult += "0";
+                strResult += strAppend;
+            }
+            strResult = strResult.toUpperCase();
+        }
+        String decodeKey;
+        try {
+            byte[] data1 = Base64.decode(SDKKey, Base64.DEFAULT);
+
+            decodeKey = new String(data1, "UTF-8");
+        } catch (Exception e) {
+            decodeKey = "";
+        }
+        String apkKey = md5(decodeKey + strResult).toUpperCase();
+        return FINGERPRINT_SHA1.equals(apkKey);
+    }
+}
+```
+
+ 3. 再更进一步，让Manifest里secret key的值每次添加时都会变动，参考[SecurityUtils]里的verifyApk(Context)方法。
+
 
 ## App links几个要点
  - android M 及其新版支援以http/https为scheme的Url开启app（之前的版本导向浏览器）

@@ -12,6 +12,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -38,6 +39,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 
 public class SplashActivity extends Activity {
 
@@ -149,6 +151,15 @@ public class SplashActivity extends Activity {
     private void initVerifyApp() {
         CLog.d(TAG, "verify app");
         SecurityUtils securityUtils = new SecurityUtils();
+        try {
+            CLog.d(TAG,"Is this app legal? "+securityUtils.verifyApk(SplashActivity.this));
+        } catch (NameNotFoundException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            securityUtils.generateKeyPair();
+        }
 
         //String
         String auth = securityUtils.getAuthentication();
