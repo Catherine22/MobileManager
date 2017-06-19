@@ -122,7 +122,7 @@ public class AntiVirusFragment extends Fragment {
             //s1————————————————————————————————————————————
 //            String dataDir = installedApplications.get(i).dataDir;//对应的是资源目录
             String sourceDir = installedApplications.get(i).sourceDir;//对应的是apk的全路径
-            String signature = Encryption.doMd5Securly(sourceDir);
+            String signature = Encryption.doMd5Safely(sourceDir);
             try {
                 si.isVirus = dao.find(signature);
 

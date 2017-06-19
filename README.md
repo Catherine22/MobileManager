@@ -1236,7 +1236,6 @@ public class GetPermissionsSample extends FragmentActivity {
 }
 ```
 
-
 # License
 
 ```
