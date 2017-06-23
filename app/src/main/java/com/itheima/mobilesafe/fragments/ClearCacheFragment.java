@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.itheima.mobilesafe.R;
 import com.itheima.mobilesafe.utils.CLog;
@@ -132,7 +133,7 @@ public class ClearCacheFragment extends Fragment {
                                 public void onClick(View v) {
                                     //Not work, due to lacking android.permission.DELETE_CACHE_FILES
                                     //DELETE_CACHE_FILES which allows an application to delete cache files is Not for use by third-party applications.
-
+                                    Toast.makeText(getActivity(),"很抱歉，只有系统级别的应用才能清理缓存",Toast.LENGTH_LONG).show();
                                     try {
                                         //Reflection
                                         Method deleteApplicationCacheFiles = PackageManager.class.getMethod("deleteApplicationCacheFiles", String.class, IPackageDataObserver.class);
