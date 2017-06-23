@@ -152,13 +152,9 @@ public class SplashActivity extends Activity {
         CLog.d(TAG, "verify app");
         SecurityUtils securityUtils = new SecurityUtils();
         try {
-            CLog.d(TAG,"Is this app legal? "+securityUtils.verifyApk(SplashActivity.this));
+            CLog.d(TAG, "Is this app legal? " + securityUtils.verifyApk(SplashActivity.this));
         } catch (NameNotFoundException | NoSuchAlgorithmException e) {
             e.printStackTrace();
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            securityUtils.generateKeyPair();
         }
 
         //String
@@ -170,16 +166,28 @@ public class SplashActivity extends Activity {
         int id = securityUtils.getdynamicID(t);
         CLog.d(TAG, "id=" + id);
 
-        //String[]
-        String[] authChain = securityUtils.getAuthChain("LOGIN");
-        StringBuilder sb = new StringBuilder();
-        sb.append("[ ");
-        for (int i = 0; i < authChain.length; i++) {
-            sb.append(authChain[i]);
-            sb.append(" ");
+        try {
+            //String[]
+            StringBuilder sb = new StringBuilder();
+            String[] authChain = securityUtils.getAuthChain("LOGIN");
+            sb.append("Decrypted secret keys\n[ ");
+            for (int i = 0; i < authChain.length; i++) {
+                sb.append(securityUtils.decryptRSA(authChain[i]));
+                sb.append(" ");
+            }
+            sb.append("]\n");
+
+            String[] authChain2 = securityUtils.getAuthChain("OTHER");
+            sb.append("secret keys\n[ ");
+            for (int i = 0; i < authChain.length; i++) {
+                sb.append(authChain2[i]);
+                sb.append(" ");
+            }
+            sb.append("]");
+            CLog.d(TAG, sb.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        sb.append("]");
-        CLog.d(TAG, "authChain=" + sb.toString());
     }
 
     private Handler handler = new Handler() {

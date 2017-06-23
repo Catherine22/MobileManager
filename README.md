@@ -473,7 +473,9 @@ ActivityManager am = (ActivityManager)cons.newInstance(this, new Handler());
      }
  }
  ```
+ - 为了增加破解的难度，把写在C/C++内的字串做RSA加密，在Java端加入解密的方法，未来每次要用时就先解密通过JNI拿到的字串。
  - 详见[SecurityUtils]和[SplashActivity]
+ - 我另外写了个Java的范例程式[RSAHelper]生成RSA的加密字串与解密所需参数，解密的说明详见另一个范例app[SecuritySample]，代码都和这个app里写的一样。
 
 ### 验证应用是否为正版（由相同keystore打包）
  1. 首先原理是每个keystore都能获取一个唯一的、固定的signature，把这个signature作为识别符判断该应用是否为指定keystore打包。
@@ -1313,3 +1315,5 @@ the License.
    [Android.mk]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/jni/Android.mk>     
    [Application.mk]:<https://github.com/Catherine22/MobileManager/blob/master/app/src/main/jni/Application.mk>
    [NDK1]: https://github.com/Catherine22/MobileManager/blob/master/jni1.png  
+   [RSAHelper]:<https://github.com/Catherine22/RSAHelper>
+   [SecuritySample]:<https://github.com/Catherine22/SecuritySample>
