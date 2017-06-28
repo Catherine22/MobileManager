@@ -11,8 +11,20 @@ import tw.com.softworld.messagescenter.Config;
  * Soft-World Inc.
  * catherine919@soft-world.com.tw
  */
+@SuppressWarnings("unused")
 public class CLog {
-    public static final boolean DEBUG = BuildConfig.SHOW_LOG;
+    private static final boolean DEBUG = BuildConfig.SHOW_LOG;
+
+    public static String getTag() {
+        String tag = "";
+        final StackTraceElement[] ste = Thread.currentThread().getStackTrace();
+        for (int i = 0; i < ste.length; i++) {
+            if (ste[i].getMethodName().equals("getTag")) {
+                tag = "(" + ste[i + 1].getFileName() + ":" + ste[i + 1].getLineNumber() + ")";
+            }
+        }
+        return tag;
+    }
 
     public static void v(String tab, String message) {
         if (MyApplication.getInstance().getPackageName().contains(".test") || DEBUG) {

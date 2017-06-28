@@ -30,7 +30,7 @@ android {
         javaMaxHeapSize "4g"
     }
 
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "tw.com.softworld.mobilemanager"
@@ -43,27 +43,41 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField("boolean", "SHOW_LOG", "true")
+            // 混淆
             minifyEnabled false
+            // Zipalign优化
+            zipAlignEnabled false
+            // 移除无用的resource文件
+            shrinkResources false
+            // 移除无用的resource文件
+            shrinkResources false
+            buildConfigField("boolean", "SHOW_LOG", "true")
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
+            // 混淆
+            minifyEnabled true
+            // Zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources true
+            // 移除无用的resource文件
+            shrinkResources true
             buildConfigField("boolean", "SHOW_LOG", "false")
-            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     productFlavors {
         MobileManager {
             applicationId "com.itheima.mobilesafe"
-            versionName "Release 1.0"
-            versionCode 1
+            versionName "Release 1.5"
+            versionCode 15
             signingConfig signingConfigs.config
         }
         MobileManagerPro {
             applicationId "com.itheima.mobilesafe.pro"
-            versionName "Release 1.0"
-            versionCode 1
+            versionName "Release 1.8"
+            versionCode 18
             signingConfig signingConfigs.config
         }
     }
@@ -95,7 +109,7 @@ android {
 dependencies {
     compile 'com.android.support:support-v4:24.1.1'
     compile 'catherine.mobile:messagescenter:+'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.android.support:recyclerview-v7:24.4.0'
     compile 'io.branch.sdk.android:library:2.+'
     compile 'com.facebook.android:account-kit-sdk:4.+'
     compile files('libs/gson-2.7.jar')

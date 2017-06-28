@@ -50,7 +50,6 @@ public class ClearCacheFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_clear_cache, container, false);
-
         tv_status = (TextView) view.findViewById(R.id.tv_status);
         pb = (ProgressBar) view.findViewById(R.id.pb);
         ll_content = (LinearLayout) view.findViewById(R.id.ll_content);
@@ -67,7 +66,7 @@ public class ClearCacheFragment extends Fragment {
                 Method[] methods = PackageManager.class.getDeclaredMethods();
                 Method getPackageSizeInfo = null;
                 for (Method m : methods) {
-//                    CLog.d(TAG, m.getName());
+                    CLog.d(TAG, m.getName());
                     if ("getPackageSizeInfo".equals(m.getName())) {
                         getPackageSizeInfo = m;
                     }
@@ -133,7 +132,7 @@ public class ClearCacheFragment extends Fragment {
                                 public void onClick(View v) {
                                     //Not work, due to lacking android.permission.DELETE_CACHE_FILES
                                     //DELETE_CACHE_FILES which allows an application to delete cache files is Not for use by third-party applications.
-                                    Toast.makeText(getActivity(),"很抱歉，只有系统级别的应用才能清理缓存",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity(), "很抱歉，只有系统级别的应用才能清理缓存", Toast.LENGTH_LONG).show();
                                     try {
                                         //Reflection
                                         Method deleteApplicationCacheFiles = PackageManager.class.getMethod("deleteApplicationCacheFiles", String.class, IPackageDataObserver.class);
