@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.provider.Telephony;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -232,10 +233,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         setContentView(R.layout.activity_home);
 
         sp = getSharedPreferences("config", MODE_PRIVATE);
-        //记录是否为初次启动，getPermission会用到
-        isFirstTime = getSharedPreferences("isFirstTime", MODE_PRIVATE);
-        isFirstTimeRun = isFirstTime.getBoolean("isFirstTimeRun", true);
-
         myAdminManager = new MyAdminManager(this);
         AsyncResponse ar = new AsyncResponse() {
             @Override
@@ -273,14 +270,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void init() {
-        getPermissions(new String[]{Manifest.permission.INTERNET, Manifest.permission.READ_PHONE_STATE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new OnRequestPermissionsListener() {
+        getPermissions(new String[]{Manifest.permission.READ_PHONE_STATE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new OnRequestPermissionsListener() {
             @Override
             public void onGranted() {
-                SharedPreferences.Editor ed = isFirstTime.edit();
-                ed.putBoolean("isFirstTimeRun", false);
-                ed.apply();
-                isFirstTimeRun = false;
-
                 initComponent();
 
                 //取得sim卡信息
@@ -316,30 +308,11 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             }
 
             @Override
-            public void onDenied(@Nullable List<String> deniedPermissions, @Nullable final List<String> neverAskAgainPermissions) {
-                SharedPreferences.Editor editor = isFirstTime.edit();
-                editor.putBoolean("isFirstTimeRun", false);
-                editor.apply();
-                isFirstTimeRun = false;
-
+            public void onDenied(@Nullable List<String> deniedPermissions) {
                 StringBuilder context = new StringBuilder();
                 if (deniedPermissions != null) {
                     for (String p : deniedPermissions) {
-                        if (Manifest.permission.INTERNET.equals(p)) {
-                            context.append("网络、");
-                        } else if (Manifest.permission.READ_PHONE_STATE.equals(p)) {
-                            context.append("电话、");
-                        } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(p)) {
-                            context.append("存储、");
-                        }
-                    }
-                }
-
-                if (neverAskAgainPermissions != null) {
-                    for (String p : neverAskAgainPermissions) {
-                        if (Manifest.permission.INTERNET.equals(p)) {
-                            context.append("网络、");
-                        } else if (Manifest.permission.READ_PHONE_STATE.equals(p)) {
+                        if (Manifest.permission.READ_PHONE_STATE.equals(p)) {
                             context.append("电话、");
                         } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(p)) {
                             context.append("存储、");
@@ -362,24 +335,19 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                         }).setPositiveButton("确定开启", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (neverAskAgainPermissions != null && neverAskAgainPermissions.size() != 0) {
-                            Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                    Uri.fromParts("package", getPackageName(), null));
-                            startActivity(intent);
-                            finish();
-                        } else
-                            init();
+                        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.fromParts("package", getPackageName(), null));
+                        startActivityForResult(intent, Constants.OPEN_SETTINGS);
                     }
                 });
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 myAlertDialog.show();
             }
-        });
 
+            @Override
+            public void onRetry() {
+                init();
+            }
+        });
     }
 
     /**
@@ -533,17 +501,7 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                         callFragment(Constants.APPS_MAG_FRAG);
                         break;
                     case 3://进程管理
-                        getPermissions(new String[]{Manifest.permission.KILL_BACKGROUND_PROCESSES}, new OnRequestPermissionsListener() {
-                            @Override
-                            public void onGranted() {
-                                callFragment(Constants.TASK_FRAG);
-                            }
-
-                            @Override
-                            public void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions) {
-                                Toast.makeText(HomeActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        launchTASK_FRAG();
                         break;
                     case 4://流量统计
                         callFragment(Constants.TRAFFIC_MAG_FRAG);
@@ -568,6 +526,25 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         });
     }
 
+    private void launchTASK_FRAG() {
+        getPermissions(new String[]{Manifest.permission.KILL_BACKGROUND_PROCESSES}, new OnRequestPermissionsListener() {
+            @Override
+            public void onGranted() {
+                callFragment(Constants.TASK_FRAG);
+            }
+
+            @Override
+            public void onDenied(@Nullable List<String> deniedPermissions) {
+                Toast.makeText(HomeActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onRetry() {
+                launchTASK_FRAG();
+            }
+        });
+    }
+
     private void clearCache() {
         getPermissions(new String[]{Manifest.permission.GET_PACKAGE_SIZE}, new OnRequestPermissionsListener() {
             @Override
@@ -576,18 +553,10 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             }
 
             @Override
-            public void onDenied(@Nullable List<String> deniedPermissions, @Nullable final List<String> neverAskAgainPermissions) {
+            public void onDenied(@Nullable List<String> deniedPermissions) {
                 StringBuilder context = new StringBuilder();
                 if (deniedPermissions != null) {
                     for (String p : deniedPermissions) {
-                        if (Manifest.permission.GET_PACKAGE_SIZE.equals(p)) {
-                            context.append("获取应用大小");
-                        }
-                    }
-                }
-
-                if (neverAskAgainPermissions != null) {
-                    for (String p : neverAskAgainPermissions) {
                         if (Manifest.permission.GET_PACKAGE_SIZE.equals(p)) {
                             context.append("获取应用大小");
                         }
@@ -607,21 +576,17 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                         }).setPositiveButton("确定开启", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (neverAskAgainPermissions != null && neverAskAgainPermissions.size() != 0) {
-                            Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                    Uri.fromParts("package", getPackageName(), null));
-                            startActivity(intent);
-                            finish();
-                        } else
-                            clearCache();
+                        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.fromParts("package", getPackageName(), null));
+                        startActivityForResult(intent, Constants.OPEN_SETTINGS);
                     }
                 });
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 myAlertDialog.show();
+            }
+
+            @Override
+            public void onRetry() {
+                clearCache();
             }
         });
     }
@@ -632,9 +597,6 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
     private int grantedSpec = 0x0000;           //已取得的特殊权限
     private int confirmedSpec = 0x0000;         //已询问的特殊权限
     private List<String> deniedPermissionsList; //被拒绝的权限
-    private List<String> neverAskAgainList;     //被标记"不再询问"的权限
-    private SharedPreferences isFirstTime;      //记录是否为初次启动app的SharePreferences
-    private boolean isFirstTimeRun;             //是否为初次启动app
 
     /**
      * 1. 如果gradle中设定compileSdkVersion与targetSdkVersion低于23，在Android M后的手机就会预设没有获取权限。<br></>
@@ -652,33 +614,31 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
      * @param listener    此变量implements事件的接口,负责传递信息
      */
     @Override
+    @TargetApi(Build.VERSION_CODES.M)
     public void getPermissions(String[] permissions, OnRequestPermissionsListener listener) {
+        if (permissions == null || permissions.length == 0 || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            listener.onGranted();
+            return;
+        }
         this.listener = listener;
         deniedPermissionsList = new LinkedList<>();
-        neverAskAgainList = new LinkedList<>();
-
         for (String p : permissions) {
-            if (p.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
+            if (p.equals(android.Manifest.permission.SYSTEM_ALERT_WINDOW)) {
                 requestSpec |= GRANTED_SAW;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(HomeActivity.this)) {
-                    grantedSpec &= GRANTED_SAW;
-                } else
+                if (android.provider.Settings.canDrawOverlays(HomeActivity.this))
                     grantedSpec |= GRANTED_SAW;
-            } else if (p.equals(Manifest.permission.WRITE_SETTINGS)) {
+            } else if (p.equals(android.Manifest.permission.WRITE_SETTINGS)) {
                 requestSpec |= GRANTED_WS;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(HomeActivity.this)) {
-                    grantedSpec &= GRANTED_WS;
-                } else
+                if (android.provider.Settings.System.canWrite(HomeActivity.this))
                     grantedSpec |= GRANTED_WS;
-            } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, p) || isFirstTimeRun) {
-                deniedPermissionsList.add(p);
             } else if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
-                neverAskAgainList.add(p);
+                deniedPermissionsList.add(p);
             }
+
         }
 
         if (requestSpec != grantedSpec) {
-            getASpecPermission(requestSpec | grantedSpec);
+            getASpecPermission(requestSpec);
         } else {// Granted all of the special permissions
             if (deniedPermissionsList.size() != 0) {
                 //Ask for the permissions
@@ -686,12 +646,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                 for (int i = 0; i < deniedPermissionsList.size(); i++) {
                     deniedPermissions[i] = deniedPermissionsList.get(i);
                 }
-                ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+                ActivityCompat.requestPermissions(this, deniedPermissions, Constants.ACCESS_PERMISSION);
             } else {
-                if (neverAskAgainList.size() != 0)
-                    listener.onDenied(null, neverAskAgainList);
-                else
-                    listener.onGranted();
+                listener.onGranted();
 
                 requestSpec = 0x0000;
                 grantedSpec = 0x0000;
@@ -701,15 +658,15 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     private void getASpecPermission(int permissions) {
-        CLog.d(TAG, "getSpec " + permissions);
-        if ((permissions & GRANTED_SAW) == GRANTED_SAW) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
+        if ((permissions & GRANTED_SAW) == GRANTED_SAW && (permissions & grantedSpec) != GRANTED_SAW) {
+            Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + HomeActivity.this.getPackageName()));
             startActivityForResult(intent, Constants.PERMISSION_OVERLAY);
         }
 
-        if ((permissions & GRANTED_WS) == GRANTED_WS) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + HomeActivity.this.getPackageName()));
+        if ((permissions & GRANTED_WS) == GRANTED_WS && (permissions & grantedSpec) != GRANTED_WS) {
+            Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + HomeActivity.this.getPackageName()));
             startActivityForResult(intent, Constants.PERMISSION_WRITE_SETTINGS);
         }
     }
@@ -792,10 +749,19 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
         editor.apply();
     }
 
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        CLog.d(TAG, "onRequestPermissionsResult");
+        //Press home key then click icon to launch while checking permission
+        if (permissions.length == 0) {
+            requestSpec = 0x0000;
+            grantedSpec = 0x0000;
+            confirmedSpec = 0x0000;
+            deniedPermissionsList = null;
+            listener.onRetry();
+            return;
+        }
 
         List<String> deniedResults = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
@@ -804,19 +770,18 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             }
         }
 
-        if ((requestSpec ^ grantedSpec) == GRANTED_WS) {
+        if ((requestSpec & GRANTED_WS) == GRANTED_WS && (grantedSpec & GRANTED_WS) != GRANTED_WS)
             deniedResults.add("Manifest.permission.WRITE_SETTINGS");
-        }
 
-        if ((requestSpec ^ grantedSpec) == GRANTED_SAW) {
+        if ((requestSpec & GRANTED_SAW) == GRANTED_SAW && (grantedSpec & GRANTED_SAW) != GRANTED_SAW)
             deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
-        }
 
-        if (deniedResults.size() != 0 || neverAskAgainList.size() != 0) {
-            listener.onDenied(deniedResults, neverAskAgainList);
-        } else {
+
+        if (deniedResults.size() != 0)
+            listener.onDenied(deniedResults);
+        else
             listener.onGranted();
-        }
+
 
         requestSpec = 0x0000;
         grantedSpec = 0x0000;
@@ -840,13 +805,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             case Constants.PERMISSION_OVERLAY:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     confirmedSpec |= GRANTED_SAW;
-
-                    if (!android.provider.Settings.canDrawOverlays(this)) {
-                        //denied
-                        grantedSpec &= GRANTED_SAW;
-                    } else {
+                    confirmedSpec |= grantedSpec;
+                    if (android.provider.Settings.canDrawOverlays(this))
                         grantedSpec |= GRANTED_SAW;
-                    }
                     if (confirmedSpec == requestSpec) {
                         if (deniedPermissionsList.size() != 0) {
                             //Ask for the permissions
@@ -854,22 +815,19 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                             for (int i = 0; i < deniedPermissionsList.size(); i++) {
                                 deniedPermissions[i] = deniedPermissionsList.get(i);
                             }
-                            ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+                            ActivityCompat.requestPermissions(this, deniedPermissions, Constants.ACCESS_PERMISSION);
                         } else {
                             List<String> deniedResults = new ArrayList<>();
-                            if ((requestSpec ^ grantedSpec) == GRANTED_WS) {
+                            if ((requestSpec & GRANTED_WS) == GRANTED_WS && (grantedSpec & GRANTED_WS) != GRANTED_WS)
                                 deniedResults.add("Manifest.permission.WRITE_SETTINGS");
-                            }
 
-                            if ((requestSpec ^ grantedSpec) == GRANTED_SAW) {
+                            if ((requestSpec & GRANTED_SAW) == GRANTED_SAW && (grantedSpec & GRANTED_SAW) != GRANTED_SAW)
                                 deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
-                            }
 
-                            if (deniedResults.size() != 0 || neverAskAgainList.size() != 0) {
-                                listener.onDenied(deniedResults, neverAskAgainList);
-                            } else {
+                            if (deniedResults.size() > 0)
+                                listener.onDenied(deniedResults);
+                            else
                                 listener.onGranted();
-                            }
 
                             requestSpec = 0x0000;
                             grantedSpec = 0x0000;
@@ -882,12 +840,9 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
             case Constants.PERMISSION_WRITE_SETTINGS:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     confirmedSpec |= GRANTED_WS;
-                    if (!android.provider.Settings.System.canWrite(this)) {
-                        //denied
-                        grantedSpec &= GRANTED_WS;
-                    } else {
+                    confirmedSpec |= grantedSpec;
+                    if (android.provider.Settings.System.canWrite(this))
                         grantedSpec |= GRANTED_WS;
-                    }
                     if (confirmedSpec == requestSpec) {
                         if (deniedPermissionsList.size() != 0) {
                             //Ask for the permissions
@@ -895,22 +850,19 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                             for (int i = 0; i < deniedPermissionsList.size(); i++) {
                                 deniedPermissions[i] = deniedPermissionsList.get(i);
                             }
-                            ActivityCompat.requestPermissions(this, deniedPermissions, ACCESS_PERMISSION);
+                            ActivityCompat.requestPermissions(this, deniedPermissions, Constants.ACCESS_PERMISSION);
                         } else {
                             List<String> deniedResults = new ArrayList<>();
-                            if ((requestSpec ^ grantedSpec) == GRANTED_WS) {
+                            if ((requestSpec & GRANTED_WS) == GRANTED_WS && (grantedSpec & GRANTED_WS) != GRANTED_WS)
                                 deniedResults.add("Manifest.permission.WRITE_SETTINGS");
-                            }
 
-                            if ((requestSpec ^ grantedSpec) == GRANTED_SAW) {
+                            if ((requestSpec & GRANTED_SAW) == GRANTED_SAW && (grantedSpec & GRANTED_SAW) != GRANTED_SAW)
                                 deniedResults.add("Manifest.permission.SYSTEM_ALERT_WINDOW");
-                            }
 
-                            if (deniedResults.size() != 0 || neverAskAgainList.size() != 0) {
-                                listener.onDenied(deniedResults, neverAskAgainList);
-                            } else {
+                            if (deniedResults.size() > 0)
+                                listener.onDenied(deniedResults);
+                            else
                                 listener.onGranted();
-                            }
 
                             requestSpec = 0x0000;
                             grantedSpec = 0x0000;
@@ -920,13 +872,20 @@ public class HomeActivity extends FragmentActivity implements View.OnClickListen
                     }
                 }
                 break;
+            case Constants.OPEN_SETTINGS:
+                requestSpec = 0x0000;
+                grantedSpec = 0x0000;
+                confirmedSpec = 0x0000;
+                deniedPermissionsList = null;
+                listener.onRetry();
+                break;
             case Constants.CHANGEING_DEFAULT_SMS_APP:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(this);
                     CLog.d(TAG, "defaultSmsApp " + defaultSmsApp);
                     if (listener != null && resultCode == RESULT_OK) {
                         if (defaultSmsApp.equals(defaultSysSmsApp))
-                            listener.onDenied(null, null);
+                            listener.onDenied(null);
                         else
                             listener.onGranted();
                     }

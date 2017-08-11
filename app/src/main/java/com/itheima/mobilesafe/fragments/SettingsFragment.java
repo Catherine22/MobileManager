@@ -145,28 +145,7 @@ public class SettingsFragment extends Fragment {
         siv_show_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.getPermissions(new String[]{
-                                Manifest.permission.SYSTEM_ALERT_WINDOW},
-                        new OnRequestPermissionsListener() {
-                            @Override
-                            public void onGranted() {
-                                CLog.d(TAG, "onGranted()");
-                                if (siv_show_address.isChecked()) {
-                                    siv_show_address.setChecked(false);
-                                    getActivity().getApplicationContext().stopService(addService);
-                                } else {
-                                    siv_show_address.setChecked(true);
-                                    getActivity().getApplicationContext().startService(addService);
-                                }
-                            }
-
-                            @Override
-                            public void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions){
-                                CLog.d(TAG, "onDenied()");
-                                siv_show_address.setChecked(false);
-                                getActivity().stopService(addService);
-                            }
-                        });
+                showAddress();
             }
         });
 
@@ -212,33 +191,7 @@ public class SettingsFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                mainInterface.getPermissions(new String[]{
-                                Manifest.permission.READ_CALL_LOG,
-                                Manifest.permission.WRITE_CALL_LOG,
-                                Manifest.permission.CALL_PHONE,
-                                Manifest.permission.RECEIVE_SMS,
-                                Manifest.permission.READ_CONTACTS,
-                                Manifest.permission.WRITE_CONTACTS},
-                        new OnRequestPermissionsListener() {
-                            @Override
-                            public void onGranted() {
-                                CLog.d(TAG, "onGranted()");
-                                if (siv_block.isChecked()) {
-                                    siv_block.setChecked(false);
-                                    getActivity().getApplicationContext().stopService(blockService);
-                                } else {
-                                    siv_block.setChecked(true);
-                                    getActivity().getApplicationContext().startService(blockService);
-                                }
-                            }
-
-                            @Override
-                            public void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions) {
-                                CLog.d(TAG, "onDenied()");
-                                siv_show_address.setChecked(false);
-                                getActivity().stopService(addService);
-                            }
-                        });
+                clickSiv_block();
             }
         });
 
@@ -368,6 +321,75 @@ public class SettingsFragment extends Fragment {
                 dialog.show();
             }
         });
+    }
+
+
+    private void clickSiv_block() {
+
+        mainInterface.getPermissions(new String[]{
+                        Manifest.permission.READ_CALL_LOG,
+                        Manifest.permission.WRITE_CALL_LOG,
+                        Manifest.permission.CALL_PHONE,
+                        Manifest.permission.RECEIVE_SMS,
+                        Manifest.permission.READ_CONTACTS,
+                        Manifest.permission.WRITE_CONTACTS},
+                new OnRequestPermissionsListener() {
+                    @Override
+                    public void onGranted() {
+                        CLog.d(TAG, "onGranted()");
+                        if (siv_block.isChecked()) {
+                            siv_block.setChecked(false);
+                            getActivity().getApplicationContext().stopService(blockService);
+                        } else {
+                            siv_block.setChecked(true);
+                            getActivity().getApplicationContext().startService(blockService);
+                        }
+                    }
+
+                    @Override
+                    public void onDenied(@Nullable List<String> deniedPermissions) {
+                        CLog.d(TAG, "onDenied()");
+                        siv_show_address.setChecked(false);
+                        getActivity().stopService(addService);
+
+                    }
+
+                    @Override
+                    public void onRetry() {
+                        clickSiv_block();
+                    }
+                });
+    }
+
+    private void showAddress() {
+        mainInterface.getPermissions(new String[]{
+                        Manifest.permission.SYSTEM_ALERT_WINDOW},
+                new OnRequestPermissionsListener() {
+                    @Override
+                    public void onGranted() {
+                        CLog.d(TAG, "onGranted()");
+                        if (siv_show_address.isChecked()) {
+                            siv_show_address.setChecked(false);
+                            getActivity().getApplicationContext().stopService(addService);
+                        } else {
+                            siv_show_address.setChecked(true);
+                            getActivity().getApplicationContext().startService(addService);
+                        }
+                    }
+
+                    @Override
+                    public void onDenied(@Nullable List<String> deniedPermissions) {
+                        CLog.d(TAG, "onDenied()");
+                        siv_show_address.setChecked(false);
+                        getActivity().stopService(addService);
+
+                    }
+
+                    @Override
+                    public void onRetry() {
+                        showAddress();
+                    }
+                });
     }
 
     private void setLoginView(int type) {

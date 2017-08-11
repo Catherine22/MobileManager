@@ -62,38 +62,47 @@ public class Setup2Fragment extends Fragment {
                     editor.putString(SpNames.sim_serial, null);
                     editor.apply();
                 } else {
-                    mainInterface.getPermissions(new String[]{
-                                    Manifest.permission.SYSTEM_ALERT_WINDOW,
-                                    Manifest.permission.WAKE_LOCK,
-                                    Manifest.permission.RECEIVE_BOOT_COMPLETED,
-                                    Manifest.permission.READ_CONTACTS,
-                                    Manifest.permission.WRITE_CONTACTS,
-                                    Manifest.permission.SEND_SMS,
-                                    Manifest.permission.RECEIVE_SMS,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                                    Manifest.permission.ACCESS_FINE_LOCATION},
-                            new OnRequestPermissionsListener() {
-                                @Override
-                                public void onGranted() {
-                                    CLog.d(TAG, "onGranted");
-                                    siv_sim.setChecked(true);
-                                    sv.pushInt(BroadcastActions.DISABLE_SWIPING, -1);
-                                    editor = sp.edit();
-                                    editor.putString(SpNames.sim_serial, Settings.simSerialNumber);
-                                    editor.apply();
-                                }
-
-                                @Override
-                                public void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions) {
-                                    CLog.d(TAG, "onDenied");
-                                    getActivity().finish();
-                                }
-                            }
-                    );
+                    clickSiv_sim();
                 }
             }
         });
         return view;
+    }
+
+    private void clickSiv_sim() {
+        mainInterface.getPermissions(new String[]{
+                        Manifest.permission.SYSTEM_ALERT_WINDOW,
+                        Manifest.permission.WAKE_LOCK,
+                        Manifest.permission.RECEIVE_BOOT_COMPLETED,
+                        Manifest.permission.READ_CONTACTS,
+                        Manifest.permission.WRITE_CONTACTS,
+                        Manifest.permission.SEND_SMS,
+                        Manifest.permission.RECEIVE_SMS,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION},
+                new OnRequestPermissionsListener() {
+                    @Override
+                    public void onGranted() {
+                        CLog.d(TAG, "onGranted");
+                        siv_sim.setChecked(true);
+                        sv.pushInt(BroadcastActions.DISABLE_SWIPING, -1);
+                        editor = sp.edit();
+                        editor.putString(SpNames.sim_serial, Settings.simSerialNumber);
+                        editor.apply();
+                    }
+
+                    @Override
+                    public void onDenied(@Nullable List<String> deniedPermissions) {
+                        CLog.d(TAG, "onDenied");
+                        getActivity().finish();
+                    }
+
+                    @Override
+                    public void onRetry() {
+                        clickSiv_sim();
+                    }
+                }
+        );
     }
 
     private void initData() {

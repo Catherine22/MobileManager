@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class AToolsFragment extends Fragment {
 
-//    private static final String TAG = "AToolsFragment";
+    //    private static final String TAG = "AToolsFragment";
     private MainInterface mainInterface;
     private BackupFactory backupFactory;
     private SmsBackup sb;
@@ -62,99 +62,111 @@ public class AToolsFragment extends Fragment {
         tv_sms_backup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.getPermissions(new String[]{Manifest.permission.READ_SMS}, new OnRequestPermissionsListener() {
-                    @Override
-                    public void onGranted() {
-
-
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                sb = (SmsBackup) backupFactory.createBackup(getActivity(), BackupConstants.SMS_BACKUP);
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pb.setProgress(0);
-                                        pb.setVisibility(View.VISIBLE);
-                                        sb.setPrecessListener(new SmsBackup.PrecessListener() {
-                                            @Override
-                                            public void currentProcess(int process) {
-                                                pb.setProgress(process);
-                                            }
-
-                                            @Override
-                                            public void maxProcess(int max) {
-                                                pb.setMax(max);
-                                            }
-                                        });
-                                    }
-                                });
-
-                                try {
-                                    sb.backupToLocal();
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getActivity(), "备份成功", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getActivity(), "备份失败", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } finally {
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            pb.setVisibility(View.INVISIBLE);
-                                        }
-                                    });
-                                }
-                            }
-                        }).start();
-
-
-                    }
-
-                    @Override
-                    public void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions) {
-                        Toast.makeText(getActivity(), "权限不足", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+                backupSms();
             }
         });
         TextView tv_sms_recovery = (TextView) view.findViewById(R.id.tv_sms_recovery);
         tv_sms_recovery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainInterface.setDefaultSmsApp(true, new OnRequestPermissionsListener() {
-                    @Override
-                    public void onGranted() {
-                        sb = (SmsBackup) backupFactory.createBackup(getActivity(), BackupConstants.SMS_BACKUP);
-                        try {
-                            sb.restoreFromLocal(true);
-                            Toast.makeText(getActivity(), "还原成功", Toast.LENGTH_SHORT).show();
-                        } catch (IOException | XmlPullParserException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getActivity(), "还原失败", Toast.LENGTH_SHORT).show();
-                        }
-                        mainInterface.setDefaultSmsApp(false, null);
-                    }
-
-                    @Override
-                    public void onDenied(@Nullable List<String> deniedPermissions, @Nullable List<String> neverAskAgainPermissions) {
-                        Toast.makeText(getActivity(), "获取权限失败", Toast.LENGTH_SHORT).show();
-                        mainInterface.setDefaultSmsApp(false, null);
-                    }
-                });
-
+                recoverySms();
             }
         });
         return view;
+    }
+
+    private void recoverySms() {
+        mainInterface.setDefaultSmsApp(true, new OnRequestPermissionsListener() {
+            @Override
+            public void onGranted() {
+                sb = (SmsBackup) backupFactory.createBackup(getActivity(), BackupConstants.SMS_BACKUP);
+                try {
+                    sb.restoreFromLocal(true);
+                    Toast.makeText(getActivity(), "还原成功", Toast.LENGTH_SHORT).show();
+                } catch (IOException | XmlPullParserException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(), "还原失败", Toast.LENGTH_SHORT).show();
+                }
+                mainInterface.setDefaultSmsApp(false, null);
+            }
+
+            @Override
+            public void onDenied(@Nullable List<String> deniedPermissions) {
+                Toast.makeText(getActivity(), "获取权限失败", Toast.LENGTH_SHORT).show();
+                mainInterface.setDefaultSmsApp(false, null);
+            }
+
+            @Override
+            public void onRetry() {
+                recoverySms();
+            }
+        });
+    }
+
+    public void backupSms() {
+        mainInterface.getPermissions(new String[]{Manifest.permission.READ_SMS}, new OnRequestPermissionsListener() {
+            @Override
+            public void onGranted() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        sb = (SmsBackup) backupFactory.createBackup(getActivity(), BackupConstants.SMS_BACKUP);
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pb.setProgress(0);
+                                pb.setVisibility(View.VISIBLE);
+                                sb.setPrecessListener(new SmsBackup.PrecessListener() {
+                                    @Override
+                                    public void currentProcess(int process) {
+                                        pb.setProgress(process);
+                                    }
+
+                                    @Override
+                                    public void maxProcess(int max) {
+                                        pb.setMax(max);
+                                    }
+                                });
+                            }
+                        });
+
+                        try {
+                            sb.backupToLocal();
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), "备份成功", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), "备份失败", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } finally {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pb.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                        }
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onRetry() {
+                backupSms();
+            }
+
+            @Override
+            public void onDenied(@Nullable List<String> deniedPermissions) {
+                Toast.makeText(getActivity(), "权限不足", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
