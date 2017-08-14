@@ -19,6 +19,7 @@
 | Facebook Account kit 登入 |[SettingsFragment], [AccountKitUtils]|
 | Deep linking（以branch.io实现） |[HomeActivity]|
 | 利用NDK存取authentication key |[SplashActivity]|
+| 应用优化 | [Wiki] |
 
 ## 自定义控件
 #### 自定义控件属性      
@@ -1013,3 +1014,4 @@ the License.
    [NDK1]: https://github.com/Catherine22/MobileManager/blob/master/jni1.png  
    [RSAHelper]:<https://github.com/Catherine22/RSAHelper>
    [SecuritySample]:<https://github.com/Catherine22/SecuritySample>
+   [Wiki]:<https://github.com/Catherine22/MobileManager/wiki/Android%E7%A8%8B%E5%BA%8F%E4%BC%98%E5%8C%96>
