@@ -19,7 +19,7 @@
 | Facebook Account kit 登入 |[SettingsFragment], [AccountKitUtils]|
 | Deep linking（以branch.io实现） |[HomeActivity]|
 | 利用NDK存取authentication key |[SplashActivity]|
-| 应用优化 | [Wiki] |
+| 代码优化 | [Wiki] |
 
 ## 自定义控件
 #### 自定义控件属性      
