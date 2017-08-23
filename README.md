@@ -1014,4 +1014,4 @@ the License.
    [NDK1]: https://github.com/Catherine22/MobileManager/blob/master/jni1.png  
    [RSAHelper]:<https://github.com/Catherine22/RSAHelper>
    [SecuritySample]:<https://github.com/Catherine22/SecuritySample>
-   [Wiki]:<https://github.com/Catherine22/WebServices/wiki>
+   [Wiki]:<https://github.com/Catherine22/MobileManager/wiki/Android-%E5%BA%94%E7%94%A8%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96>
