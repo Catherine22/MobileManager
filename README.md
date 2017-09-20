@@ -935,6 +935,10 @@ public class GetPermissionsSample extends FragmentActivity {
 }
 ```
 
+## 开发时遇到的坑
+- Huawei 手机挡 Log ， 拨号 *#*#2846579#*#*
+- HTC 找不到外存或 SD Card ， 因为用户手动卸载。
+
 # License
 
 ```
