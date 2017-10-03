@@ -157,10 +157,6 @@ private Handler handler = new Handler() {
   - [MyApplication]
   - [CLog]
 
-#### Http网络请求（含JSON解析）
-  - [NetUtils]
-  - [NetAsyncTask]
-
 #### 进程、服务管理
   - [SystemInfoUtils]
   - [ServiceUtils]
