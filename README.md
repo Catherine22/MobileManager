@@ -565,7 +565,7 @@ public boolean verifyApk(Context ctx) throws PackageManager.NameNotFoundExceptio
  - 在domain中定义app信息于assetlinks.json，当链接以浏览器开启时，导向该domain时可根据assetlinks.json信息开启app
 ```xml
 <intent-filter android:autoVerify="true">
-    <!-- Accepts URIs that begin with "http://itheima.com/mobilesafe" -->
+    <!-- Accept URI that begins with "http://itheima.com/mobilesafe" -->
     <data android:scheme="http" android:host="itheima.com" android:pathPrefix="/mobilesafe" /><!--pathPrefix必须有／前缀-->
     <data android:scheme="https" android:host="itheima.com" android:pathPrefix="/mobilesafe" />
 
